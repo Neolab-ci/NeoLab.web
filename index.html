@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoLab-CI - Plateforme d'Excellence en Électronique</title>
+    <!-- FontAwesome pour les icônes technologiques et électroniques -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- NAVBAR (Identique à la page À propos) -->
+    <header class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
+                <span>NeoLab-CI</span>
+            </a>
+            
+     <nav class="nav-menu" id="navMenu">
+     <a href="index.html" class="active">Accueil</a>
+     <a href="pages/cours/cours.html">Cours </a>
+     <a href="pages/projet/projet.html">Projets </a>
+     <a href="pages/composant/composants.html">Composants</a>
+     <a href="pages/apropo/index.html">À propos</a>
+            </nav>
+
+            <div class="nav-actions">
+                        <a href="pages/espace/enseignan.html" class="btn-connect">Espace enseignan</a>
+                        <a href="pages/espace/eleve.html" class="btn-connect">Espace Élève</a>
+                <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION (Inspiré de la maquette avec l'équilibre Électronique / Code) -->
+   <section class="hero-section" style="position: relative; overflow: hidden;">
+
+        <div class="hero-slider-bg"></div>
+        <div class="hero-glow"></div>
+        <div class="container hero-grid">
+            <div class="hero-text">
+                <span class="section-tagline">BIENVENUE SUR NEOLAB-CI</span>
+                <h1 class="hero-title">Apprends. <span>Pratique.</span> Innové.</h1>
+                <p class="hero-subtitle">Le laboratoire virtuel et physique pour maîtriser l'électronique de base jusqu'aux systèmes programmables.</p>
+                <p class="hero-description">
+                    Accédez à des cours clairs, des fiches de composants détaillées et des schémas interactifs conçus spécialement pour les élèves et passionnés de la filière électronique et technologique.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn-primary">Développer un projet <i class="fa-solid fa-bolt"></i></a>
+                    <a href="pages/cours/cours.html" class="btn-secondary">Explorer le catalogue <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="tech-artwork">
+                    <div class="circuit-board">
+                        <div class="central-chip"><i class="fa-solid fa-infinity"></i></div>
+                        <div class="pulse-ring"></div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PILIERS D'APPRENTISSAGE (Les 3 boîtes de la maquette) -->
+    <section class="mission-section" style="padding-top: 40px;">
+        <div class="container">
+            <div class="text-center" style="margin-bottom: 50px; text-align: center;">
+                <span class="section-tagline">NOTRE MÉTHODE</span>
+                <h2 class="section-title">Comment fonctionne <span>la plateforme ?</span></h2>
+            </div>
+            
+                <div class="pillars-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; width: 100%;">
+
+        <div class="pillar-item" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/theorie.jpg') no-repeat center/cover; padding: 40px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+            <div class="pillar-icon" style="background: rgba(0, 210, 255, 0.1); color: #00d2ff;"><i class="fa-solid fa-book-open"></i></div>
+                <h3 style="font-size: 20px; margin: 15px 0 10px; color: #fff;">1. Apprendre la Théorie</h3>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Des cours structurés sur l'électronique analogique, les lois de circuits, les transistors et les mathématiques appliquées au hardware.</p>
+        </div>
+
+        <div class="pillar-item" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/maquette.jpg') no-repeat center/cover; padding: 40px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+            <div class="pillar-icon" style="background: rgba(0, 102, 255, 0.1); color: #0066ff;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                <h3 style="font-size: 20px; margin: 15px 0 10px; color: #fff;">2. Pratiquer sur Maquette</h3>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Réalisez des montages réels sur platines d'essai (breadboard) en suivant nos guides étape par étape et nos schémathèques.</p>
+        </div>
+
+        <div class="pillar-item" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/programe.jpg') no-repeat center/cover; padding: 40px 30px; border-radius: 16px; border: 1px solid rgba(168, 85, 247, 0.2);">
+            <div class="pillar-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;"><i class="fa-solid fa-code"></i></div>
+                <h3 style="font-size: 20px; margin: 15px 0 10px; color: #fff;">3. Programmer & Connecter</h3>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Donnez vie à vos circuits en téléversant du code C/C++ sur Arduino et découvrez l'univers passionnant de l'Internet des Objets (IoT).</p>
+        </div>
+
+</div>
+        </div>
+    </section>
+
+    <!-- LES PARCOURS POPULAIRES (Grille de cours de la maquette) -->
+    <section class="values-section">
+        <div class="container">
+            <div class="text-center" style="margin-bottom: 50px; text-align: center;">
+                <span class="section-tagline">FORMATION FLUIDE</span>
+                <h2 class="section-title">Nos parcours d'études <span>recommandés</span></h2>
+            </div>
+            
+            <div class="values-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; width: 100%;">
+
+        <div class="value-card" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/analogie1.jpg') no-repeat center/cover;">
+            <div class="value-icon"><i class="fa-solid fa-wave-square"></i></div>
+            <span style="font-size: 11px; font-weight: 700; color: #22c55e; background: rgba(34,197,94,0.1); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 10px;">ÉLECTRONIQUE BASE</span>
+            <h3>Électronique Analogique</h3>
+            <p>Comprendre les signaux, mesurer au multimètre, maîtriser les diodes et condensateurs.</p>
+            <div class="card-line"></div>
+        </div>
+
+        <div class="value-card" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/arduino.jpg') no-repeat center/cover;">
+            <div class="value-icon"><i class="fa-solid fa-infinity"></i></div>
+            <span style="font-size: 11px; font-weight: 700; color: #22c55e; background: rgba(34,197,94,0.1); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 10px;">PROGRAMMATION</span>
+            <h3>Initiation Arduino</h3>
+            <p>Prendre en main le microcontrôleur Uno, comprendre les entrées/sorties et la structure du code.</p>
+            <div class="card-line"></div>
+        </div>
+
+        <div class="value-card" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/capteur.jpg') no-repeat center/cover;">
+            <div class="value-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <span style="font-size: 11px; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.1); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 10px;">PRATIQUE</span>
+            <h3>Capteurs & Actionneurs</h3>
+            <p>Interfacer le matériel : gérer des écrans LCD, servomoteurs, modules RFID et capteurs ultrasons.</p>
+            <div class="card-line"></div>
+        </div>
+
+        <div class="value-card" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/file.jpg') no-repeat center/cover;">
+            <div class="value-icon"><i class="fa-solid fa-wifi"></i></div>
+            <span style="font-size: 11px; font-weight: 700; color: #a855f7; background: rgba(168,85,247,0.1); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 10px;">AVANCÉ</span>
+            <h3>Systèmes IoT & Sans-fil</h3>
+            <p>Connecter vos circuits au réseau Wi-Fi avec les modules ESP32 pour envoyer des données à distance.</p>
+            <div class="card-line"></div>
+        </div>
+
+</div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVITÉ / STATISTIQUES (Bandeau d'appel à l'action intermédiaire) -->
+    <section class="cta-section" style="padding: 40px 0;">
+        <div class="container">
+            <div class="cta-box" style="padding: 40px 50px;">
+                <div class="cta-glow"></div>
+                <div class="cta-content">
+                    <h2>Une bibliothèque de composants complète</h2>
+                    <p>Trouvez instantanément le brochage, la tension d'alimentation et le code d'exemple de chaque composant de vos kits d'étude.</p>
+                </div>
+                <div class="cta-action">
+                    <a href="#" class="btn-primary" style="background: #fff; color: #020617; box-shadow: none;">Ouvrir la Composanthèque <i class="fa-solid fa-box-archive"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER (Identique à la page À propos) -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo mb-20">
+                    <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
+                    <span>NEOLAB-CI</span>
+                </a>
+                <p>La plateforme éducative dédiée à l'excellence en électronique, systèmes embarqués et technologies connectées pour l'enseignement technique.</p>
+                <div class="footer-socials">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fa-brands fa-github"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-links-col">
+                <h4>Filière</h4>
+                <a href="pages/cours/cours.html">Cours Théoriques</a>
+                <a href="#">Travaux Pratiques</a>
+                <a href="#">Schémathèque</a>
+                <a href="pages/composant/composants.html">Guide des Composants</a>
+            </div>
+
+            <div class="footer-links-col">
+                <h4>Ressources</h4>
+                <a href="#">Fiches Techniques</a>
+                <a href="#">Tutoriels Arduino</a>
+                <a href="#">Projets d'Élèves</a>
+                <a href="#">FAQ</a>
+            </div>
+
+            <div class="footer-links-col">
+                <h4>Légal</h4>
+                <a href="#">Mentions légales</a>
+                <a href="#">Utilisation des Données</a>
+            </div>
+
+            <div class="footer-links-col">
+                <h4>Contact Laboratoire</h4>
+                <p><i class="fa-solid fa-envelope"></i>infoneolab2@gmail.com</p>
+                <p><i class="fa-solid fa-location-dot"></i> Abidjan, Côte d'Ivoire</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 NeoLab-CI. Tous droits réservés.</p>
+            <button class="scroll-top" id="scrollTopBtn" aria-label="Retour en haut"><i class="fa-solid fa-arrow-up"></i></button>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
