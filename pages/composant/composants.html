@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Titre de la page</title>
+    <link rel="stylesheet" href="composant.css">
+</head>
+<body>
+   
+<template id="component-data">
+  <div class="json-comp">
+    {
+      "id": 101,
+      "name": "Module Phare (LED)",
+      "category": "Capteur",
+      "badge": "badge-capteur",
+      "emoji": "🚨",
+      "img": "img/LED.jpg",
+      "schematic": "img/LED.jpeg",
+      "short": "Simule un feu de signalisation ou un avertisseur visuel.",
+      "desc": "Ce module regroupe une ou plusieurs LEDs configurées pour reproduire le comportement d'un feu de signalisation ou d'un gyrophare. Il est idéal pour l'apprentissage de la gestion des états de sortie et des cycles de temporisation.",
+      "tags": ["Opto", "Signalisation", "Sécurité", "LED"],
+      "specs": [
+        { "label": "Tension de service", "value": "5 V DC" },
+        { "label": "Courant consommé", "value": "20 mA à 50 mA" },
+        { "label": "Couleurs disponibles", "value": "Rouge / Orange / Vert" },
+        { "label": "Type de commande", "value": "Numérique (HIGH/LOW)" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "VCC", "role": "Alimentation 5V" },
+        { "color": "#10b981", "name": "IN / SIG", "role": "Signal de commande (Broche Numérique)" },
+        { "color": "#3b82f6", "name": "GND", "role": "Masse" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">13</span>, OUTPUT);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  digitalWrite(<span class=\"num\">13</span>, HIGH); delay(<span class=\"num\">1000</span>);\n  digitalWrite(<span class=\"num\">13</span>, LOW); delay(<span class=\"num\">1000</span>);\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 102,
+      "name": "Servomoteur SG90",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "⚙️",
+      "img": "img/servo.jpeg",
+      "schematic": "img/servoschema.png",
+      "short": "Actionneur angulaire précis pour barrières et robots.",
+      "desc": "Le SG90 est un micro-servomoteur capable de pivoter avec précision sur un angle compris entre 0 et 180 degrés. Il intègre son propre jeu d'engrenages et un circuit de contrôle de position géré par signal PWM.",
+      "tags": ["Moteur", "PWM", "Actionneur", "Barrière"],
+      "specs": [
+        { "label": "Plage d'angle", "value": "0° à 180°" },
+        { "label": "Couple de blocage", "value": "1.8 kg·cm" },
+        { "label": "Vitesse d'exécution", "value": "0.1 s / 60 degrés" },
+        { "label": "Tension recommandée", "value": "4.8V à 6V" }
+      ],
+      "pins": [
+        { "color": "#f59e0b", "name": "Fils Orange", "role": "Signal PWM (vers broche PWM ex: D9)" },
+        { "color": "#ef4444", "name": "Fils Rouge", "role": "Alimentation positive (+5V)" },
+        { "color": "#78350f", "name": "Fils Marron", "role": "Masse commune (GND)" }
+      ],
+      "code": "#include <span class=\"str\">&lt;Servo.h&gt;</span>\nServo <span class=\"fn\">maBarriere</span>;\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  maBarriere.<span class=\"fn\">attach</span>(<span class=\"num\">9</span>);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  maBarriere.<span class=\"fn\">write</span>(<span class=\"num\">90</span>);  delay(<span class=\"num\">1500</span>);\n  maBarriere.<span class=\"fn\">write</span>(<span class=\"num\">0</span>);   delay(<span class=\"num\">1500</span>);\n}"
+    }
+  </div>
+
+
+  <div class="json-comp">
+    {
+      "id": 1,
+      "name": "Résistance carbone",
+      "category": "Passif",
+      "badge": "badge-passif",
+      "emoji": "🔴",
+      "img": "img/resistance.jpeg",
+      "schematic": "img/resistanceschema.png",
+      "short": "Limite le courant dans un circuit électronique.",
+      "desc": "La résistance au carbone est le composant passif le plus fondamental. Elle s'oppose au passage du courant électrique selon la loi d'Ohm (U = R × I). Elle protège les composants sensibles.",
+      "tags": ["Passif", "Ohm", "Carbone", "Protection"],
+      "specs": [
+        { "label": "Gamme de valeurs", "value": "1 Ω à 10 MΩ" },
+        { "label": "Puissance typ.", "value": "1/4 W" },
+        { "label": "Tolérance", "value": "±5 %" },
+        { "label": "Technologie", "value": "Film de carbone" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "Borne A", "role": "Pas de polarité" },
+        { "color": "#3b82f6", "name": "Borne B", "role": "Pas de polarité" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  Serial.<span class=\"fn\">begin</span>(<span class=\"num\">9600</span>);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  <span class=\"kw\">int</span> val = analogRead(A0);\n  Serial.<span class=\"fn\">println</span>(val);\n  delay(<span class=\"num\">500</span>);\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 2,
+      "name": "Potentiomètre",
+      "category": "Passif",
+      "badge": "badge-passif",
+      "emoji": "🎛️",
+      "img": "img/potentiometre.jpeg",
+      "schematic": "pschema.jpeg",
+      "short": "Résistance variable par réglage manuel.",
+      "desc": "Un potentiomètre est une résistance variable à trois bornes. Le curseur central se déplace le long d'une piste résistive, permettant de créer une tension de sortie ajustable.",
+      "tags": ["Passif", "Variable", "Ajustement", "Contrôle"],
+      "specs": [
+        { "label": "Valeurs courantes", "value": "10 kΩ, 100 kΩ" },
+        { "label": "Type de courbe", "value": "Linéaire" },
+        { "label": "Angle de rotation", "value": "300°" },
+        { "label": "Montage", "value": "Breadboard / PCB" }
+      ],
+      "pins": [
+        { "color": "#3b82f6", "name": "Pin 1", "role": "VCC / GND" },
+        { "color": "#f59e0b", "name": "Pin 2 (Curseur)", "role": "Sortie Variable (vers A0)" },
+        { "color": "#ef4444", "name": "Pin 3", "role": "GND / VCC" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  Serial.<span class=\"fn\">begin</span>(<span class=\"num\">9600</span>);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  <span class=\"kw\">int</span> pot = analogRead(A0);\n  Serial.<span class=\"fn\">println</span>(pot);\n  delay(<span class=\"num\">100</span>);\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 3,
+      "name": "Condensateur céramique",
+      "category": "Passif",
+      "badge": "badge-passif",
+      "emoji": "🟡",
+      "img": "img/condo3.jpeg",
+      "schematic": "img/condschema.png",
+      "short": "Faible capacité, idéal pour la haute fréquence.",
+      "desc": "Composant passif non polarisé stockant une petite quantité d'énergie. Très utilisé pour le découplage des circuits intégrés et le filtrage des parasites haute fréquence.",
+      "tags": ["Passif", "Filtrage", "Découplage", "HF"],
+      "specs": [
+        { "label": "Capacité typ.", "value": "100 nF (Code 104)" },
+        { "label": "Polarisation", "value": "Aucune" },
+        { "label": "Tension max", "value": "50 V" },
+        { "label": "Matériau", "value": "Céramique" }
+      ],
+      "pins": [
+        { "color": "#94a3b8", "name": "Broche 1", "role": "Pas de polarité" },
+        { "color": "#94a3b8", "name": "Broche 2", "role": "Pas de polarité" }
+      ],
+      "code": "<span class=\"cm\">// Utilisation matérielle (Filtrage d'alimentation de l'IC)</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 4,
+      "name": "Condensateur électrolytique",
+      "category": "Passif",
+      "badge": "badge-passif",
+      "emoji": "🧪",
+      "img": "img/condo.jpeg",
+      "schematic": "img/condschema.png",
+      "short": "Grande capacité, polarisé, utilisé pour le filtrage.",
+      "desc": "Condensateur polarisé offrant de grandes capacités. Il est principalement utilisé pour stabiliser les lignes de tension d'alimentation et lisser les signaux.",
+      "tags": ["Passif", "Filtrage", "Alimentation", "Polarisé"],
+      "specs": [
+        { "label": "Capacité typ.", "value": "10 µF à 1000 µF" },
+        { "label": "Polarisation", "value": "Oui (Bande grise = Négatif)" },
+        { "label": "Tension max", "value": "16V / 25V / 50V" },
+        { "label": "Tolérance", "value": "±20 %" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "Longue Broche", "role": "Anode (+)" },
+        { "color": "#3b82f6", "name": "Courte Broche", "role": "Cathode (-)" }
+      ],
+      "code": "<span class=\"cm\">// Utilisation matérielle pour stabiliser les pics de courant</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 5,
+      "name": "Bobine / Inductance",
+      "category": "Passif",
+      "badge": "badge-passif",
+      "emoji": "🌀",
+      "img": "img/bobine.jpeg",
+      "schematic": "img/bobineschema.jpeg",
+      "short": "Stockage d'énergie magnétique et filtrage.",
+      "desc": "L'inductance stocke de l'énergie sous forme de champ magnétique lorsqu'elle est traversée par un courant. Elle filtre les variations brusques de courant.",
+      "tags": ["Passif", "Magnétique", "Filtre", "Inductance"],
+      "specs": [
+        { "label": "Valeurs types", "value": "10 µH à 1 mH" },
+        { "label": "Type de noyau", "value": "Ferrite / Air" },
+        { "label": "Résistance DC", "value": "Très basse" },
+        { "label": "Usage", "value": "Convertisseurs Buck/Boost" }
+      ],
+      "pins": [
+        { "color": "#94a3b8", "name": "Borne A", "role": "Pas de polarité" },
+        { "color": "#94a3b8", "name": "Borne B", "role": "Pas de polarité" }
+      ],
+      "code": "<span class=\"cm\">// Composant matériel pour alimentations à découpage</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 6,
+      "name": "Diode redresseuse",
+      "category": "Actif",
+      "badge": "badge-actif",
+      "emoji": "➡",
+      "img": "img/diode.jpeg",
+      "schematic": "img/dioderschema.png",
+      "short": "Lainte passer le courant dans un seul sens.",
+      "desc": "Composant semi-conducteur classique (ex: 1N4007) qui permet au courant de circuler de l'anode vers la cathode uniquement, protégeant contre les inversions.",
+      "tags": ["Actif", "Diode", "Redressement", "Protection"],
+      "specs": [
+        { "label": "Modèle type", "value": "1N4007" },
+        { "label": "Courant max", "value": "1 A" },
+        { "label": "Tension inverse", "value": "1000 V" },
+        { "label": "Chute de tension", "value": "0.7 V" }
+      ],
+      "pins": [
+        { "color": "#10b981", "name": "Anode", "role": "Côté sans anneau (+)" },
+        { "color": "#ef4444", "name": "Cathode", "role": "Côté avec anneau (-)" }
+      ],
+      "code": "<span class=\"cm\">// Protection matérielle anti-inversion</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 7,
+      "name": "Diode Zener",
+      "category": "Actif",
+      "badge": "badge-actif",
+      "emoji": "⚡",
+      "img": "img/diodzenerschema.jpeg",
+      "schematic": "img/diodzener.png",
+      "short": "Régulation de tension précise par effet Zener.",
+      "desc": "Conçue pour laisser passer le courant en sens inverse si la tension dépasse un seuil précis. Utilisée pour stabiliser les tensions de référence.",
+      "tags": ["Actif", "Zener", "Régulation", "Référence"],
+      "specs": [
+        { "label": "Tensions types", "value": "3.3V / 5.1V" },
+        { "label": "Puissance max", "value": "500 mW" },
+        { "label": "Usage", "value": "Stabilisation et écrêtage" },
+        { "label": "Type", "value": "BZX55C ou similaire" }
+      ],
+      "pins": [
+        { "color": "#10b981", "name": "Anode", "role": "Masse (GND)" },
+        { "color": "#ef4444", "name": "Cathode", "role": "Ligne de signal à réguler" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(A0, INPUT); <span class=\"cm\">// Protège l'entrée analogique</span>\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 8,
+      "name": "LED",
+      "category": "Capteur",
+      "badge": "badge-capteur",
+      "emoji": "💡",
+      "img": "img/LED.jpg",
+      "schematic": "img/ledschema.jpeg",
+      "short": "Diode émettrice de lumière basse consommation.",
+      "desc": "Émet de la lumière lorsqu'elle est traversée par un courant direct. Elle nécessite toujours une résistance de protection pour éviter de griller.",
+      "tags": ["Opto", "Lumière", "Indicateur", "Arduino"],
+      "specs": [
+        { "label": "Courant idéal", "value": "20 mA" },
+        { "label": "Tension de seuil", "value": "2.0 V (Rouge)" },
+        { "label": "Diamètre", "value": "5 mm" },
+        { "label": "Type", "value": "Composant traversant" }
+      ],
+      "pins": [
+        { "color": "#10b981", "name": "Longue Patte", "role": "Anode (+)" },
+        { "color": "#ef4444", "name": "Courte Patte", "role": "Cathode (-)" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">13</span>, OUTPUT);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  digitalWrite(<span class=\"num\">13</span>, HIGH); delay(<span class=\"num\">200</span>);\n  digitalWrite(<span class=\"num\">13</span>, LOW); delay(<span class=\"num\">200</span>);\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 9,
+      "name": "LED RGB",
+      "category": "Capteur",
+      "badge": "badge-capteur",
+      "emoji": "🌈",
+      "img": "img/ledrgv.jpeg",
+      "schematic": "img/lesrgv.png",
+      "short": "Trois couleurs intégrées pour contrôle multicolore.",
+      "desc": "Regroupe trois puces LED (Rouge, Verte, Bleue) dans un seul boîtier. En mélangeant l'intensité via des signaux PWM, on génère une infinité de couleurs.",
+      "tags": ["Opto", "RGB", "Couleurs", "PWM"],
+      "specs": [
+        { "label": "Type commun", "value": "Cathode Commune" },
+        { "label": "Nombre de broches", "value": "4 broches" },
+        { "label": "Tensions directes", "value": "R:2V, G:3.2V, B:3.2V" },
+        { "label": "Rendu", "value": "Multicolore" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "Pin R", "role": "Rouge (Pin PWM)" },
+        { "color": "#94a3b8", "name": "Pin Long", "role": "Masse commune (GND)" },
+        { "color": "#10b981", "name": "Pin G", "role": "Vert (Pin PWM)" },
+        { "color": "#3b82f6", "name": "Pin B", "role": "Bleu (Pin PWM)" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">9</span>, OUTPUT); pinMode(<span class=\"num\">10</span>, OUTPUT); pinMode(<span class=\"num\">11</span>, OUTPUT);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  analogWrite(<span class=\"num\">9</span>, <span class=\"num\">128</span>); <span class=\"cm\">// Rouge moyen</span>\n  analogWrite(<span class=\"num\">11</span>, <span class=\"num\">255</span>); <span class=\"cm\">// Bleu max</span>\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 10,
+      "name": "Photodiode",
+      "category": "Capteur",
+      "badge": "badge-capteur",
+      "emoji": "👁️‍🗨️",
+      "img": "img/photodiod.jpeg",
+      "schematic": "img/photodiodschema.jpeg",
+      "short": "Détection de lumière ultra-rapide.",
+      "desc": "Semi-conducteur réagissant très rapidement à l'exposition lumineuse en faisant varier son courant inverse. Idéal pour les barrières optiques infrarouges.",
+      "tags": ["Capteur", "Lumière", "Opto", "Vitesse"],
+      "specs": [
+        { "label": "Réponse", "value": "Quelques nanosecondes" },
+        { "label": "Type de spectre", "value": "Infrarouge ou Visible" },
+        { "label": "Montage", "value": "Polarisation inverse requise" },
+        { "label": "Sensibilité", "value": "Haute vitesse" }
+      ],
+      "pins": [
+        { "color": "#10b981", "name": "Anode", "role": "Borne positive (+)" },
+        { "color": "#ef4444", "name": "Cathode", "role": "Borne négative (-)" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  Serial.<span class=\"fn\">begin</span>(<span class=\"num\">9600</span>);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  Serial.<span class=\"fn\">println</span>(analogRead(A0));\n  delay(<span class=\"num\">100</span>);\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 11,
+      "name": "Transistor NPN",
+      "category": "Actif",
+      "badge": "badge-actif",
+      "emoji": "📐",
+      "img": "img/npn1.jpeg",
+      "schematic": "img/pnpschema.jpeg",
+      "short": "Amplification et commutation de signaux.",
+      "desc": "Le transistor bipolaire NPN (ex: 2N2222) s'active en appliquant un petit courant sur sa Base, fermant le circuit entre Collecteur et Émetteur. Idéal comme interrupteur logique.",
+      "tags": ["Actif", "Bipolaire", "Commutation", "2N2222"],
+      "specs": [
+        { "label": "Modèle courant", "value": "2N2222 / BC547" },
+        { "label": "Courant Ic max", "value": "600 mA" },
+        { "label": "Boîtier", "value": "TO-92" },
+        { "label": "Gain (hFE)", "value": "100 à 300" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "Émetteur (E)", "role": "Relié au GND" },
+        { "color": "#f59e0b", "name": "Base (B)", "role": "Commande via résistance" },
+        { "color": "#3b82f6", "name": "Collecteur (C)", "role": "Relié à la charge" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">3</span>, OUTPUT);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  digitalWrite(<span class=\"num\">3</span>, HIGH); delay(<span class=\"num\">1000</span>);\n  digitalWrite(<span class=\"num\">3</span>, LOW);  delay(<span class=\"num\">1000</span>);\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 12,
+      "name": "Transistor PNP",
+      "category": "Actif",
+      "badge": "badge-actif",
+      "emoji": "📐",
+      "img": "img/npnnpn.jpeg",
+      "schematic": "img/pnpschema.jpeg",
+      "short": "Fonctionnement complémentaire au transistor NPN.",
+      "desc": "Le transistor bipolaire PNP (ex: BC557) s'active à l'inverse du NPN. Le circuit se ferme lorsque la Base est mise à la masse (état logique bas).",
+      "tags": ["Actif", "Bipolaire", "Inversé", "BC557"],
+      "specs": [
+        { "label": "Modèle courant", "value": "BC557 / 2N2907" },
+        { "label": "Logique", "value": "Masse active (LOW)" },
+        { "label": "Boîtier", "value": "TO-92" },
+        { "label": "Courant Ic", "value": "-100 mA" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "Émetteur (E)", "role": "Relié au +5V" },
+        { "color": "#f59e0b", "name": "Base (B)", "role": "Commande active à l'état BAS" },
+        { "color": "#3b82f6", "name": "Collecteur (C)", "role": "Sortie vers la charge" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">4</span>, OUTPUT);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  digitalWrite(<span class=\"num\">4</span>, LOW); <span class=\"cm\">// Transistor PNP passant !</span>\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 13,
+      "name": "MOSFET IRF540",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🔳",
+      "img": "img/mosfet_irf540.png",
+      "schematic": "img/mosfet_irf540.png",
+      "short": "Commande de charges de forte puissance.",
+      "desc": "Transistor à effet de champ canal N de puissance. Permet de piloter de gros moteurs ou rubans LED avec d'infimes pertes par effet Joule.",
+      "tags": ["Puissance", "MOSFET", "Commutation", "Moteur"],
+      "specs": [
+        { "label": "Courant Id max", "value": "28 A" },
+        { "label": "Tension Vds", "value": "100 V" },
+        { "label": "Boîtier", "value": "TO-220" },
+        { "label": "Rds(on) interne", "value": "0.044 Ω" }
+      ],
+      "pins": [
+        { "color": "#f59e0b", "name": "Gate (G)", "role": "Grille (Commande de tension Arduino)" },
+        { "color": "#3b82f6", "name": "Drain (D)", "role": "Pôle négatif de la charge de puissance" },
+        { "color": "#ef4444", "name": "Source (S)", "role": "Masse commune (GND)" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">5</span>, OUTPUT);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  analogWrite(<span class=\"num\">5</span>, <span class=\"num\">255</span>); <span class=\"cm\">// Allumage pleine puissance</span>\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 14,
+      "name": "TRIAC",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🛑",
+      "img": "img/triacschema1.jpeg",
+      "schematic": "img/triacshema2.jpeg",
+      "short": "Interrupteur électronique pour courant alternatif.",
+      "desc": "Composant capable de commuter le courant alternatif dans les deux sens. Idéal pour concevoir des variateurs ou gradateurs de lumière de salon en 230V.",
+      "tags": ["Puissance", "TRIAC", "AC", "Gradateur"],
+      "specs": [
+        { "label": "Modèle type", "value": "BT136" },
+        { "label": "Usage", "value": "Courant alternatif (AC)" },
+        { "label": "Boîtier", "value": "TO-220" },
+        { "label": "Sécurité", "value": "Haute tension sectorielle" }
+      ],
+      "pins": [
+        { "color": "#3b82f6", "name": "MT1", "role": "Terminal Principal 1" },
+        { "color": "#ef4444", "name": "MT2", "role": "Terminal Principal 2" },
+        { "color": "#f59e0b", "name": "Gate (G)", "role": "Gâchette d'amorçage" }
+      ],
+      "code": "<span class=\"cm\">// Utilisation avec isolation opto-coupleur recommandée</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 15,
+      "name": "Relais 5V",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🔳",
+      "img": "img/relais.jpeg",
+      "schematic": "img/relaischema.jpeg",
+      "short": "Isolation électrique et commande de fortes charges.",
+      "desc": "Interrupteur électromécanique. Une commande logique 5V excite une bobine, déplaçant un contact mécanique pour piloter un appareil indépendant en 230V.",
+      "tags": ["Électroméca", "Relais", "Isolation", "Secteur"],
+      "specs": [
+        { "label": "Tension bobine", "value": "5 V DC" },
+        { "label": "Coupure max", "value": "10A @ 250V AC" },
+        { "label": "Type contact", "value": "Inverseur mécanique" },
+        { "label": "Isolation", "value": "Galvanique complète" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "VCC / GND", "role": "Alimentation Bobine (5V)" },
+        { "color": "#10b981", "name": "IN", "role": "Signal logique de commande" },
+        { "color": "#f59e0b", "name": "COM / NO", "role": "Borniers côté puissance isolée" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">7</span>, OUTPUT);\n}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {\n  digitalWrite(<span class=\"num\">7</span>, HIGH); delay(<span class=\"num\">2000</span>);\n  digitalWrite(<span class=\"num\">7</span>, LOW);  delay(<span class=\"num\">2000</span>);\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 16,
+      "name": "Régulateur LM7805",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🧱",
+      "img": "img/lm7805.jpeg",
+      "schematic": "img/lm7805schema.jpeg",
+      "short": "Garantit une sortie stable et fixe de 5V.",
+      "desc": "Régulateur linéaire abaissant une tension continue fluctuante ou élevée (ex: 9V, 12V) pour délivrer une sortie pure et stable de 5.0 V DC.",
+      "tags": ["Alimentation", "Régulateur", "7805", "Stable"],
+      "specs": [
+        { "label": "Tension de sortie", "value": "5.0 V DC" },
+        { "label": "Courant max", "value": "1.5 A" },
+        { "label": "Tension entrée", "value": "7V à 20V DC" },
+        { "label": "Boîtier", "value": "TO-220" }
+      ],
+      "pins": [
+        { "color": "#3b82f6", "name": "INPUT", "role": "Tension brute d'entrée" },
+        { "color": "#ef4444", "name": "GND", "role": "Masse commune" },
+        { "color": "#10b981", "name": "OUTPUT", "role": "Sortie stable 5V" }
+      ],
+      "code": "<span class=\"cm\">// Intégration matérielle, aucune ligne de code requise</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 17,
+      "name": "Régulateur LM317",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🧱",
+      "img": "img/lm317.jpeg",
+      "schematic": "img/lm317schema.jpeg",
+      "short": "Régulateur linéaire à tension ajustable.",
+      "desc": "Régulateur linéaire dont la tension de sortie peut être ajustée précisément à l'aide d'un potentiomètre externe relié à sa broche de contrôle.",
+      "tags": ["Alimentation", "Ajustable", "LM317", "Variable"],
+      "specs": [
+        { "label": "Plage de sortie", "value": "1.2V à 37V DC" },
+        { "label": "Courant max", "value": "1.5 A" },
+        { "label": "Type", "value": "Linéaire ajustable" },
+        { "label": "Boîtier", "value": "TO-220" }
+      ],
+      "pins": [
+        { "color": "#f59e0b", "name": "ADJ", "role": "Ajustement (via potentiomètre)" },
+        { "color": "#10b981", "name": "VOUT", "role": "Tension de sortie régulée" },
+        { "color": "#3b82f6", "name": "VIN", "role": "Tension d'entrée" }
+      ],
+      "code": "<span class=\"cm\">// Utilisé pour créer des blocs d'alimentations ajustables</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 18,
+      "name": "Pont de diodes",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🔀",
+      "img": "img/ponddiod.jpeg",
+      "schematic": "img/dioderschema.png",
+      "short": "Redresseur complet pour convertir l'AC vers le DC.",
+      "desc": "Moulage de quatre diodes en pont (Graetz). Il convertit les vagues du courant alternatif (AC) en courant continu redressé (DC).",
+      "tags": ["Alimentation", "Redresseur", "Graetz", "AC-DC"],
+      "specs": [
+        { "label": "Structure", "value": "4 diodes intégrées" },
+        { "label": "Entrées", "value": "2 broches AC (~)" },
+        { "label": "Sorties", "value": "Plus (+) et Moins (-)" },
+        { "label": "Usage", "value": "Sortie de transformateur" }
+      ],
+      "pins": [
+        { "color": "#94a3b8", "name": "AC (~)", "role": "Entrée alternative" },
+        { "color": "#ef4444", "name": "Plus (+)", "role": "Sortie positive continue" },
+        { "color": "#3b82f6", "name": "Moins (-)", "role": "Sortie négative continue" }
+      ],
+      "code": "<span class=\"cm\">// Composant matériel redresseur classique</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 19,
+      "name": "Quartz 16 MHz",
+      "category": "Passif",
+      "badge": "badge-passif",
+      "emoji": "💎",
+      "img": "img/16mhz1.jpeg",
+      "schematic": "img/16schema.png",
+      "short": "Référence de temps et horloge haute stabilité.",
+      "desc": "Composant piézoélectrique générant un signal de cadence parfait à 16 MHz. C'est l'horloge système qui donne le rythme à l'Arduino Uno.",
+      "tags": ["Passif", "Horloge", "Oscillateur", "Fréquence"],
+      "specs": [
+        { "label": "Fréquence", "value": "16.000 MHz" },
+        { "label": "Stabilité", "value": "±20 ppm" },
+        { "label": "Boîtier", "value": "HC-49S Profil Bas" },
+        { "label": "Condensateurs", "value": "Nécessite 2x 22pF" }
+      ],
+      "pins": [
+        { "color": "#94a3b8", "name": "XTAL1", "role": "Entrée horloge microcontrôleur" },
+        { "color": "#94a3b8", "name": "XTAL2", "role": "Sortie horloge microcontrôleur" }
+      ],
+      "code": "<span class=\"cm\">// Cadence le processeur de manière transparente</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 20,
+      "name": "Timer NE555",
+      "category": "Actif",
+      "badge": "badge-actif",
+      "emoji": "🕷️",
+      "img": "img/ne555n.jpeg",
+      "schematic": "img/ne555nschema.jpeg",
+      "short": "Générateur d'impulsions et de temporisations.",
+      "desc": "Circuit intégré légendaire configuré pour générer des impulsions de temporisation ou des signaux carrés périodiques (oscillateur astable).",
+      "tags": ["Actif", "Horloge", "Temporisateur", "NE555"],
+      "specs": [
+        { "label": "Boîtier", "value": "DIP-8 (8 pattes)" },
+        { "label": "Tension alim", "value": "4.5V à 16V" },
+        { "label": "Courant max", "value": "200 mA" },
+        { "label": "Modes", "value": "Astable / Monostable" }
+      ],
+      "pins": [
+        { "color": "#3b82f6", "name": "Pin 1 (GND)", "role": "Masse" },
+        { "color": "#f59e0b", "name": "Pin 3 (OUT)", "role": "Sortie du signal carré généré" },
+        { "color": "#ef4444", "name": "Pin 8 (VCC)", "role": "Alimentation positive" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">2</span>, INPUT); <span class=\"cm\">// Lit les impulsions du 555</span>\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 21,
+      "name": "Amplificateur opérationnel LM358",
+      "category": "Actif",
+      "badge": "badge-actif",
+      "emoji": "🕷️",
+      "img": "img/lm358p.jpeg",
+      "schematic": "https://i.imgur.com/x8CW9mZ.png",
+      "short": "Double amplificateur opérationnel basse consommation.",
+      "desc": "Intègre deux amplificateurs opérationnels indépendants. Parfait pour la mise en forme ou l'amplification de signaux analogiques de capteurs.",
+      "tags": ["Analogique", "Ampli-Op", "Gain", "LM358"],
+      "specs": [
+        { "label": "Nombre d'AOP", "value": "2" },
+        { "label": "Alimentation", "value": "3V à 32V" },
+        { "label": "Boîtier", "value": "DIP-8" },
+        { "label": "Type", "value": "Basse consommation" }
+      ],
+      "pins": [
+        { "color": "#10b981", "name": "OUT 1 / 2", "role": "Sorties des modules" },
+        { "color": "#ef4444", "name": "IN - (x2)", "role": "Entrées inverseuses" },
+        { "color": "#3b82f6", "name": "IN + (x2)", "role": "Entrées non-inverseuses" }
+      ],
+      "code": "<span class=\"cm\">// Pré-traitement analogique matériel</span>\n<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 22,
+      "name": "Circuit ULN2003",
+      "category": "Actif",
+      "badge": "badge-actif",
+      "emoji": "🕷️",
+      "img": "img/uln2003.jpeg",
+      "schematic": "img/uln2003schema.jpeg",
+      "short": "Réseau de transistors pour piloter moteurs et relais.",
+      "desc": "Réseau de 7 paires de transistors Darlington de puissance. Sert d'interface (Driver) pour piloter des charges comme un moteur pas-à-pas.",
+      "tags": ["Driver", "Darlington", "Moteur", "Interface"],
+      "specs": [
+        { "label": "Canaux dispo", "value": "7 canaux" },
+        { "label": "Courant max", "value": "500 mA par canal" },
+        { "label": "Tension max", "value": "50 V" },
+        { "label": "Boîtier", "value": "DIP-16" }
+      ],
+      "pins": [
+        { "color": "#f59e0b", "name": "IN 1-7", "role": "Entrées logiques Arduino (5V)" },
+        { "color": "#3b82f6", "name": "OUT 1-7", "role": "Sorties de puissance commutées" },
+        { "color": "#94a3b8", "name": "GND / COM", "role": "Masse et retour diodes" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">8</span>, OUTPUT); pinMode(<span class=\"num\">9</span>, OUTPUT);\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 23,
+      "name": "Afficheur 7 segments",
+      "category": "Capteur",
+      "badge": "badge-capteur",
+      "emoji": "🔢",
+      "img": "img/7segment.jpeg",
+      "schematic": "img/7segmentschema.jpeg",
+      "short": "Affichage numérique simple à base de LEDs.",
+      "desc": "Indicateur composé de 7 segments LED disposés en forme de huit. Permet d'écrire des chiffres par combinaison d'allumages.",
+      "tags": ["Affichage", "LED", "Chiffres", "Compteur"],
+      "specs": [
+        { "label": "Type", "value": "Cathode Commune" },
+        { "label": "Éléments", "value": "7 Segments + Point décimal" },
+        { "label": "Couleur", "value": "Rouge" },
+        { "label": "Pins", "value": "10 broches" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "A à G", "role": "Contrôle des segments individuels" },
+        { "color": "#3b82f6", "name": "COM", "role": "Broche commune de masse" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  pinMode(<span class=\"num\">2</span>, OUTPUT); <span class=\"cm\">// Segment Allumé</span>\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 24,
+      "name": "Écran LCD 16x2",
+      "category": "Capteur",
+      "badge": "badge-capteur",
+      "emoji": "📺",
+      "img": "img/lcd.jpeg",
+      "schematic": "img/lcd.jpeg",
+      "short": "Affichage alphanumérique sur 2 lignes de 16 caractères.",
+      "desc": "Écran LCD permettant d'afficher 32 caractères textuels. Couramment équipé d'une carte d'interface I2C pour limiter le câblage à 4 fils.",
+      "tags": ["Affichage", "LCD", "Texte", "Écran"],
+      "specs": [
+        { "label": "Capacité", "value": "16 caractères × 2 lignes" },
+        { "label": "Interface", "value": "I2C (Via adaptateur PCF8574)" },
+        { "label": "Rétroéclairage", "value": "LED Bleu" },
+        { "label": "Contrôleur", "value": "HD44780 standard" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "VCC / GND", "role": "Alimentation 5V" },
+        { "color": "#f59e0b", "name": "SDA", "role": "Données série I2C (Pin A4)" },
+        { "color": "#10b981", "name": "SCL", "role": "Horloge série I2C (Pin A5)" }
+      ],
+      "code": "#include <span class=\"str\">&lt;LiquidCrystal_I2C.h&gt;</span>\nLiquidCrystal_I2C <span class=\"fn\">lcd</span>(<span class=\"num\">0x27</span>, <span class=\"num\">16</span>, <span class=\"num\">2</span>);"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 25,
+      "name": "Capteur DHT11",
+      "category": "Capteur",
+      "badge": "badge-capteur",
+      "emoji": "🌡️",
+      "img": "https://i.imgur.com/pCv8WZm.png",
+      "schematic": "img/dht11schema.png",
+      "short": "Mesure simple de la température et de l'humidité.",
+      "desc": "Capteur numérique intégrant un capteur d'humidité capacitif et une thermistance. Transmet les informations sur un bus monofilaire.",
+      "tags": ["Capteur", "Météo", "Température", "DHT11"],
+      "specs": [
+        { "label": "Humidité", "value": "20-90 % RH" },
+        { "label": "Température", "value": "0-50 °C" },
+        { "label": "Sortie", "value": "Protocole Single-Wire" },
+        { "label": "Précision", "value": "±2°C / ±5%" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "VCC", "role": "Alimentation 5V" },
+        { "color": "#f59e0b", "name": "DATA", "role": "Ligne de données série numérique" },
+        { "color": "#3b82f6", "name": "GND", "role": "Masse" }
+      ],
+      "code": "#include <span class=\"str\">&lt;DHT.h&gt;</span>\nDHT <span class=\"fn\">dht</span>(<span class=\"num\">2</span>, DHT11);"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 26,
+      "name": "Capteur HC-SR04",
+      "category": "Capteur",
+      "badge": "badge-capteur",
+      "emoji": "📏",
+      "img": "img/hcsr04.jpeg",
+      "schematic": "img/hcsr04schema.png",
+      "short": "Mesure de distance précise par ultrasons.",
+      "desc": "Module mesurant la distance par calcul de temps d'écho d'une onde ultrasonique inaudible à 40 kHz rebondissant sur un obstacle.",
+      "tags": ["Capteur", "Ultrason", "Distance", "Robotique"],
+      "specs": [
+        { "label": "Portée", "value": "2 cm à 400 cm" },
+        { "label": "Précision", "value": "3 mm" },
+        { "label": "Angle", "value": "&lt; 15 degrés" },
+        { "label": "Alimentation", "value": "5V DC" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "VCC", "role": "Alimentation +5V" },
+        { "color": "#f59e0b", "name": "TRIG", "role": "Impulsion de déclenchement (10µs)" },
+        { "color": "#10b981", "name": "ECHO", "role": "Retour d'onde mesuré" },
+        { "color": "#3b82f6", "name": "GND", "role": "Masse" }
+      ],
+      "code": "<span class=\"kw\">long</span> t = pulseIn(echoPin, HIGH);\n<span class=\"kw\">int</span> d = t * <span class=\"num\">0.034</span> / <span class=\"num\">2</span>;"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 27,
+      "name": "Module Bluetooth HC-05",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🔵",
+      "img": "img/bluet1.jpeg",
+      "schematic": "img/bluetschema.jpeg",
+      "short": "Communication sans fil série Bluetooth SPP.",
+      "desc": "Module Bluetooth permettant une communication sans fil entre un microcontrôleur Arduino et un smartphone via liaison série UART.",
+      "tags": ["Sans-fil", "Bluetooth", "Série", "HC-05"],
+      "specs": [
+        { "label": "Version", "value": "Bluetooth v2.0 + EDR" },
+        { "label": "Portée", "value": "10 mètres" },
+        { "label": "Interface", "value": "Série UART (9600 bauds)" },
+        { "label": "Mode", "value": "Maître / Esclave" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "VCC / GND", "role": "Alimentation (3.6V-6V)" },
+        { "color": "#10b981", "name": "TXD", "role": "Émission (vers RX Arduino)" },
+        { "color": "#f59e0b", "name": "RXD", "role": "Réception (vers TX Arduino)" }
+      ],
+      "code": "#include <span class=\"str\">&lt;SoftwareSerial.h&gt;</span>\nSoftwareSerial <span class=\"fn\">bt</span>(<span class=\"num\">10</span>, <span class=\"num\">11</span>);"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 28,
+      "name": "Module Wi-Fi ESP8266",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🌐",
+      "img": "img/wifi.jpeg",
+      "schematic": "img/wifischema.jpeg",
+      "short": "Connexion Wi-Fi complète pour l'Internet des Objets (IoT).",
+      "desc": "Puce Wi-Fi autonome dotée d'une pile TCP/IP complète. Permet de connecter vos maquettes au réseau local ou d'héberger un serveur web.",
+      "tags": ["Sans-fil", "WiFi", "IoT", "ESP8266"],
+      "specs": [
+        { "label": "Tension", "value": "3.3 V Strict" },
+        { "label": "Fréquence", "value": "2.4 GHz" },
+        { "label": "Protocole", "value": "802.11 b/g/n" },
+        { "label": "Commande", "value": "Série via Commandes AT" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "VCC", "role": "Alimentation 3.3V exclusivement" },
+        { "color": "#3b82f6", "name": "GND", "role": "Masse" },
+        { "color": "#10b981", "name": "TX / RX", "role": "Liaison de communication série" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {\n  Serial.<span class=\"fn\">println</span>(<span class=\"str\">\"AT\"</span>); <span class=\"cm\">// Ping le module</span>\n}"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 29,
+      "name": "Microcontrôleur ATmega328P",
+      "category": "Actif",
+      "badge": "badge-actif",
+      "emoji": "🧠",
+      "img": "img/atmega.jpeg",
+      "schematic": "img/atmegaschema.jpeg",
+      "short": "Puce principale et cerveau des cartes Arduino.",
+      "desc": "Microcontrôleur principal 8 bits de l'Arduino Uno. Il exécute les instructions logiques et gère la mémoire ainsi que l'ensemble des lignes d'E/S.",
+      "tags": ["Actif", "AVR", "Cerveau", "ATmega"],
+      "specs": [
+        { "label": "Architecture", "value": "AVR RISC 8 bits" },
+        { "label": "Mémoire Flash", "value": "32 Ko" },
+        { "label": "SRAM / EEPROM", "value": "2 Ko / 1 Ko" },
+        { "label": "Format", "value": "DIP-28" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "VCC / GND", "role": "Alimentation puce (5V)" },
+        { "color": "#f59e0b", "name": "Pins 9 & 10", "role": "Liaison au Quartz externe" },
+        { "color": "#10b981", "name": "GPIOs", "role": "Broches d'entrées/sorties directes" }
+      ],
+      "code": "DDRB |= (<span class=\"num\">1</span> &lt;&lt; DDB5); <span class=\"cm\">// Registre natif</span>"
+    }
+  </div>
+
+  <div class="json-comp">
+    {
+      "id": 30,
+      "name": "Carte Arduino Uno",
+      "category": "Module",
+      "badge": "badge-module",
+      "emoji": "🔌",
+      "img": "img/arduino.jpg",
+      "schematic": "img/arduinoschema.jpeg",
+      "short": "Plateforme d'apprentissage et de prototypage rapide.",
+      "desc": "Carte de développement incontournable regroupant le microcontrôleur ATmega328P, le port USB de programmation et les régulateurs de tension nécessaires.",
+      "tags": ["Module", "Arduino", "Uno", "Prototypage"],
+      "specs": [
+        { "label": "Broches Num.", "value": "14 (dont 6 PWM)" },
+        { "label": "Entrées Anal.", "value": "6 (ADC 10 bits)" },
+        { "label": "Alimentation", "value": "5V USB ou 7-12V Jack" },
+        { "label": "Fréquence", "value": "16 MHz" }
+      ],
+      "pins": [
+        { "color": "#ef4444", "name": "POWER Pins", "role": "Distribution des alimentations maquette" },
+        { "color": "#f59e0b", "name": "DIGITAL", "role": "Entrées/Sorties numériques logiques" },
+        { "color": "#3b82f6", "name": "ANALOG IN", "role": "Broches de lecture analogique" }
+      ],
+      "code": "<span class=\"kw\">void</span> <span class=\"fn\">setup</span>() {}\n<span class=\"kw\">void</span> <span class=\"fn\">loop</span>() {}"
+    }
+  </div>
+</template>
+
+<main>
+  <div class="page-header">
+    
+    <div class="breadcrumb">// BIBLIOTHÈQUE // COMPOSANTS // ELECTRONIQUE</div>
+    <h1>Composants <span>Électroniques</span></h1>
+    <a href="../../index.html" class="btn-retour-accueil" title="HOME">HOME</a>
+    <p>Explore et comprends des composants électroniques avec leurs caractéristiques, brochages et exemples de code Arduino.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-pill"><span class="num" id="statCompCount">+0</span><span class="lbl">Composants</span></div>
+    <div class="stat-pill"><span class="num">4</span><span class="lbl">Catégories</span></div>
+    <div class="stat-pill"><span class="num">+500</span><span class="lbl">Exemples de code</span></div>
+    <div class="stat-pill"><span class="num">100%</span><span class="lbl">Gratuit</span></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="search-box">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Rechercher un composant..." oninput="filterComponents()"/>
+      </div>
+      <select class="filter-select" id="sortSelect" onchange="filterComponents()">
+        <option value="">Trier par : Défaut</option>
+        <option value="az">Nom A → Z</option>
+        <option value="za">Nom Z → A</option>
+        <option value="cat">Catégorie</option>
+      </select>
+    </div>
+    
+    <div class="view-switcher">
+      <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grille">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/>
+          <rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>
+        </svg>
+      </button>
+      <button class="view-btn" id="listBtn" onclick="setView('list')" title="Liste">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="cat-tabs" id="catTabs">
+    <button class="cat-tab active" onclick="filterCat('all', this)">Tous <span class="count" id="countAll">0</span></button>
+    <button class="cat-tab" onclick="filterCat('Passif', this)">⬡ Passifs <span class="count" id="countPassif">0</span></button>
+    <button class="cat-tab" onclick="filterCat('Actif', this)">⚡ Actifs <span class="count" id="countActif">0</span></button>
+    <button class="cat-tab" onclick="filterCat('Capteur', this)">📡 Capteurs <span class="count" id="countCapteur">0</span></button>
+    <button class="cat-tab" onclick="filterCat('Module', this)">🔧 Modules <span class="count" id="countModule">0</span></button>
+  </div>
+
+  <div id="gridView" class="components-grid"></div>
+  <div id="listView" class="components-list" style="display:none;"></div>
+
+  <div class="pagination">
+    <button class="pg-btn" disabled>←</button>
+    <button class="pg-btn active">1</button>
+    <button class="pg-btn" disabled>→</button>
+  </div>
+</main>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalContent"></div>
+</div>
+<script src="composant.js"></script>
+</body>
+</html>

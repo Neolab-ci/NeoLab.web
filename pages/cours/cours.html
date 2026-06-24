@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeoLab-CI - Espace Cours</title>
+  <link rel="stylesheet" href="cours.css"> 
+</head>
+<body>
+
+  <a href="../../index.html" class="btn-retour-accueil" title="Retour à l'accueil">🏠</a>
+
+  <div class="container">
+    
+    <header class="page-header">
+      <div class="header-main">
+        <span class="site-logo">NEOLAB-CI</span>
+        <h1>Espace de Cours & Formations</h1>
+        <p class="subtitle">Sélectionnez une thématique pour accéder aux supports officiels et manuels de référence.</p>
+      </div>
+      
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-number" id="statCoursCount">+0</div>
+          <div class="stat-label">Total Modules</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="filter-section">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchCourseInput" placeholder="Rechercher un cours ou un mot-clé...">
+      </div>
+      
+      <div class="sort-box">
+        <select id="sortCourseSelect">
+          <option value="recent">Plus récents</option>
+          <option value="diff">Par niveau de difficulté</option>
+        </select>
+      </div>
+    </div>
+
+        <div class="tabs-container" id="levelTabs">
+      <button class="cat-tab active" onclick="filterCategory('all', this)">
+        🌐 Tous (<span id="countAllCours">0</span>)
+      </button>
+      <button class="cat-tab" onclick="filterCategory('Électronique', this)">
+        ⚡ Électronique (<span id="countElectro">0</span>)
+      </button>
+      <button class="cat-tab" onclick="filterCategory('Technologie', this)">
+        💻 Technologie (<span id="countTechno">0</span>)
+      </button>
+      <button class="cat-tab" onclick="filterCategory('TP', this)">
+        🛠️ Travaux Pratiques (<span id="countTP">0</span>)
+      </button>
+    </div>
+
+    <div class="format-filters" style="display: flex; gap: 8px; margin: -10px 0 20px 0; padding: 0 5px;">
+      <button class="fmt-btn active" onclick="filterFormat('all', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s;">
+        📱 Tout afficher
+      </button>
+      <button class="fmt-btn" onclick="filterFormat('pdf', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s;">
+        📄 Supports PDF
+      </button>
+      <button class="fmt-btn" onclick="filterFormat('video', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s;">
+        🎥 Cours Vidéo
+      </button>
+    </div>
+
+    <main class="grid-view" id="coursesGridView">
+      </main>
+
+
+
+    <main class="grid-view" id="coursesGridView">
+      </main>
+
+    <div class="pagination">
+      </div>
+
+  </div>
+
+ 
+      <template id="course-data">
+  
+    <div class="json-course">{
+      "id": 5,
+      "title": "Les Diodes : Descriptions, Représentations & Applications",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "pdf",
+      "img": "images/cours_diodes.jpg",
+      "short": "Étude fondamentale des jonctions PN. Ce module couvre les représentations graphiques, les caractéristiques électriques, ainsi qu'une série de cours et exercices d'application pratiques sur les diodes.",
+      "pdf": "cours/diodes_description_applications.pdf",
+      "questions": [
+        {"q": "Quel type de jonction semi-conductrice constitue une diode standard ?", "options": ["Jonction NPN", "Jonction PN", "Jonction FET"], "correct": 1},
+        {"q": "Comment appelle-t-on l'électrode reliée à la région P de la diode ?", "options": ["La Cathode", "L'Anode", "La Grille"], "correct": 1},
+        {"q": "Quelle est la tension de seuil approximative d'une diode classique au Silicium ?", "options": ["0.2 V", "0.7 V", "1.2 V"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 6,
+      "title": "Diodes et Transistors - Principes d'Amplification et Commutation",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "pdf",
+      "img": "images/diodes_transistors.jpg",
+      "short": "Comprendre l'interaction entre les composants semi-conducteurs. Étude des diodes de redressement et des transistors bipolaires en régime de commutation et d'amplification de signal.",
+      "pdf": "cours/diodes_et_transistors.pdf",
+      "questions": [
+        {"q": "Quels sont les trois terminaux d'un transistor bipolaire ?", "options": ["Anode, Cathode, Gâchette", "Émetteur, Base, Collecteur", "Source, Drain, Grille"], "correct": 1},
+        {"q": "En régime de commutation, dans quels états fonctionne le transistor ?", "options": ["Linéaire et Actif", "Bloqué et Saturé", "Permanent et Transitoire"], "correct": 1},
+        {"q": "Quelle relation lie les courants d'un transistor bipolaire ?", "options": ["IE = IB + IC", "IC = IB + IE", "IB = IC + IE"], "correct": 0}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 7,
+      "title": "Recueil de Travaux Dirigés & Exercices d'Électronique Analogique",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "pdf",
+      "img": "images/exercices_analogique.jpg",
+      "short": "Cahier d'exercices pratiques pour s'entraîner. Comprend des énoncés et des corrigés sur les mailles complexes, les circuits à diodes et la polarisation des composants actifs.",
+      "pdf": "cours/exercices_electronique_analogique.pdf",
+      "questions": [
+        {"q": "Quelle loi stipule que la somme algébrique des tensions dans une maille est nulle ?", "options": ["La loi des nœuds", "La loi des mailles", "La loi d'Ohm"], "correct": 1},
+        {"q": "Dans l'analyse d'un circuit, par quoi remplace-t-on un générateur de tension parfait pour appliquer le théorème de Thévenin ?", "options": ["Un circuit ouvert", "Un court-circuit", "Une résistance infinie"], "correct": 1},
+        {"q": "Quelle est l'utilité principale du théorème de superposition ?", "options": ["Calculer la puissance totale", "Analyser un circuit ayant plusieurs sources indépendantes", "Déterminer la fréquence de coupure"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 8,
+      "title": "Composants Passifs : Les Condensateurs et l'Effet Capacitif",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "pdf",
+      "img": "images/condensateurs.jpg",
+      "short": "Étude des condensateurs en régimes continu et transitoire. Comprendre la charge, la décharge, le stockage d'énergie et les critères de choix technologiques (chimiques, céramiques).",
+      "pdf": "cours/condensateurs.pdf",
+      "questions": [
+        {"q": "Quelle est l'unité de mesure de la capacité d'un condensateur ?", "options": ["Le Henry (H)", "Le Farad (F)", "L'Ohm (Ω)"], "correct": 1},
+        {"q": "Comment se comporte un condensateur en régime continu une fois qu'il est totalement chargé ?", "options": ["Comme un court-circuit", "Comme un circuit ouvert", "Comme une résistance de faible valeur"], "correct": 1},
+        {"q": "Quelle formule exprime la constante de temps (τ) d'un circuit RC série ?", "options": ["τ = R / C", "τ = R * C", "τ = 1 / (R * C)"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 9,
+      "title": "Magnétisme et Électromagnétisme : Les Effets Inductifs",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "pdf",
+      "img": "images/champ_magnetique.jpg",
+      "short": "Introduction aux lois du champ magnétique, de l'induction et de l'auto-induction. Analyse du comportement des bobines et des transformateurs dans les circuits électroniques.",
+      "pdf": "cours/les_effets_inductifs.pdf",
+      "questions": [
+        {"q": "Quelle est l'unité de mesure du flux magnétique ?", "options": ["Le Tesla (T)", "Le Weber (Wb)", "Le Henry (H)"], "correct": 1},
+        {"q": "Quelle loi physique explique l'apparition d'une force contre-électromotrice s'opposant à la cause qui lui a donné naissance ?", "options": ["La loi de Lenz", "La loi de Gauss", "La loi de Coulomb"], "correct": 0}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 10,
+      "title": "Identification des Composants : Le Code Couleurs des Résistances",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "pdf",
+      "img": "images/code_couleurs.jpg",
+      "short": "Guide pratique incontournable. Apprenez à lire instantanément la valeur en Ohms (Ω) et la tolérance d'une résistance à 4, 5 ou 6 anneaux grâce au tableau de code couleurs.",
+      "pdf": "cours/resistance_code_couleurs.pdf",
+      "questions": [
+        {"q": "Quelle est la valeur numérique associée à la couleur Marron pour le 1er anneau ?", "options": ["0", "1", "2", "5"], "correct": 1},
+        {"q": "Si le troisième anneau d'une résistance à 4 anneaux est Rouge, quel est le multiplicateur ?", "options": ["x10", "x100", "x1 000"], "correct": 1},
+        {"q": "Quelle couleur représente une tolérance de précision de ±5% ?", "options": ["Argent", "Or", "Marron"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 11,
+      "title": "Montages à Amplificateurs Opérationnels (AOP)",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "pdf",
+      "img": "images/montages_aop.jpg",
+      "short": "Étude linéaire et non-linéaire de l'AOP. Conception des montages de base : amplificateur inverseur, non-inverseur, suiveur, sommateur, soustracteur et comparateur de tension.",
+      "pdf": "cours/montages_amplificateurs_operationnels.pdf",
+      "questions": [
+        {"q": "Dans un AOP idéal fonctionnant en régime linéaire, que vaut la tension différentielle d'entrée (ε) ?", "options": ["Infinie", "Zéro", "Égale à Vcc"], "correct": 1},
+        {"q": "Où est bouclée la sortie de l'AOP dans un montage fonctionnant en régime linéaire ?", "options": ["Sur l'entrée non-inverseuse (+)", "Sur l'entrée inverseuse (-)", "Sur la masse générale"], "correct": 1},
+        {"q": "Quel est le gain en tension d'un montage Amplificateur Suiveur ?", "options": ["Gain = 0", "Gain = 1", "Gain = Infini"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 12,
+      "title": "Traitement du Signal : Filtrage Actif et Passif",
+      "category": "Électronique",
+      "level": "Avancé",
+      "badge": "capteur",
+      "format": "pdf",
+      "img": "images/filtrage_signal.jpg",
+      "short": "Analyse fréquentielle des circuits. Étude des filtres passifs (RC, RL) et actifs (à base d'AOP) : filtres passe-bas, passe-haut, passe-bande et réphaseurs.",
+      "pdf": "cours/filtrage_actif_passif.pdf",
+      "questions": [
+        {"q": "Quelle est la différence majeure entre un filtre actif et un filtre passif ?", "options": ["Le filtre passif utilise des inductances pures", "Le filtre actif intègre un composant d'amplification (comme un AOP) et nécessite une alimentation externe", "Le filtre actif ne peut pas traiter les signaux alternatifs"], "correct": 1},
+        {"q": "À quelle atténuation en décibels (dB) correspond la fréquence de coupure d'un filtre ?", "options": ["-1 dB", "-3 dB", "-6 dB"], "correct": 1},
+        {"q": "Quel type de filtre laisse passer les fréquences situées au-dessus d'une fréquence seuil appelée fréquence de coupure ?", "options": ["Passe-bas", "Passe-haut", "Passe-bande"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 13,
+      "title": "Électronique Numérique : Logique Combinatoire et Séquentielle",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "pdf",
+      "img": "images/numerique_global.jpg",
+      "short": "Cours général sur l'électronique numérique. Des briques logiques de base jusqu'à l'étude complète des systèmes interconnectés complexes.",
+      "pdf": "cours/electronique_numerique_logique_combinatoire_et_sequentielle.pdf",
+      "questions": [
+        {"q": "Quelle est la caractéristique principale d'un système logique séquentiel par rapport à un système combinatoire ?", "options": ["Il utilise des tensions analogiques", "Il dépend uniquement des entrées présentes", "Il possède une mémoire et dépend des états précédents (horloge)"], "correct": 2},
+        {"q": "Quelle structure de base permet de mémoriser un bit dans un circuit séquentiel ?", "options": ["Une porte ET", "Une bascule (Latch / Flip-Flop)", "Un multiplexeur"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 14,
+      "title": "Circuits Logiques Combinatoires et Algèbre de Boole",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "pdf",
+      "img": "images/circuits_combinatoires.jpg",
+      "short": "Étude des systèmes sans mémoire. Maîtrisez les tables de vérité, les fonctions logiques ET/OU/NON, et la simplification des équations logiques par la méthode de Karnaugh.",
+      "pdf": "cours/circuits_logiques_combinatoires.pdf",
+      "questions": [
+        {"q": "Selon les lois de l'Algèbre de Boole, que vaut l'expression (A + 1) ?", "options": ["A", "1", "0", "A1"], "correct": 1},
+        {"q": "Quelle table permet de lister toutes les combinaisons possibles des variables d'entrée et leurs sorties associées ?", "options": ["Table de Karnaugh", "Table de vérité", "Table de Boole"], "correct": 1},
+        {"q": "Quel composant combinatoire possède plusieurs entrées et une seule sortie sélectionnée ?", "options": ["Un Décodeur", "Un Multiplexeur", "Un Registre"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 15,
+      "title": "Les Structures Séquentielles : Bascules, Compteurs et Registres",
+      "category": "Électronique",
+      "level": "Avancé",
+      "badge": "capteur",
+      "format": "pdf",
+      "img": "images/structures_sequentielles.jpg",
+      "short": "Analyse des systèmes numériques à mémoire. Étude des bascules (RS, D, JK), la conception de compteurs synchrones/asynchrones et des registres de décalage.",
+      "pdf": "cours/les_structures_sequentielles.pdf",
+      "questions": [
+        {"q": "Dans une bascule D synchrone, quand la sortie Q recopie-t-elle l'entrée D ?", "options": ["En permanence", "Lors d'un front actif de l'horloge (CLK)", "Uniquement quand CLK est à 0"], "correct": 1},
+        {"q": "Quelle bascule élimine l'état indéterminé de la bascule RS lorsque les deux entrées sont à 1 ?", "options": ["La bascule D", "La bascule JK", "La bascule T"], "correct": 1},
+        {"q": "Comment appelle-t-on un compteur où le signal d'horloge n'est pas appliqué simultanément à toutes les bascules ?", "options": ["Compteur synchrone", "Compteur asynchrone", "Compteur à décalage"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 16,
+      "title": "Arithmétique Numérique : Manipulations de Nombres en Binaire",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "pdf",
+      "img": "images/arithmetique_binaire.jpg",
+      "short": "Apprenez les bases mathématiques des machines informatiques. Conversion entre les systèmes décimal, binaire et hexadécimal, et opérations arithmétiques de base.",
+      "pdf": "cours/manipulations_nombres_binaire.pdf",
+      "questions": [
+        {"q": "Quelle est la représentation binaire du nombre décimal 10 ?", "options": ["1001", "1010", "1100"], "correct": 1},
+        {"q": "Quelle lettre de l'alphabet hexadécimal correspond à la valeur décimale 15 ?", "options": ["A", "E", "F"], "correct": 2},
+        {"q": "En arithmétique binaire, que vaut la somme (1 + 1) ?", "options": ["1", "2", "0 avec une retenue de 1 (soit 10)"], "correct": 2}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 17,
+      "title": "L'Électronique de A à Z - Encyclopédie Pratique",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "pdf",
+      "img": "images/electronique_az.jpg",
+      "short": "Un guide de référence complet idéal pour les révisions, regroupant l'ensemble des définitions, formules et fiches techniques du domaine de l'électronique.",
+      "pdf": "cours/electronique-a-a-z.pdf",
+      "questions": [
+        {"q": "Quelle est l'unité internationale de l'impédance ou de la résistance ?", "options": ["Le Watt", "L'Ohm", "L'Ampère"], "correct": 1},
+        {"q": "Quel appareil permet de visualiser graphiquement l'évolution d'une tension électrique en fonction du temps ?", "options": ["Le Voltmètre", "L'Oscilloscope", "Le Wattmètre"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 18,
+      "title": "Apprendre l'Électronique en Partant de Zéro - Niveau 1",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "pdf",
+      "img": "images/partir_de_zero.jpg",
+      "short": "Le point de départ parfait pour les grands débutants. Vulgarisation claire des notions de tension, courant, puissance et prise en main des premiers outils de mesure.",
+      "pdf": "cours/apprendre_electronique_partant_de_zero_niveau_1.pdf",
+      "questions": [
+        {"q": "Quelle est la formule fondamentale de la loi d'Ohm ?", "options": ["P = U * I", "U = R * I", "I = R * U"], "correct": 1},
+        {"q": "Comment doit-on brancher un ampèremètre dans un circuit pour mesurer l'intensité du courant ?", "options": ["En dérivation (parallèle)", "En série", "Directement aux bornes du générateur"], "correct": 1},
+        {"q": "Quelle est l'unité de mesure de la puissance électrique ?", "options": ["Le Joule (J)", "Le Watt (W)", "Le Volt (V)"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 19,
+      "title": "Physique Fondamentale : Optique et Physique des Ondes",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "pdf",
+      "img": "images/physique_ondes.jpg",
+      "short": "Bases physiques cruciales pour les télécommunications. Analyse de la propagation des ondes électromagnétiques, phénomènes d'interférence, de diffraction et d'optique géométrique.",
+      "pdf": "cours/optique_physique_ondes.pdf",
+      "questions": [
+        {"q": "Quel phénomène décrit la déviation d'un rayon lumineux lorsqu'il change de milieu de propagation ?", "options": ["La Réflexion", "La Réfraction", "La Diffraction"], "correct": 1},
+        {"q": "Dans le vide, à quelle vitesse approximative se propagent les ondes électromagnétiques ?", "options": ["300 000 km/s", "340 m/s", "150 000 km/s"], "correct": 0}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 20,
+      "title": "Développement Web Fullstack : HTML5, CSS3 et JavaScript",
+      "category": "Technologie",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "pdf",
+      "img": "images/html_css_js_complet.jpg",
+      "short": "Le triptyque indispensable du web. Apprenez à structurer le contenu (HTML), styliser les interfaces (CSS) et ajouter de l'interactivité dynamique côté client (JavaScript).",
+      "pdf": "cours/html_css_javascript_complet.pdf",
+      "questions": [
+        {"q": "Quel langage permet d'appliquer du style, des couleurs et des mises en page réactives à un document web ?", "options": ["HTML", "CSS", "SQL"], "correct": 1},
+        {"q": "Quelle balise HTML5 standard est utilisée pour insérer un titre principal de premier niveau ?", "options": ["<paragraph>", "<head>", "<h1>"], "correct": 2},
+        {"q": "Comment déclare-t-on une variable dont la valeur ne peut pas être réassignée en JavaScript ?", "options": ["var", "let", "const"], "correct": 2}
+      ]
+    }</div>
+
+
+    <div class="json-course">{
+      "id": 50,
+      "title": "[Vidéo] Les Diodes : Descriptions, Représentations & Caractéristiques",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/cours_diodes.jpg",
+      "short": "Suivez ce cours en vidéo pour assimiler visuellement le comportement de la jonction PN, le sens passant/bloqué et les représentations schématiques des diodes.",
+      "videoUrl": "https://www.youtube.com/watch?v=ZSvfJ3Jvan0&list=PL3do0W9owVhefXPL5cX1zZMCrbQH8l8OY",
+      "questions": [
+        {"q": "Visuellement, comment repère-t-on la broche Cathode sur le corps d'une diode réelle ?", "options": ["Par un anneau de couleur contrastée", "Par une patte plus longue", "Par un marquage en triangle"], "correct": 0},
+        {"q": "Que se passe-t-il si on branche une diode en polarisation inverse en deçà de sa tension de claquage ?", "options": ["Le courant passe librement", "Elle bloque le passage du courant", "Elle explose"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 51,
+      "title": "[Vidéo] Exercices d'Application Corrigés sur les Diodes",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/exercices_analogique.jpg",
+      "short": "Résolution pas à pas et en images d'exercices pratiques : calculs de circuits de redressement, de seuils de tension et d'écrêtage.",
+      "videoUrl": "https://m.youtube.com/watch?v=n5mmJLR6dBk&list=PLU7IbxWzSiXQotZw50OdTTtMOjG5F-Fxh&index=1&pp=iAQB",
+      "questions": [
+        {"q": "Dans un circuit de redressement mono-alternance idéal sans condensateur, quelle partie du signal sinusoïdal d'entrée est supprimée par la diode ?", "options": ["L'alternance positive", "L'alternance négative", "Toutes les fréquences hautes"], "correct": 1},
+        {"q": "Si une diode idéale a une tension à ses bornes positive en sens passant, que vaut sa résistance interne ?", "options": ["Zéro Ohm", "Infinie", "100 Ohms"], "correct": 0}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 52,
+      "title": "[Vidéo] Diodes et Transistors : Les Fondations de l'Électronique",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "video",
+      "img": "images/diodes_transistors.jpg",
+      "short": "Analyse animée des composants semi-conducteurs. Découvrez en vidéo le passage de la commutation à l'amplification avec le transistor bipolaire.",
+      "videoUrl": "https://www.youtube.com/watch?v=e5bkNP21g3M&list=PL3do0W9owVhefXPL5cX1zZMCrbQH8l8OY&index=2",
+      "questions": [
+        {"q": "Quel paramètre, souvent noté β (bêta) ou hFE, caractérise l'amplification en courant d'un transistor bipolaire ?", "options": ["Le facteur de charge", "Le gain en courant", "La tension de saturation"], "correct": 1},
+        {"q": "Dans un circuit de commande de relais par transistor, à quoi sert la diode branchée en parallèle inverse sur la bobine ?", "options": ["À amplifier le signal", "À protéger le transistor contre les surtensions d'induction (diode de roue libre)", "À stabiliser la tension"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 53,
+      "title": "[Vidéo] Résolution d'Exercices Complexes en Électronique Analogique",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "video",
+      "img": "images/exercices_analogique.jpg",
+      "short": "Vidéo explicative méthodologique pour apprendre à poser les lois de Kirchhoff, de Thévenin et de Norton sur des montages analogiques avancés.",
+      "videoUrl": "https://www.youtube.com/watch?v=9Igb6T1f7Yo&list=PL3do0W9owVhefXPL5cX1zZMCrbQH8l8OY&index=5",
+      "questions": [
+        {"q": "Quelle est l'équivalence d'un modèle de Norton ?", "options": ["Un générateur de tension en série avec une résistance", "Un générateur de courant en parallèle avec une résistance", "Une simple impédance complexe"], "correct": 1},
+        {"q": "Selon la loi des nœuds, que vaut la somme des courants entrants dans un nœud ?", "options": ["Elle est égale à la somme des courants sortants", "Elle est toujours nulle", "Elle dépend de la tension globale"], "correct": 0}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 54,
+      "title": "[Vidéo] Tout comprendre sur les Condensateurs et l'Effet Capacitif",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/condensateurs.jpg",
+      "short": "Visualisez les lignes de champ, les phénomènes de charge et décharge transitoires ainsi que le stockage d'énergie au cœur du composant.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quelle technologie de condensateur est généralement polarisée et possède une borne + et une borne - ?", "options": ["Céramique", "Électrolytique (Chimique)", "Film Polyester"], "correct": 1},
+        {"q": "Au bout de combien de temps considère-t-on qu'un condensateur est rechargé à plus de 99% dans un circuit RC ?", "options": ["1 τ", "3 τ", "5 τ"], "correct": 2}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 55,
+      "title": "[Vidéo] Magnétisme, Physique des Ondes et Champ Magnétique",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "video",
+      "img": "images/champ_magnetique.jpg",
+      "short": "Démonstration vidéo des lois du flux magnétique, de la création des champs et de l'impact des forces électromagnétiques sur les conducteurs.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quelle est l'unité de mesure de l'induction (densité de champ) magnétique ?", "options": ["L'Ohm", "Le Tesla (T)", "Le Henry"], "correct": 1},
+        {"q": "Quelle règle géométrique permet de déterminer le sens du vecteur champ magnétique produit par un courant rectiligne ?", "options": ["La règle de la main droite", "La loi des nœuds", "Le théorème de Descartes"], "correct": 0}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 56,
+      "title": "[Vidéo] Les Effets Inductifs : Bobines et Self-Induction",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "video",
+      "img": "images/les_effets_inductifs.jpg",
+      "short": "Cours illustré en vidéo sur le comportement d'une inductance, la force contre-électromotrice et l'analyse des circuits RL en régime transitoire.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quelle est l'unité de mesure de l'inductance d'une bobine ?", "options": ["Le Farad", "Le Weber", "Le Henry (H)"], "correct": 2},
+        {"q": "Comment réagit une bobine pure face à une brusque variation de l'intensité du courant qui la traverse ?", "options": ["Elle favorise le changement", "Elle s'oppose à la variation du courant", "Elle se détruit instantanément"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 57,
+      "title": "[Vidéo] Atelier Pratique : Maîtriser le Code Couleurs des Résistances",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/code_couleurs.jpg",
+      "short": "Exercices visuels et astuces mnémotechniques en vidéo pour décoder les résistances.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quelle couleur correspond au chiffre 0 ?", "options": ["Noir", "Marron", "Bleu"], "correct": 0},
+        {"q": "Le code couleur 'Jaune, Violet, Rouge' correspond à quelle valeur ?", "options": ["4.7 kΩ", "470 Ω", "47 kΩ"], "correct": 0},
+        {"q": "À quoi sert le dernier anneau sur une résistance standard ?", "options": ["À indiquer la puissance maximale", "À indiquer la tolérance de fabrication", "À indiquer le coefficient de température"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 58,
+      "title": "[Vidéo] Les Montages Fondamentaux à Amplificateurs Opérationnels (AOP)",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "video",
+      "img": "images/montages_aop.jpg",
+      "short": "Explication dynamique des montages à AOP en mode linéaire : amplificateurs suiveur, inverseur, non-inverseur et sommateur.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Dans un montage amplificateur inverseur à base d'AOP, quel est le signe du gain en tension ?", "options": ["Positif", "Négatif (déphasage de 180°)", "Nul"], "correct": 1},
+        {"q": "Que peut-on dire des courants d'entrée i+ et i- d'un AOP considéré comme parfait ?", "options": ["Ils sont très élevés", "Ils sont rigoureusement nuls (impédance d'entrée infinie)", "Ils dépendent de la charge en sortie"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 59,
+      "title": "[Vidéo] Analyse Fréquentielle : Filtrage Actif et Passif",
+      "category": "Électronique",
+      "level": "Avancé",
+      "badge": "capteur",
+      "format": "video",
+      "img": "images/filtrage_signal.jpg",
+      "short": "Visualisation sur oscilloscope virtuel du comportement des filtres (passe-bas, passe-haut) et tracé des diagrammes de Bode en vidéo.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quelle est la pente d'atténuation d'un filtre passif du premier ordre (RC) dans sa bande atténuée ?", "options": ["-20 dB / décade", "-40 dB / décade", "-6 dB / décade"], "correct": 0},
+        {"q": "Quelle fonction mathématique utilise-t-on couramment pour tracer le gain en décibels sur un diagramme de Bode ?", "options": ["Le logarithme décimal (20*log)", "L'exponentielle", "La racine carrée"], "correct": 0}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 60,
+      "title": "[Vidéo] Électronique Numérique : Logique Combinatoire et Séquentielle",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "video",
+      "img": "images/numerique_global.jpg",
+      "short": "Un tour d'horizon complet en vidéo sur le passage du traitement de signal analogique vers le monde numérique et les architectures binaires.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quels sont les deux seuls niveaux logiques manipulés en électronique numérique ?", "options": ["Vcc et l'infini", "0 (Masse) et 1 (Tension logique)", "Niveaux bas, moyen et haut"], "correct": 1},
+        {"q": "Quel appareil électronique permet d'effectuer la conversion d'une grandeur physique réelle (ex: température) en donnée numérique ?", "options": ["Un CNA", "Un CAN (Convertisseur Analogique-Numérique)", "Un Filtre actif"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 61,
+      "title": "[Vidéo] Portes Logiques et Circuits Logiques Combinatoires",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/circuits_combinatoires.jpg",
+      "short": "Cours vidéo didactique sur l'Algèbre de Boole, les tables de vérité et les méthodes de simplification de Karnaugh pour concevoir des circuits logiques.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quelle porte logique renvoie un niveau 1 si et seulement si toutes ses entrées sont à 1 ?", "options": ["Porte OU (OR)", "Porte ET (AND)", "Porte OU-Exclusif (XOR)"], "correct": 1},
+        {"q": "Quelle est la fonction d'une porte NON (NOT) ?", "options": ["Multiplier les entrées", "Inverser l'état logique de l'entrée", "Forcer la sortie à zéro"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 62,
+      "title": "[Vidéo] Les Structures Séquentielles : Bascules et Compteurs",
+      "category": "Électronique",
+      "level": "Avancé",
+      "badge": "capteur",
+      "format": "video",
+      "img": "images/structures_sequentielles.jpg",
+      "short": "Analyse pas à pas en vidéo du fonctionnement des systèmes à mémoire : fonctionnement des horloges, des bascules JK/D et création de registres.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Que signifie le terme 'synchrone' appliqué à un compteur numérique ?", "options": ["Les bascules changent d'état à des moments différents", "Toutes les bascules reçoivent le même signal d'horloge simultanément", "Le compteur fonctionne sans impulsion"], "correct": 1},
+        {"q": "Quel type de mémoire informatique utilise des réseaux de bascules pour stocker des données à ultra haute vitesse ?", "options": ["Le Disque dur mécanique", "Les Registres du processeur", "La mémoire Flash ROM"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 63,
+      "title": "[Vidéo] Arithmétique Machine : Manipulations de Nombres en Binaire",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/arithmetique_binaire.jpg",
+      "short": "Apprenez en vidéo à convertir rapidement les nombres (Décimal, Binaire, Hexadécimal) et comprenez le fonctionnement de l'addition binaire.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Combien de bits d'information composent un Octet (Byte) ?", "options": ["4 bits", "8 bits", "16 bits"], "correct": 1},
+        {"q": "Quelle est la valeur décimale du nombre binaire 1111 ?", "options": ["7", "15", "16"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 64,
+      "title": "[Vidéo] Maîtriser l'Électronique de A à Z - Introduction Générale",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/electronique_az.jpg",
+      "short": "Grande vidéo de synthèse reprenant les théorèmes majeurs, les définitions clés et la cartographie des métiers de la maintenance et du prototypage.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quelle loi régit la dissipation d'énergie par effet thermique dans une résistance ?", "options": ["La loi de Joule (P = R*I²)", "La loi de Faraday", "La loi d'Ampère"], "correct": 0},
+        {"q": "Quel composant passif s'oppose aux variations de courant ?", "options": ["Le condensateur", "La bobine d'inductance", "La diode Zener"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 65,
+      "title": "[Vidéo] Apprendre l'Électronique en Partant de Zéro - Les Bases",
+      "category": "Électronique",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/partir_de_zero.jpg",
+      "short": "Le guide vidéo parfait pour débuter : manipulation sécurisée des multimètres, mesures de tensions et câblage sur plaque d'essai (Breadboard).",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Sur quel mode règle-t-on un multimètre pour vérifier si un câble réseau ou un fusible est coupé ?", "options": ["Voltmètre alternatif", "Testeur de continuité / Ohmmètre", "Ampèremètre continu"], "correct": 1},
+        {"q": "Sur une plaque d'essai (Breadboard), comment sont connectées les lignes d'alimentation extérieures (rouges et bleues) ?", "options": ["En ligne horizontale continue", "En colonnes verticales", "Elles ne sont pas connectées entre elles"], "correct": 0}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 66,
+      "title": "[Vidéo] Physique Fondamentale : Optique et Ondes Électromagnétiques",
+      "category": "Électronique",
+      "level": "Intermédiaire",
+      "badge": "actif",
+      "format": "video",
+      "img": "images/physique_ondes.jpg",
+      "short": "Visualisation graphique des phénomènes de réflexion, réfraction, diffraction et analyse ondulatoire essentielle aux télécommunications.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quel composant des systèmes télécoms optiques exploite la réflexion totale interne de la lumière pour guider le signal ?", "options": ["Le câble coaxial", "La fibre optique", "Le guide d'onde métallique"], "correct": 1},
+        {"q": "Quelle grandeur physique correspond au nombre d'oscillations d'une onde par seconde, mesurée en Hertz (Hz) ?", "options": ["La longueur d'onde", "La fréquence", "L'amplitude"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 70,
+      "title": "[Vidéo] Créer son premier site Web : De HTML5 à CSS3",
+      "category": "Technologie",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/html_css_js_complet.jpg",
+      "short": "Suivez un développeur en temps réel : codage de structures HTML, mise en page responsive avec CSS Flexbox et déploiement de composants.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quel attribut d'une balise d'ancrage <a> spécifie l'URL de destination d'un lien ?", "options": ["src", "href", "link"], "correct": 1},
+        {"q": "En CSS, quelle propriété permet de modifier la couleur du texte ?", "options": ["text-color", "color", "background-color"], "correct": 1}
+      ]
+    }</div>
+
+    <div class="json-course">{
+      "id": 71,
+      "title": "[Vidéo] Rendre un site Dynamique grâce à JavaScript",
+      "category": "Technologie",
+      "level": "Débutant",
+      "badge": "passif",
+      "format": "video",
+      "img": "images/html_css_js_complet.jpg",
+      "short": "Tutoriel vidéo complet pour manipuler le DOM, écouter les événements utilisateurs (clics, inputs) et dynamiser vos interfaces web.",
+      "videoUrl": "https://www.youtube.com/embed/LIEN_VIDEO_A_REMPLACER",
+      "questions": [
+        {"q": "Quelle méthode intégrée permet de sélectionner un élément HTML unique via son attribut ID ?", "options": ["document.querySelector()", "document.getElementById()", "document.getElementsByClassName()"], "correct": 1},
+        {"q": "Quel écouteur d'événement utilise-t-on pour déclencher une action lorsqu'un utilisateur clique sur un bouton ?", "options": ["'mouseover'", "'change'", "'click'"], "correct": 2}
+      ]
+    }</div>
+
+
+  </template>
+
+  <script src="cours.js"></script>
+</body>
+</html>
