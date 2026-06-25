@@ -1,13 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoLab-CI — Administration</title>
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <h1>Admin Panel</h1>
-    <p>Welcome, Admin!</p>
-    
+
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <h2>NeoLab-CI</h2>
+            <span>Espace Admin</span>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="#" class="menu-link active" onclick="switchTab(event, 'dashboard')">📊 Vue d'ensemble</a>
+            <a href="#" class="menu-link" onclick="switchTab(event, 'stock')">🛠️ Gestion du Stock</a>
+            <a href="#" class="menu-link" onclick="switchTab(event, 'cours')">📚 Gestion des Cours</a>
+            <a href="#" class="menu-link" onclick="switchTab(event, 'users')">👥 Utilisateurs</a>
+            <a href="#" class="menu-link" onclick="switchTab(event, 'settings')">⚙️ Paramètres</a>
+            <a href="../index.html" class="menu-link">@ Accueil</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        
+        <header class="main-header">
+            <h1>Panneau de Contrôle</h1>
+            <div class="user-profile">
+                <span>Admin NeoLab</span>
+                <div class="avatar"></div>
+            </div>
+        </header>
+
+        <section id="dashboard" class="content-section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Visiteurs Jour</h3>
+                    <p class="stat-number">124</p>
+                    <span class="stat-trend positive">+12% vs hier</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Élèves</h3>
+                    <p class="stat-number">48</p>
+                    <span class="stat-sub">Inscriptions directes</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Professeurs</h3>
+                    <p class="stat-number">9</p>
+                    <span class="stat-sub-alert">7 Actifs / 2 En attente ⚠️</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Stock Matériel</h3>
+                    <p class="stat-number">15</p>
+                    <span class="stat-sub">Composants Arduino</span>
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="card-header">
+                    <h2>Centre de Validation Professeurs</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Spécialité</th>
+                            <th>Date Demande</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prof-validation-table">
+                        <tr>
+                            <td>Amina Kouamé</td>
+                            <td>amina.k@neolab.ci</td>
+                            <td>Systèmes Embarqués</td>
+                            <td>23/06/2026</td>
+                            <td>
+                                <button class="btn btn-success" onclick="approveProf(this)">Accepter</button>
+                                <button class="btn btn-danger" onclick="rejectProf(this)">Refuser</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Jean-Pierre L.</td>
+                            <td>jp.lab@gmail.com</td>
+                            <td>Robotique / Arduino</td>
+                            <td>24/06/2026</td>
+                            <td>
+                                <button class="btn btn-success" onclick="approveProf(this)">Accepter</button>
+                                <button class="btn btn-danger" onclick="rejectProf(this)">Refuser</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="stock" class="content-section">
+            <div class="data-card">
+                <div class="card-header">
+                    <h2>Inventaire des composants Arduino</h2>
+                    <button class="btn btn-primary">+ Ajouter un composant</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Composant</th>
+                            <th>Rôle</th>
+                            <th>Quantité</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Arduino Uno R3</td>
+                            <td>Microcontrôleur principal</td>
+                            <td>12</td>
+                            <td><button class="btn btn-secondary">Modifier</button></td>
+                        </tr>
+                        <tr>
+                            <td>Capteur Ultrason HC-SR04</td>
+                            <td>Mesure de distance</td>
+                            <td>25</td>
+                            <td><button class="btn btn-secondary">Modifier</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="cours" class="content-section">
+            <div class="data-card">
+                <div class="card-header">
+                    <h2>Cours en ligne mis à disposition</h2>
+                    <button class="btn btn-primary">+ Ajouter un cours</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Titre du cours</th>
+                            <th>Niveau</th>
+                            <th>Auteur (Professeur)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Introduction aux E/S Arduino</td>
+                            <td>Débutant</td>
+                            <td>Amina Kouamé</td>
+                            <td><button class="btn btn-secondary">Modifier</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="users" class="content-section">
+            <div class="data-card">
+                <div class="card-header">
+                    <h2>Liste des utilisateurs enregistrés</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nom complet</th>
+                            <th>Rôle</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Koffi Emmanuel</td>
+                            <td>Élève</td>
+                            <td><span class="badge badge-success">Actif</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="settings" class="content-section">
+            <div class="data-card">
+                <div class="card-header">
+                    <h2>Paramètres Généraux de l'Application</h2>
+                </div>
+                <div class="settings-form">
+                    <h3>🔧 Configuration Firebase</h3>
+                    <div class="form-group">
+                        <label>ID du projet de test Firebase</label>
+                        <input type="text" value="neolab-ci-test-db" readonly>
+                    </div>
+                    
+                    <h3>🔒 Sécurité & Accès</h3>
+                    <div class="form-group">
+                        <label>Mode d'inscription des Professeurs</label>
+                        <select>
+                            <option selected>Validation manuelle par l'admin (Recommandé)</option>
+                            <option>Ouvert à tous</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-success" onclick="saveSettings()">Enregistrer les modifications</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="admin.js"></script>
 </body>
 </html>
