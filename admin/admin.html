@@ -8,7 +8,6 @@
 </head>
 <body>
 
-
     <div class="sidebar">
         <div class="sidebar-brand">
             <h2>NeoLab-CI</h2>
@@ -20,7 +19,6 @@
             <a href="#" class="menu-link" onclick="switchTab(event, 'cours')">📚 Gestion des Cours</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'users')">👥 Utilisateurs</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'settings')">⚙️ Paramètres</a>
-            <a href="../index.html" class="menu-link">@ Accueil</a>
         </nav>
     </div>
 
@@ -38,22 +36,22 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3>Visiteurs Jour</h3>
-                    <p class="stat-number">124</p>
+                    <p class="stat-number" id="stat-visiteurs">0</p>
                     <span class="stat-trend positive">+12% vs hier</span>
                 </div>
                 <div class="stat-card">
                     <h3>Total Élèves</h3>
-                    <p class="stat-number">48</p>
+                    <p class="stat-number" id="stat-eleves">0</p>
                     <span class="stat-sub">Inscriptions directes</span>
                 </div>
                 <div class="stat-card">
                     <h3>Professeurs</h3>
-                    <p class="stat-number">9</p>
-                    <span class="stat-sub-alert">7 Actifs / 2 En attente ⚠️</span>
+                    <p class="stat-number" id="stat-professeurs">0</p>
+                    <span class="stat-sub-alert" id="stat-profs-details">0 Actifs / 0 En attente</span>
                 </div>
                 <div class="stat-card">
                     <h3>Stock Matériel</h3>
-                    <p class="stat-number">15</p>
+                    <p class="stat-number" id="stat-composants">0</p>
                     <span class="stat-sub">Composants Arduino</span>
                 </div>
             </div>
@@ -73,115 +71,10 @@
                         </tr>
                     </thead>
                     <tbody id="prof-validation-table">
-                        <tr>
-                            <td>Amina Kouamé</td>
-                            <td>amina.k@neolab.ci</td>
-                            <td>Systèmes Embarqués</td>
-                            <td>23/06/2026</td>
-                            <td>
-                                <button class="btn btn-success" onclick="approveProf(this)">Accepter</button>
-                                <button class="btn btn-danger" onclick="rejectProf(this)">Refuser</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Jean-Pierre L.</td>
-                            <td>jp.lab@gmail.com</td>
-                            <td>Robotique / Arduino</td>
-                            <td>24/06/2026</td>
-                            <td>
-                                <button class="btn btn-success" onclick="approveProf(this)">Accepter</button>
-                                <button class="btn btn-danger" onclick="rejectProf(this)">Refuser</button>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
-
-        <section id="stock" class="content-section">
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Inventaire des composants Arduino</h2>
-                    <button class="btn btn-primary">+ Ajouter un composant</button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Composant</th>
-                            <th>Rôle</th>
-                            <th>Quantité</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Arduino Uno R3</td>
-                            <td>Microcontrôleur principal</td>
-                            <td>12</td>
-                            <td><button class="btn btn-secondary">Modifier</button></td>
-                        </tr>
-                        <tr>
-                            <td>Capteur Ultrason HC-SR04</td>
-                            <td>Mesure de distance</td>
-                            <td>25</td>
-                            <td><button class="btn btn-secondary">Modifier</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="cours" class="content-section">
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Cours en ligne mis à disposition</h2>
-                    <button class="btn btn-primary">+ Ajouter un cours</button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Titre du cours</th>
-                            <th>Niveau</th>
-                            <th>Auteur (Professeur)</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Introduction aux E/S Arduino</td>
-                            <td>Débutant</td>
-                            <td>Amina Kouamé</td>
-                            <td><button class="btn btn-secondary">Modifier</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="users" class="content-section">
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Liste des utilisateurs enregistrés</h2>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Nom complet</th>
-                            <th>Rôle</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Koffi Emmanuel</td>
-                            <td>Élève</td>
-                            <td><span class="badge badge-success">Actif</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
         <section id="settings" class="content-section">
             <div class="data-card">
                 <div class="card-header">
@@ -191,15 +84,15 @@
                     <h3>🔧 Configuration Firebase</h3>
                     <div class="form-group">
                         <label>ID du projet de test Firebase</label>
-                        <input type="text" value="neolab-ci-test-db" readonly>
+                        <input type="text" value="neolab-ci" readonly>
                     </div>
                     
                     <h3>🔒 Sécurité & Accès</h3>
                     <div class="form-group">
                         <label>Mode d'inscription des Professeurs</label>
-                        <select>
-                            <option selected>Validation manuelle par l'admin (Recommandé)</option>
-                            <option>Ouvert à tous</option>
+                        <select id="setting-signup-mode">
+                            <option value="Validation manuelle par l'admin (Recommandé)">Validation manuelle par l'admin (Recommandé)</option>
+                            <option value="Ouvert à tous">Ouvert à tous</option>
                         </select>
                     </div>
 
@@ -208,9 +101,228 @@
             </div>
         </section>
 
+         <section id="stock" class="content-section">
+            <div class="data-card">
+                <div class="card-header">
+                    <h2>Inventaire des composants Arduino</h2>
+                    <button class="btn btn-primary" onclick="ouvrirModalComposant()">+ Ajouter un composant</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Composant</th>
+                            <th>Rôle</th>
+                            <th>Quantité</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="cours" class="content-section">
+            <div class="data-card">
+                <div class="card-header">
+                    <h2>Cours en ligne mis à disposition</h2>
+                    <button class="btn btn-primary" onclick="ouvrirModalCours()">+ Ajouter un cours</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Aperçu</th>
+                            <th>Titre du cours</th>
+                            <th>Niveau</th>
+                            <th>Auteur</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cours-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+</div>
+        
+
+                <section id="users" class="content-section">
+            <div class="data-card">
+                <div class="card-header">
+                    <h2>Utilisateurs enregistrés</h2>
+                    <button class="btn btn-primary" onclick="ouvrirModalCreation()">+ Créer un compte</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nom complet</th>
+                            <th>Filière / Spécialité</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+   
+         <div id="creationModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h2>Créer un nouveau compte</h2>
+            <form id="creationUserForm">
+                <div class="form-group">
+                    <label for="new-role">Type de compte</label>
+                    <select id="new-role" onchange="toggleChampsRole()" required>
+                        <option value="eleve" selected>Élève</option>
+                        <option value="professeur">Professeur (Actif directement)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-nom">Nom complet</label>
+                    <input type="text" id="new-nom" placeholder="Ex: Jean Koffi" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-sexe">Genre (Sexe)</label>
+                    <select id="new-sexe" required>
+                        <option value="Homme">Homme</option>
+                        <option value="Femme">Femme</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-email">Adresse Email</label>
+                    <input type="email" id="new-email" placeholder="Ex: jean.k@gmail.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Mot de passe initial</label>
+                    <input type="password" id="new-password" placeholder="••••••••" required>
+                </div>
+
+                <div class="form-group" id="group-niveau">
+                    <label for="new-niveau">Niveau d'études / Filière</label>
+                    <input type="text" id="new-niveau" placeholder="Ex: Licence 2 Électronique">
+                </div>
+
+                <div class="form-group" id="group-specialite" style="display: none;">
+                    <label for="new-specialite">Spécialité</label>
+                    <input type="text" id="new-specialite" placeholder="Ex: Robotique / Arduino">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fermerModalCreation()">Annuler</button>
+                    <button type="submit" class="btn btn-success">Créer le compte</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <script src="admin.js"></script>
 
+    <div id="composantModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h2>Ajouter un nouveau composant</h2>
+            <form id="creationComposantForm">
+                <div class="form-group">
+                    <label for="comp-nom">Nom du composant</label>
+                    <input type="text" id="comp-nom" placeholder="Ex: Arduino Uno R3" required>
+                </div>
+                <div class="form-group">
+                    <label for="comp-role">Rôle / Description courte</label>
+                    <input type="text" id="comp-role" placeholder="Ex: Microcontrôleur principal" required>
+                </div>
+                <div class="form-group">
+                    <label for="comp-quantite">Quantité disponible</label>
+                    <input type="number" id="comp-quantite" placeholder="Ex: 10" required>
+                </div>
+                <div class="form-group">
+                    <label for="comp-image">Lien URL de l'image</label>
+                    <input type="text" id="comp-image" placeholder="https://lien-image.com/arduino.jpg">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fermerModalComposant()">Annuler</button>
+                    <button type="submit" class="btn btn-success">Ajouter au Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="modifComposantModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h2>Modifier le composant</h2>
+            <form id="modifComposantForm">
+                <input type="hidden" id="edit-comp-id">
+                
+                <div class="form-group">
+                    <label for="edit-comp-nom">Nom du composant</label>
+                    <input type="text" id="edit-comp-nom" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-comp-role">Rôle / Description</label>
+                    <input type="text" id="edit-comp-role" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-comp-quantite">Quantité en stock</label>
+                    <input type="number" id="edit-comp-quantite" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-comp-image">Lien URL de l'image</label>
+                    <input type="text" id="edit-comp-image">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fermerModalModifComposant()">Annuler</button>
+                    <button type="submit" class="btn btn-success">Enregistrer les changements</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="coursModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h2>Publier un nouveau cours</h2>
+            <form id="creationCoursForm">
+                <div class="form-group">
+                    <label for="cours-titre">Nom / Titre du cours</label>
+                    <input type="text" id="cours-titre" placeholder="Ex: Les Capteurs Ultrasons" required>
+                </div>
+                <div class="form-group">
+                    <label for="cours-niveau">Niveau</label>
+                    <select id="cours-niveau" required>
+                        <option value="Débutant">Débutant</option>
+                        <option value="Intermédiaire">Intermédiaire</option>
+                        <option value="Avancé">Avancé</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cours-desc">Petite description</label>
+                    <input type="text" id="cours-desc" placeholder="Ex: Maîtriser le capteur HC-SR04..." required>
+                </div>
+                <div class="form-group">
+                    <label for="cours-media">Lien du fichier (PDF ou Vidéo)</label>
+                    <input type="text" id="cours-media" placeholder="https://lien-fichier.com/cours.pdf" required>
+                </div>
+                <div class="form-group">
+                    <label for="cours-image">Lien URL de la miniature (Image)</label>
+                    <input type="text" id="cours-image" placeholder="https://lien-image.com/miniature.jpg">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fermerModalCours()">Annuler</button>
+                    <button type="submit" class="btn btn-success">Publier le cours</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+  
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script src="admin.js"></script>
+<<<<<<< HEAD
+
+=======
+>>>>>>> ef6b93744340e43fb4792a33c08e300bbb5d4b40
 </body>
 </html>

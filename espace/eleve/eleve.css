@@ -137,7 +137,6 @@ border-radius:10px;
 
 display:grid;
 
-
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 
 gap:20px;
@@ -150,19 +149,19 @@ gap:20px;
 .card{
 
 
-background:white;
+background:rgb(242, 242, 245);
 
 
 padding:25px;
 
 
-border-radius:15px;
+border-radius:16px;
 
 
-box-shadow:0 5px 15px rgba(0,0,0,.1);
+box-shadow:0 5px 15px #00000036;
 
 
-transition:.3s;
+transition:.2s;
 
 
 }
