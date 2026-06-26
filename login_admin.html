@@ -133,7 +133,7 @@
                 .then((querySnapshot) => {
                     if (!querySnapshot.empty) {
                         // RE-DIRECTION : Tout est OK, on l'envoie vers la page admin
-                        window.location.href = 'admin/admin.html';
+                        window.location.href = 'admin/&admin.html';
                     } else {
                         // Le compte existe dans Firebase Auth, mais n'est pas dans la collection 'admins' de Firestore
                         errorDiv.innerText = "Accès refusé : Vous n'êtes pas répertorié comme Administrateur.";

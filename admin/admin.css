@@ -41,7 +41,7 @@ body {
 
 .sidebar-brand {
     padding: 0 25px 20px 25px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(109, 105, 105, 0.856);
 }
 
 .sidebar-brand span {
@@ -58,14 +58,14 @@ body {
 
 .menu-link {
     padding: 15px 25px;
-    color: #e2e8f0;
+    color: #cfd1d4;
     text-decoration: none;
     transition: all 0.3s;
     font-size: 1rem;
 }
 
 .menu-link:hover, .menu-link.active {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(107, 107, 122, 0.651);
     color: var(--white);
     border-left: 4px solid var(--accent-color);
 }

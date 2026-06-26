@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoLab-CI — Connexion & Inscription</title>
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <h2>NeoLab-CI</h2>
+            <p>Plateforme d'Électronique & Technologie</p>
+        </div>
+
+        <div class="auth-tabs">
+            <button id="tab-login" class="tab-btn active" onclick="switchForm('login')">Connexion</button>
+            <button id="tab-register" class="tab-btn" onclick="switchForm('register')">Inscription</button>
+        </div>
+
+        <form id="login-form" class="auth-form active">
+            <div class="form-group">
+                <label for="login-role">Je suis :</label>
+                <select id="login-role" required>
+                    <option value="eleve">Élève</option>
+                    <option value="professeur">Professeur</option>
+                    <option value="admin">Administrateur</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="login-email">Adresse Email</label>
+                <input type="email" id="login-email" placeholder=" entre votre email" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Mot de passe</label>
+                <input type="password" id="login-password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+        </form>
+
+        <form id="register-form" class="auth-form">
+            <div class="form-group">
+                <label for="reg-role">Je m'inscris en tant que :</label>
+                <select id="reg-role" onchange="toggleRegistrationFields()" required>
+                    <option value="eleve" selected>Élève</option>
+                    <option value="professeur">Professeur</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reg-nom">Nom complet</label>
+                <input type="text" id="reg-nom" placeholder="Ex: Amina Kouamé" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-sexe">Genre (Sexe)</label>
+                <select id="reg-sexe" required>
+                    <option value="Homme">Homme</option>
+                    <option value="Femme">Femme</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reg-email">Adresse Email</label>
+                <input type="email" id="reg-email" placeholder="Ex: amina@gmail.com" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-password">Mot de passe</label>
+                <input type="password" id="reg-password" placeholder="Minimum 6 caractères" required>
+            </div>
+
+            <div class="form-group" id="reg-group-niveau">
+                <label for="reg-niveau">Niveau d'études / Filière</label>
+                <input type="text" id="reg-niveau" placeholder="Ex: Licence 2 Électronique" required>
+            </div>
+
+            <div class="form-group" id="reg-group-specialite" style="display: none;">
+                <label for="reg-specialite">Spécialité d'enseignement</label>
+                <input type="text" id="reg-specialite" placeholder="Ex: Systèmes Embarqués / Arduino">
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block">Créer mon compte</button>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script src="auth.js"></script>
+</body>
+</html>
