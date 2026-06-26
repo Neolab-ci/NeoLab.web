@@ -106,3 +106,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+:root {
+    --bg-main: #020617;
+    --bg-surface: #0b1329;
+    --bg-card: rgba(15, 23, 42, 0.6);
+    --border-color: rgba(56, 189, 248, 0.15);
+    --border-glow: rgba(0, 210, 255, 0.3);
+    
+    --primary: #0066ff;
+    --primary-glow: rgba(0, 102, 255, 0.5);
+    --accent: #00d2ff;
+    --accent-sky: #38bdf8;
+    
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    
+    --font-family: 'Inter', sans-serif;
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
