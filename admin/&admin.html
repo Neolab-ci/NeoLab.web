@@ -147,21 +147,39 @@
             </div>
         </section>
         
-        <section id="users" class="content-section">
+       <section id="users" class="content-section">
             <div class="data-card">
                 <div class="card-header">
-                    <h2>Utilisateurs enregistrés</h2>
+                    <h2>Élèves enregistrés</h2>
                     <button class="btn btn-primary" onclick="ouvrirModalCreation()">+ Créer un compte</button>
                 </div>
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>Nom complet</th>
-                            <th>Filière / Spécialité</th>
+                            <th>Filière / Niveau</th>
                             <th>Statut</th>
                         </tr>
                     </thead>
                     <tbody id="users-table-body">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="data-card" style="margin-top: 30px;">
+                <div class="card-header">
+                    <h2>Professeurs actifs</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nom complet</th>
+                            <th>Adresse Email</th>
+                            <th>Spécialité</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody id="profs-actifs-table-body">
                         </tbody>
                 </table>
             </div>

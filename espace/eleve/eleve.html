@@ -1,236 +1,149 @@
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>NEOLAB CEI</title>
-
-<link rel="stylesheet" href="eleve.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEOLAB CI</title>
+    <link rel="stylesheet" href="eleve.css">
 </head>
-
-
 <body>
 
-
-<!-- Sidebar -->
-<div class="sidebar">
-
-  <h2>NEOLAB CI</h2>
-
-<ul>
-
-<li data-page="dashboard">
-<ion-icon name="grid-outline"></ion-icon>
-Tableau de bord
-</li>
-
-<li data-page="cours">
-<ion-icon name="book-outline"></ion-icon>
-Mes cours
-</li>
-
-<li data-page="devoirs">
-<ion-icon name="document-text-outline"></ion-icon>
-Devoirs
-</li>
-
-<li data-page="emploi">
-<ion-icon name="calendar-outline"></ion-icon>
-Emploi du temps
-</li>
-
-<li data-page="ressources">
-<ion-icon name="folder-outline"></ion-icon>
-Ressources
-</li>
-
-<li data-page="certificats">
-<ion-icon name="ribbon-outline"></ion-icon>
-Certifications
-</li>
-
-<li data-page="messages">
-<ion-icon name="chatbubble-outline"></ion-icon>
-Messages
-</li>
-
-<li data-page="profil">
-<ion-icon name="person-circle-outline"></ion-icon>
-Profil
-</li>
-
-<li data-page="settings">
-<ion-icon name="settings-outline"></ion-icon>
-Paramètres
-</li>
-
-<li>
-<ion-icon name="log-out-outline"></ion-icon>
-Déconnexion
-</li>
-
-<li>
-<ion-icon name="home"></ion-icon>
-acceuil
-</li>
-</ul>
-
-
-</div>
+    <div class="sidebar">
+        <h2>NEOLAB CI</h2>
+        <ul>
+            <li data-page="dashboard" class="active">
+                <ion-icon name="grid-outline"></ion-icon>
+                Tableau de bord
+            </li>
+            <li data-page="cours">
+                <ion-icon name="book-outline"></ion-icon>
+                Mes cours
+            </li>
+            <li data-page="devoirs">
+                <ion-icon name="document-text-outline"></ion-icon>
+                Devoirs
+            </li>
+            <li data-page="emploi">
+                <ion-icon name="calendar-outline"></ion-icon>
+                Emploi du temps
+            </li>
+            <li data-page="ressources">
+                <ion-icon name="folder-outline"></ion-icon>
+                Ressources
+            </li>
+            <li data-page="certificats">
+                <ion-icon name="ribbon-outline"></ion-icon>
+                Certifications
+            </li>
+            <li data-page="messages">
+                <ion-icon name="chatbubble-outline"></ion-icon>
+                Messages
+            </li>
+            <li data-page="profil">
+                <ion-icon name="person-circle-outline"></ion-icon>
+                Profil
+            </li>
+            <li data-page="settings">
+                <ion-icon name="settings-outline"></ion-icon>
+                Paramètres
+            </li>
+            <li id="btn-logout">
+                <ion-icon name="log-out-outline"></ion-icon>
+                Déconnexion
+            </li>
+            <li data-page="dashboard">
+                <ion-icon name="home-outline"></ion-icon>
+                Accueil
+            </li>
+        </ul>
+    </div>
 
     <div class="content">
+       <header>
+    <input type="text" placeholder="Rechercher...">
+    <div class="user-profile-header" style="display: flex; align-items: center; gap: 12px;">
+        <span id="user-display-name">Chargement... 👋</span>
+        <img id="user-display-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Neo" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent);">
+    </div>
+</header>
 
+        <section id="dashboard" class="active-section">
+            <h1>Tableau de bord</h1>
+            <div class="cards">
+                <div class="card">
+                    <h2 id="dash-cours">12</h2>
+                    <p>Cours suivis</p>
+                </div>
+                <div class="card">
+                    <h2 id="dash-moyenne">16.4</h2>
+                    <p>Moyenne</p>
+                </div>
+                <div class="card">
+                    <h2 id="dash-temps">48 h</h2>
+                    <p>Temps d'étude</p>
+                </div>
+                <div class="card">
+                    <h2 id="dash-certifs">3</h2>
+                    <p>Certificats</p>
+                </div>
+            </div>
+        </section>
 
+        <section id="cours">
+            <h1>Mes cours</h1>
+            <p>Vos cours d'électronique et Arduino s'afficheront ici.</p>
+        </section>
 
-      <header>
-          <input placeholder="Rechercher...">
-          <div>Emmanuel 👋</div>
-      </header>
+       <section id="devoirs">
+            <h1>Mes devoirs & Exercices</h1>
+                 <p style="color: var(--text-muted); margin-bottom: 25px;">Retrouvez ici les exercices et travaux pratiques assignés.</p>
+            <div class="cards" id="student-exercises-grid">
+        </div>
+        </section>
 
+        <section id="emploi">
+            <h1>Emploi du temps</h1>
+        </section>
 
+        <section id="ressources">
+            <h1>Ressources</h1>
+        </section>
 
+        <section id="certificats">
+            <h1>Certifications</h1>
+        </section>
 
+        <section id="messages">
+            <h1>Messages</h1>
+        </section>
 
-        <section id="dashboard">
-
-
-      <h1>Tableau de bord</h1>
-
-
-
-  
-
-      <div class="cards">
-
-        <div class="card">
-
-        <h2>12</h2>
-
-<p>Cours suivis</p>
-
-</div>
-
-
-
-<div class="card">
-
-<h2>16.4</h2>
-
-<p>Moyenne</p>
-
-</div>
-
-
-
-<div class="card">
-
-<h2>48 omkjljmlpjh</h2>
-
-<p>Temps d'étude</p>
-
-</div>
-
-
-
-<div class="card">
-
-<h2>3</h2>
-
-<p>Certificats</p>
-
-</div>
-
-
-
-</div>
-
-
-
+       <section id="profil">
+    <h1>Mon profil</h1>
+    <div class="card" style="max-width: 500px; margin-top: 20px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img id="profile-card-avatar" src="" alt="Avatar Profil" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 10px;">
+            <h2 id="profile-card-nom">...</h2>
+            <p id="profile-card-role" style="color: var(--accent);">Élève</p>
+        </div>
+        <p><strong>📧 Email :</strong> <span id="profile-card-email">...</span></p>
+        <p><strong>🧬 Genre :</strong> <span id="profile-card-sexe">...</span></p>
+        <p><strong>🎓 Niveau / Filière :</strong> <span id="profile-card-niveau">...</span></p>
+        <p><strong>📅 Date d'inscription :</strong> <span id="profile-card-date">...</span></p>
+    </div>
 </section>
 
+        <section id="settings">
+            <h1>Paramètres</h1>
+        </section>
+    </div>
 
+   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-
-
-<section id="cours">
-
-<h1>Mes cours</h1>
-<p>hour</p>
-</section>
-
-
-
-<section id="devoirs">
-
-<h1>Mes devoirs</h1>
-
-</section>
-
-
-
-
-<section id="emploi">
-
-<h1>Emploi du temps</h1>
-
-</section>
-
-
-
-<section id="ressources">
-
-<h1>Ressources</h1>
-
-</section>
-
-
-
-<section id="certificats">
-
-<h1>Certifications</h1>
-
-</section>
-
-
-
-<section id="messages">
-
-<h1>Messages</h1>
-
-</section>
-
-
-
-<section id="profil">
-
-<h1>Mon profil</h1>
-
-</section>
-
-
-
-<section id="settings">
-
-<h1>Paramètres</h1>
-
-</section>
-
-
-
-</div>
-
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
-<script src="eleve.js"></script>
-
-
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <script src="eleve.js"></script>
 </body>
-
 </html>

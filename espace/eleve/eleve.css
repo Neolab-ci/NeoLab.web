@@ -17,15 +17,15 @@
     --transition-fast: 0.2s ease;
     --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    display:flex;
+    display: flex;
     background-color: var(--bg-main);
     color: var(--text-main);
     font-family: var(--font-family);
@@ -33,132 +33,109 @@ body {
     overflow-x: hidden;
 }
 
-.sidebar{
-    width:260px;
-    height:100vh;
-    background:#041d49;
-    padding:30px;
-    position:fixed;
-    color:white;
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: #041d49;
+    padding: 30px;
+    position: fixed;
+    color: white;
 }
 
-.sidebar h2{
-    margin-bottom:40px;
+.sidebar h2 {
+    margin-bottom: 40px;
 }
 
-.sidebar li{
-    padding:15px;
-    list-style:none;
-    cursor:pointer;
-    margin-bottom:10px;
-    border-radius:10px;
-    transition:.3s;
+.sidebar ul {
+    list-style: none;
 }
 
-.sidebar li{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:14px;
-    border-radius:12px;
-    cursor:pointer;
-    transition:0.3s;
-    }
-
-.sidebar li:hover{
-    background:#1ef3fa;
-    color:#007AFF;
-    }
-
-.sidebar ion-icon{
-    font-size:22px;
-    color:#fcfdfe;
-    }
-
-.sidebar li.active{
-    background:#1ef3fa;
-    color:#007AFF;
+.sidebar li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: var(--transition-fast);
 }
 
-.sidebar li.active ion-icon{
-    color:#007AFF;
-    }
+.sidebar li:hover, .sidebar li.active {
+    background: #1ef3fa;
+    color: #007AFF;
+}
 
-.sidebar li:hover ion-icon{
-    color:#007AFF;
-    }
+.sidebar ion-icon {
+    font-size: 22px;
+    color: #fcfdfe;
+    transition: var(--transition-fast);
+}
 
-.content{
-    margin-left:260px;
-    padding:30px;
-    width:100%;
-    }
+.sidebar li:hover ion-icon, .sidebar li.active ion-icon {
+    color: #007AFF;
+}
 
-header{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:40px;
-    }
+.content {
+    margin-left: 260px;
+    padding: 30px;
+    width: 100%;
+}
 
-header input{
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+header input {
     padding: 12px;
-    background:lch(99.68% 0.52 290.36);
-    width:300px;
-    border:none;
-    border-radius:10px;
-    }
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    width: 300px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    outline: none;
+}
 
-section{
-    display:none;
-    animation:fade .4s ease;
-   
-    }
+/* Gestion des sections */
+section {
+    display: none;
+}
+section.active-section {
+    display: block;
+    animation: fade var(--transition-smooth);
+}
 
-@keyframes fade{
-    from{
-    opacity:0;
-    transform:translateY(15px);
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
     }
-to{
-    opacity:1;
-    transform:translateY(0);
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    }
+}
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-   
-    }
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
 
+.card {
+    background: rgba(2, 29, 104, 0.76);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: var(--transition-fast);
+    border: 1px solid var(--border-color);
+}
 
-
-.card{
-    background:rgba(2, 29, 104, 0.76);
-    padding:25px;
-    border-radius:16px;
-    box-shadow:0 5px 15px #00000036;
-    transition:.3s;
-    }
-
-.cart:hover{
-    transform:translateY(-5px);
-    }
-
-section{
-    display:none;
-    animation:fade .5s;
-    }
-
-@keyframes fade{
-    from{
-    opacity:2;
-    transform:translateY(20px);
-    }
-
-to{
-    opacity:1;
-    transform:translateY(0);
-    }
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 5px 20px var(--border-glow);
 }
