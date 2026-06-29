@@ -11,16 +11,16 @@
     --border-color: #e2e8f0;
 }
 
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: var(--bg-light);
+    background-color: #c7c5c5;
     color: var(--text-dark);
     display: flex;
 }
@@ -42,7 +42,7 @@ body {
 
 .sidebar-brand {
     padding: 0 25px 20px 25px;
-    border-bottom: 1px solid rgba(109, 105, 105, 0.856);
+    border-bottom: 1px solid rgba(7, 2, 82, 0.856);
 }
 
 .sidebar-brand span {
@@ -59,16 +59,21 @@ body {
 
 .menu-link {
     padding: 15px 25px;
-    color: #cfd1d4;
+    color: #fbfbfdc4;
     text-decoration: none;
     transition: all 0.3s;
     font-size: 1rem;
 }
 
 .menu-link:hover, .menu-link.active {
-    background-color: rgba(107, 107, 122, 0.651);
-    color: var(--white);
     border-left: 4px solid var(--accent-color);
+    padding: 10px;
+    margin: 5px;
+    border-radius: 25px;
+    background-color: #1ef3fa;
+    color: #2319a8e5
+    
+
 }
 
 

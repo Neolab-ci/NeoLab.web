@@ -49,3 +49,141 @@ function toggleRegistrationFields() {
         document.getElementById('reg-specialite').required = true;
     }
 }
+
+
+
+// ==========================================
+// LOGIQUE DE CONNEXION ET REDIRECTION AUTOMATIQUE
+// ==========================================
+
+document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const role = document.getElementById('login-role').value;
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    // 1. SI C'EST UN ADMINISTRATEUR
+    if (role === 'admin') {
+        db.collection('admins')
+          .where('email', '==', email)
+          .get()
+          .then(snapshot => {
+              if (!snapshot.empty) {
+                  // En situation réelle, on utiliserait firebase.auth(), ici on valide via les données du document
+                  alert("Connexion réussie ! Bienvenue sur le Panneau d'Administration.");
+                  window.location.href = "../admin/&admin.html"; // Redirection vers ton espace admin
+              } else {
+                  alert("Accès refusé. Cet email n'est pas enregistré comme Administrateur.");
+              }
+          })
+          .catch(error => console.error("Erreur connexion admin:", error));
+    }
+
+    // 2. SI C'EST UN ÉLÈVE
+    else if (role === 'eleve') {
+        db.collection('eleves')
+          .where('email', '==', email)
+          .where('password_init', '==', password) // Vérification temporaire par champ texte
+          .get()
+          .then(snapshot => {
+              if (!snapshot.empty) {
+                  alert("Connexion réussie ! Redirection vers votre Espace Élève...");
+                  window.location.href = "../../espace/eleve/eleve.html"; // Redirection vers le futur espace élève
+              } else {
+                  alert("Email ou mot de passe incorrect ou compte, non existant.");
+              }
+          })
+          .catch(error => console.error("Erreur connexion élève:", error));
+    }
+
+    // 3. SI C'EST UN PROFESSEUR
+    else if (role === 'professeur') {
+        db.collection('professeurs')
+          .where('email', '==', email)
+          .where('password_init', '==', password)
+          .get()
+          .then(snapshot => {
+              if (!snapshot.empty) {
+                  // Le prof est bien validé et actif
+                  alert("Connexion réussie ! Redirection vers votre Espace Professeur...");
+                  window.location.href = "../../espace/professeur/professeur.html"; // Redirection vers le futur espace prof
+              } else {
+                  // Si on ne le trouve pas dans les profs actifs, on cherche s'il est encore en attente
+                  verifierSiProfEnAttente(email, password);
+              }
+          })
+          .catch(error => console.error("Erreur connexion professeur:", error));
+    }
+});
+
+// Fonction secondaire pour alerter un prof si son compte n'est pas encore validé
+function verifierSiProfEnAttente(email, password) {
+    db.collection('profs_en_attente')
+      .where('email', '==', email)
+      .get()
+      .then(snapshot => {
+          if (!snapshot.empty) {
+              alert("⚠️ Votre compte est toujours en attente de validation par l'administration. Veuillez patienter.");
+          } else {
+              alert("Email ou mot de passe incorrect.");
+          }
+      });
+}
+
+
+// ==========================================
+// LOGIQUE D'INSCRIPTION EN LIGNE (REGISTRATION)
+// ==========================================
+
+document.getElementById('register-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const role = document.getElementById('reg-role').value;
+    const nom = document.getElementById('reg-nom').value;
+    const sexe = document.getElementById('reg-sexe').value;
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const dateActuelle = new Date().toLocaleDateString('fr-FR');
+
+    if (password.length < 6) {
+        alert("Le mot de passe doit contenir au moins 6 caractères.");
+        return;
+    }
+
+    if (role === 'eleve') {
+        const niveau = document.getElementById('reg-niveau').value;
+
+        db.collection('eleves').add({
+            nom: nom,
+            email: email,
+            sexe: sexe,
+            password_init: password,
+            niveauEtudes: niveau,
+            dateInscription: dateActuelle
+        })
+        .then(() => {
+            alert("Compte Élève créé avec succès ! Redirection vers votre tableau de bord.");
+            window.location.href = "eleve.html";
+        })
+        .catch(error => alert("Erreur lors de l'inscription : " + error.message));
+
+    } else if (role === 'professeur') {
+        const specialite = document.getElementById('reg-specialite').value;
+
+        db.collection('profs_en_attente').add({
+            nom: nom,
+            email: email,
+            sexe: sexe,
+            password_init: password,
+            specialite: specialite,
+            dateDemande: dateActuelle,
+            statut: 'en_attente'
+        })
+        .then(() => {
+            alert("✉️ Demande d'inscription envoyée ! Votre profil doit être validé par un administrateur avant de pouvoir vous connecter.");
+            switchForm('login'); // Renvoie le prof sur l'onglet connexion
+        })
+        .catch(error => alert("Erreur lors du dépôt de candidature : " + error.message));
+    }
+});

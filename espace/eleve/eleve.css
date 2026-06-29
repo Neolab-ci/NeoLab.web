@@ -1,295 +1,164 @@
+:root {
+    --bg-main: #020617;
+    --bg-surface: #0b1329;
+    --bg-card: rgba(15, 23, 42, 0.6);
+    --border-color: rgba(56, 189, 248, 0.15);
+    --border-glow: rgba(0, 210, 255, 0.3);
+    
+    --primary: #0066ff;
+    --primary-glow: rgba(0, 102, 255, 0.5);
+    --accent: #00d2ff;
+    --accent-sky: #38bdf8;
+    
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    
+    --font-family: 'Inter', sans-serif;
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
 *{
-
-margin:0;
-padding:0;
-box-sizing:border-box;
-
-font-family:Arial;
-
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
 }
 
-
-
-body{
-
-display:flex;
-
-background:#f4f7fc;
-
+body {
+    display:flex;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: var(--font-family);
+    line-height: 1.6;
+    overflow-x: hidden;
 }
-
-
-
-
 
 .sidebar{
-
-
-width:260px;
-
-height:100vh;
-
-background:#1e293b;
-
-
-padding:30px;
-
-position:fixed;
-
-
-color:white;
-
-
+    width:260px;
+    height:100vh;
+    background:#041d49;
+    padding:30px;
+    position:fixed;
+    color:white;
 }
-
-
-
 
 .sidebar h2{
-
-margin-bottom:40px;
-
+    margin-bottom:40px;
 }
-
-
 
 .sidebar li{
-
-
-padding:15px;
-
-list-style:none;
-
-cursor:pointer;
-
-margin-bottom:10px;
-
-
-border-radius:10px;
-
-
-transition:.3s;
-
-
+    padding:15px;
+    list-style:none;
+    cursor:pointer;
+    margin-bottom:10px;
+    border-radius:10px;
+    transition:.3s;
 }
-
-
-
 
 .sidebar li{
-
-display:flex;
-align-items:center;
-gap:12px;
-
-padding:14px;
-
-border-radius:12px;
-
-cursor:pointer;
-
-transition:0.3s;
-
-}
-
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.3s;
+    }
 
 .sidebar li:hover{
-
-background:#F2F2F7;
-
-color:#007AFF;
-
-}
-
+    background:#1ef3fa;
+    color:#007AFF;
+    }
 
 .sidebar ion-icon{
-
-font-size:22px;
-
-color:#fcfdfe;
-
-}
+    font-size:22px;
+    color:#fcfdfe;
+    }
 
 .sidebar li.active{
-
-    background:#e3e5e7;
-
-    color: #007AFF;
-;
-
+    background:#1ef3fa;
+    color:#007AFF;
 }
-
 
 .sidebar li.active ion-icon{
-
-color:#007AFF;
-
-}
+    color:#007AFF;
+    }
 
 .sidebar li:hover ion-icon{
-
-color:#007AFF;
-
-}
-
-
-
+    color:#007AFF;
+    }
 
 .content{
-
-
-margin-left:260px;
-
-padding:30px;
-
-width:100%;
-
-
-}
-
-
+    margin-left:260px;
+    padding:30px;
+    width:100%;
+    }
 
 header{
-
-
-display:flex;
-
-justify-content:space-between;
-
-margin-bottom:40px;
-
-}
-
-
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:40px;
+    }
 
 header input{
-
-padding:12px;
-background:#1605051a;
-width:300px;
-border:none;
-border-radius:10px;
-}
+    padding: 12px;
+    background:lch(99.68% 0.52 290.36);
+    width:300px;
+    border:none;
+    border-radius:10px;
+    }
 
 section{
-
-display:none;
-
-animation:fade .4s ease;
-
-}
-
-
+    display:none;
+    animation:fade .4s ease;
+   
+    }
 
 @keyframes fade{
-
-from{
-
-opacity:0;
-transform:translateY(15px);
-
-}
-
+    from{
+    opacity:0;
+    transform:translateY(15px);
+    }
 to{
-
-opacity:1;
-transform:translateY(0);
-
-}
-
-}
+    opacity:1;
+    transform:translateY(0);
+    }
+    }
 
 .cards{
-
-
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
-gap:20px;
-
-
-}
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+   
+    }
 
 
 
 .card{
+    background:rgba(2, 29, 104, 0.76);
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 5px 15px #00000036;
+    transition:.3s;
+    }
 
-
-background:rgb(242, 242, 245);
-
-
-padding:25px;
-
-
-border-radius:16px;
-
-
-box-shadow:0 5px 15px #00000036;
-
-
-transition:.2s;
-
-
-}
-
-
-
-.card:hover{
-
-
-transform:translateY(-5px);
-
-
-}
-
-
-
+.cart:hover{
+    transform:translateY(-5px);
+    }
 
 section{
-
-
-display:none;
-
-
-animation:fade .5s;
-
-
-}
-
-
-
-section{
-display:none;
-}
-
-
-
+    display:none;
+    animation:fade .5s;
+    }
 
 @keyframes fade{
-
-
-from{
-
-
-opacity:0;
-
-transform:translateY(20px);
-
-
-}
-
-
+    from{
+    opacity:2;
+    transform:translateY(20px);
+    }
 
 to{
-
-
-opacity:1;
-
-transform:translateY(0);
-
-
-}
-
-
+    opacity:1;
+    transform:translateY(0);
+    }
 }
