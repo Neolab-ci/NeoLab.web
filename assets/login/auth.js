@@ -1,4 +1,4 @@
-// Configuration Firebase (Identique à ton espace admin)
+// Configuration Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBRGYbiSp26ba_cxj7REHKkOqSylQf1DfQ",
     authDomain: "neolab-ci.firebaseapp.com",
@@ -12,13 +12,12 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
+const auth = firebase.auth();
 
 // 1. Gestion du changement d'onglet (Connexion / Inscription)
 function switchForm(formType) {
-    // Boutons
     document.getElementById('tab-login').classList.remove('active');
     document.getElementById('tab-register').classList.remove('active');
-    // Formulaires
     document.getElementById('login-form').classList.remove('active');
     document.getElementById('register-form').classList.remove('active');
 
@@ -50,12 +49,9 @@ function toggleRegistrationFields() {
     }
 }
 
-
-
 // ==========================================
-// LOGIQUE DE CONNEXION ET REDIRECTION AUTOMATIQUE
+// LOGIQUE DE CONNEXION 
 // ==========================================
-
 document.getElementById('login-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -70,9 +66,8 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
           .get()
           .then(snapshot => {
               if (!snapshot.empty) {
-                  // En situation réelle, on utiliserait firebase.auth(), ici on valide via les données du document
                   alert("Connexion réussie ! Bienvenue sur le Panneau d'Administration.");
-                  window.location.href = "../admin/&admin.html"; // Redirection vers ton espace admin
+                  window.location.href = "../../admin/&admin.html"; 
               } else {
                   alert("Accès refusé. Cet email n'est pas enregistré comme Administrateur.");
               }
@@ -80,21 +75,17 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
           .catch(error => console.error("Erreur connexion admin:", error));
     }
 
-    // 2. SI C'EST UN ÉLÈVE
+    // 2. SI C'EST UN ÉLÈVE (CORRIGÉ AVEC AUTH + REDIRECTION CHEZ TOI)
     else if (role === 'eleve') {
-        db.collection('eleves')
-          .where('email', '==', email)
-          .where('password_init', '==', password) // Vérification temporaire par champ texte
-          .get()
-          .then(snapshot => {
-              if (!snapshot.empty) {
-                  alert("Connexion réussie ! Redirection vers votre Espace Élève...");
-                  window.location.href = "../../espace/eleve/eleve.html"; // Redirection vers le futur espace élève
-              } else {
-                  alert("Email ou mot de passe incorrect ou compte, non existant.");
-              }
-          })
-          .catch(error => console.error("Erreur connexion élève:", error));
+        auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+            alert("Connexion réussie ! Redirection vers votre Espace Élève...");
+            window.location.href = "../../espace/eleve/eleve.html"; 
+        })
+        .catch(error => {
+            alert("Erreur : Email ou mot de passe incorrect.");
+            console.error(error);
+        });
     }
 
     // 3. SI C'EST UN PROFESSEUR
@@ -105,11 +96,9 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
           .get()
           .then(snapshot => {
               if (!snapshot.empty) {
-                  // Le prof est bien validé et actif
                   alert("Connexion réussie ! Redirection vers votre Espace Professeur...");
-                  window.location.href = "../../espace/professeur/professeur.html"; // Redirection vers le futur espace prof
+                  window.location.href = "../../espace/professeur/professeur.html"; 
               } else {
-                  // Si on ne le trouve pas dans les profs actifs, on cherche s'il est encore en attente
                   verifierSiProfEnAttente(email, password);
               }
           })
@@ -117,25 +106,22 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
     }
 });
 
-// Fonction secondaire pour alerter un prof si son compte n'est pas encore validé
 function verifierSiProfEnAttente(email, password) {
     db.collection('profs_en_attente')
       .where('email', '==', email)
       .get()
       .then(snapshot => {
           if (!snapshot.empty) {
-              alert("⚠️ Votre compte est toujours en attente de validation par l'administration. Veuillez patienter.");
+              alert("⚠️ Votre compte est toujours en attente de validation par l'administration.");
           } else {
               alert("Email ou mot de passe incorrect.");
           }
       });
 }
 
-
 // ==========================================
-// LOGIQUE D'INSCRIPTION EN LIGNE (REGISTRATION)
+// LOGIQUE D'INSCRIPTION EN LIGNE
 // ==========================================
-
 document.getElementById('register-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -154,17 +140,25 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
     if (role === 'eleve') {
         const niveau = document.getElementById('reg-niveau').value;
 
-        db.collection('eleves').add({
-            nom: nom,
-            email: email,
-            sexe: sexe,
-            password_init: password,
-            niveauEtudes: niveau,
-            dateInscription: dateActuelle
+        // 1. Création dans Firebase Auth
+        auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            
+            // 2. Écriture synchronisée avec l'UID de session
+            return db.collection('eleves').doc(user.uid).set({
+                uid: user.uid,
+                nom: nom,
+                email: email,
+                sexe: sexe,
+                password_init: password,
+                niveauEtudes: niveau,
+                dateInscription: dateActuelle
+            });
         })
         .then(() => {
-            alert("Compte Élève créé avec succès ! Redirection vers votre tableau de bord.");
-            window.location.href = "eleve.html";
+            alert("Compte Élève créé avec succès !");
+            window.location.href = "../../espace/eleve/eleve.html";
         })
         .catch(error => alert("Erreur lors de l'inscription : " + error.message));
 
@@ -181,8 +175,8 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
             statut: 'en_attente'
         })
         .then(() => {
-            alert("✉️ Demande d'inscription envoyée ! Votre profil doit être validé par un administrateur avant de pouvoir vous connecter.");
-            switchForm('login'); // Renvoie le prof sur l'onglet connexion
+            alert("✉️ Demande d'inscription envoyée à l'administration !");
+            switchForm('login'); 
         })
         .catch(error => alert("Erreur lors du dépôt de candidature : " + error.message));
     }

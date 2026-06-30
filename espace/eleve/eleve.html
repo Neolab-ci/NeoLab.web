@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEOLAB CI</title>
+    <title>NEOLAB CI - Espace Élève</title>
     <link rel="stylesheet" href="eleve.css">
 </head>
 <body>
@@ -52,39 +51,35 @@
                 <ion-icon name="log-out-outline"></ion-icon>
                 Déconnexion
             </li>
-            <li data-page="dashboard">
-                <ion-icon name="home-outline"></ion-icon>
-                Accueil
-            </li>
         </ul>
     </div>
 
     <div class="content">
-       <header>
-    <input type="text" placeholder="Rechercher...">
-    <div class="user-profile-header" style="display: flex; align-items: center; gap: 12px;">
-        <span id="user-display-name">Chargement... 👋</span>
-        <img id="user-display-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Neo" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent);">
-    </div>
-</header>
+        <header>
+            <input type="text" placeholder="Rechercher...">
+            <div class="user-profile-header" style="display: flex; align-items: center; gap: 12px;">
+                <span id="user-display-name">Vérification... 👋</span>
+                <img id="user-display-avatar" src="" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); display: none;">
+            </div>
+        </header>
 
-        <section id="dashboard" class="active-section">
+        <section id="dashboard" class="active-section" style="display: block;">
             <h1>Tableau de bord</h1>
             <div class="cards">
                 <div class="card">
-                    <h2 id="dash-cours">12</h2>
+                    <h2 id="dash-cours">0</h2>
                     <p>Cours suivis</p>
                 </div>
                 <div class="card">
-                    <h2 id="dash-moyenne">16.4</h2>
+                    <h2 id="dash-moyenne">--</h2>
                     <p>Moyenne</p>
                 </div>
                 <div class="card">
-                    <h2 id="dash-temps">48 h</h2>
+                    <h2 id="dash-temps">0 h</h2>
                     <p>Temps d'étude</p>
                 </div>
                 <div class="card">
-                    <h2 id="dash-certifs">3</h2>
+                    <h2 id="dash-certifs">0</h2>
                     <p>Certificats</p>
                 </div>
             </div>
@@ -92,57 +87,66 @@
 
         <section id="cours">
             <h1>Mes cours</h1>
-            <p>Vos cours d'électronique et Arduino s'afficheront ici.</p>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Vos cours d'électronique et Arduino mis à jour en temps réel.</p>
+            <div class="cards" id="student-courses-grid">
+                </div>
         </section>
 
-       <section id="devoirs">
+        <section id="devoirs">
             <h1>Mes devoirs & Exercices</h1>
-                 <p style="color: var(--text-muted); margin-bottom: 25px;">Retrouvez ici les exercices et travaux pratiques assignés.</p>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Retrouvez ici les exercices et travaux pratiques assignés.</p>
             <div class="cards" id="student-exercises-grid">
-        </div>
+                </div>
         </section>
 
         <section id="emploi">
             <h1>Emploi du temps</h1>
+            <p style="color: var(--text-muted);">Votre planning de formation s'affichera bientôt.</p>
         </section>
 
         <section id="ressources">
             <h1>Ressources</h1>
+            <p style="color: var(--text-muted);">Fichiers d'aide, documentations techniques et fiches Arduino.</p>
         </section>
 
         <section id="certificats">
             <h1>Certifications</h1>
+            <p style="color: var(--text-muted);">Vos diplômes et certificats NeoLab-CI validés.</p>
         </section>
 
         <section id="messages">
-            <h1>Messages</h1>
+            <h1>Messages & Notifications</h1>
+            <p style="color: var(--text-muted);">Discussions avec les professeurs et les autres étudiants.</p>
         </section>
 
-       <section id="profil">
-    <h1>Mon profil</h1>
-    <div class="card" style="max-width: 500px; margin-top: 20px;">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img id="profile-card-avatar" src="" alt="Avatar Profil" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 10px;">
-            <h2 id="profile-card-nom">...</h2>
-            <p id="profile-card-role" style="color: var(--accent);">Élève</p>
-        </div>
-        <p><strong>📧 Email :</strong> <span id="profile-card-email">...</span></p>
-        <p><strong>🧬 Genre :</strong> <span id="profile-card-sexe">...</span></p>
-        <p><strong>🎓 Niveau / Filière :</strong> <span id="profile-card-niveau">...</span></p>
-        <p><strong>📅 Date d'inscription :</strong> <span id="profile-card-date">...</span></p>
-    </div>
-</section>
+        <section id="profil">
+            <h1>Mon profil</h1>
+            <div class="card" style="max-width: 500px; margin-top: 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img id="profile-card-avatar" src="" alt="Avatar Profil" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 10px;">
+                    <h2 id="profile-card-nom">...</h2>
+                    <p id="profile-card-role" style="color: var(--accent);">Étudiant NeoLab-CI</p>
+                </div>
+                <p style="margin-bottom: 8px;"><strong>📧 Email :</strong> <span id="profile-card-email">...</span></p>
+                <p style="margin-bottom: 8px;"><strong>🧬 Genre :</strong> <span id="profile-card-sexe">...</span></p>
+                <p style="margin-bottom: 8px;"><strong>🎓 Niveau / Filière :</strong> <span id="profile-card-niveau">...</span></p>
+                <p style="margin-bottom: 8px;"><strong>📅 Date d'inscription :</strong> <span id="profile-card-date">...</span></p>
+            </div>
+        </section>
 
         <section id="settings">
             <h1>Paramètres</h1>
+            <p style="color: var(--text-muted);">Gestion des configurations de votre compte.</p>
         </section>
     </div>
 
-   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <script src="eleve.js"></script>
 </body>
 </html>
