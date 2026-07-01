@@ -1,0 +1,30 @@
+:root {
+  --bg-main: #050816;
+  --bg-card: #0B1120;
+  --accent: #3b82f6;
+  --border-color: rgba(59, 130, 246, 0.15);
+}
+
+body {
+  background-color: var(--bg-main);
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #ffffff;
+}
+
+/* Transitions Fluides */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animations au survol des cartes projets */
+.project-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.2);
+}

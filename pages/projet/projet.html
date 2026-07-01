@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEOLAB-CI | Hub de Projets</title>
+  <link rel="stylesheet" href="projet.css">
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-[#050816] text-white">
+
+  <!-- EN-TÊTE / RECHERCHE -->
+  <section class="px-6 py-16 text-center relative overflow-hidden">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/10 blur-[130px] rounded-full pointer-events-none"></div>
+
+    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">
+      Plateforme de Projets <span class="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">Multi-Technologies</span>
+    </h1>
+    <p class="text-gray-400 mt-4 text-base md:text-lg max-w-3xl mx-auto">
+      Explorez notre banque de projets techniques. Choisissez votre univers pour commencer votre parcours pratique.
+    </p>
+
+    <div class="mt-10 flex flex-col items-center gap-6 px-4">
+      <!-- Barre de recherche -->
+      <div class="relative w-full max-w-xl">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Rechercher un composant ou un mot-clé (ex: ESP32, OpenCV)..."
+          class="w-full px-6 py-4 bg-[#0B1120] border border-blue-500/20 rounded-2xl outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/20 transition-all text-white placeholder-gray-500 shadow-xl"
+        />
+        <i data-lucide="search" class="absolute right-5 top-1/2 -translate-y-1/2 text-blue-400 w-5 h-5"></i>
+      </div>
+
+      <!-- Menu déroulant des technologies -->
+      <div class="w-full max-w-4xl flex flex-col items-center gap-4">
+        <button id="mainTechBtn" onclick="toggleTechList()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl transition-all text-sm font-semibold shadow-lg shadow-blue-600/20 flex items-center gap-2 mx-auto">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span id="mainTechBtnText">Toutes les technos</span>
+          <i data-lucide="chevron-down" id="arrowIcon" class="w-4 h-4 transition-transform"></i>
+        </button>
+
+        <div id="techListContainer" class="hidden flex flex-wrap justify-center gap-2 bg-[#0B1120]/80 p-3 rounded-2xl border border-blue-500/10 w-full transition-all duration-300">
+          <button onclick="selectCategory('all')" class="cat-btn bg-blue-600/20 border border-blue-500/30 text-blue-400 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all">Toutes les technos</button>
+          <button onclick="selectCategory('arduino')" class="cat-btn hover:bg-[#131b2e] text-gray-400 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all">Arduino</button>
+          <button onclick="selectCategory('robot')" class="cat-btn hover:bg-[#131b2e] text-gray-400 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all">Robotique Mobile</button>
+          <button onclick="selectCategory('iot')" class="cat-btn hover:bg-[#131b2e] text-gray-400 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all">IoT & Cloud</button>
+          <button onclick="selectCategory('ia')" class="cat-btn hover:bg-[#131b2e] text-gray-400 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all">IA & Vision</button>
+          <button onclick="selectCategory('embarque')" class="cat-btn hover:bg-[#131b2e] text-gray-400 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all">Systèmes Linux</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENEUR DES GRILLES DE NIVEAUX -->
+  <main id="levelsMainContainer" class="max-w-7xl mx-auto px-6 py-4 w-full flex-grow space-y-24 transition-opacity duration-300">
+    
+    <!-- Débutant -->
+    <section id="section-debutant" class="level-section">
+      <div class="flex items-center gap-4 mb-8 border-b border-emerald-500/10 pb-4">
+        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20"><i data-lucide="baby" class="w-8 h-8"></i></div>
+        <div>
+          <h2 class="text-3xl font-extrabold text-white tracking-tight">Niveau Débutant — Fondations Métiers</h2>
+          <p class="text-emerald-400/80 text-sm mt-0.5">Idéal pour l'assimilation de l'électronique de base, du code séquentiel et des capteurs standards.</p>
+        </div>
+      </div>
+      <div id="grid-debutant" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </section>
+
+    <!-- Intermédiaire -->
+    <section id="section-intermediaire" class="level-section">
+      <div class="flex items-center gap-4 mb-8 border-b border-amber-500/10 pb-4">
+        <div class="p-3 bg-amber-500/10 text-amber-400 rounded-2xl border border-amber-500/20"><i data-lucide="wrench" class="w-8 h-8"></i></div>
+        <div>
+          <h2 class="text-3xl font-extrabold text-white tracking-tight">Niveau Intermédiaire — Maîtrise Algorithmique</h2>
+          <p class="text-amber-400/80 text-sm mt-0.5">Combinaison de plusieurs protocoles de communication, d'affichages graphiques et d'asservissements moteurs.</p>
+        </div>
+      </div>
+      <div id="grid-intermediaire" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </section>
+
+    <!-- Avancé -->
+    <section id="section-avance" class="level-section">
+      <div class="flex items-center gap-4 mb-8 border-b border-rose-500/10 pb-4">
+        <div class="p-3 bg-rose-500/10 text-rose-400 rounded-2xl border border-rose-500/20"><i data-lucide="terminal" class="w-8 h-8"></i></div>
+        <div>
+          <h2 class="text-3xl font-extrabold text-white tracking-tight">Niveau Avancé — Ingénierie Complexe</h2>
+          <p class="text-rose-400/80 text-sm mt-0.5">Architectures industrielles, traitement de flux vidéo en temps réel, serveurs locaux et automatisation lourde.</p>
+        </div>
+      </div>
+      <div id="grid-avance" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </section>
+
+    <!-- Aucun Résultat -->
+    <div id="noResult" class="hidden text-center py-20">
+      <i data-lucide="frown" class="w-12 h-12 text-gray-600 mx-auto mb-4"></i>
+      <p class="text-gray-400 text-lg">Aucun projet ne correspond à vos filtres de recherche 😔</p>
+    </div>
+  </main>
+
+  <!-- MODAL DE DÉTAILS -->
+  <div id="modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-[#0B1120] border border-blue-500/20 p-6 md:p-8 rounded-3xl max-w-3xl w-full relative shadow-2xl my-8">
+      
+      <button onclick="closeModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white p-1.5 bg-[#050816] rounded-full border border-blue-500/10 z-10">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <span id="modalCategory" class="text-xs font-bold uppercase tracking-wider text-blue-400 px-2.5 py-1 bg-blue-500/10 rounded-md inline-block"></span>
+      
+      <h2 id="title" class="text-2xl md:text-3xl font-bold mt-4 text-white tracking-tight"></h2>
+      <p id="desc" class="text-gray-400 mt-2 text-sm md:text-base leading-relaxed"></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+        <div class="bg-[#050816] p-2 rounded-xl border border-blue-500/10">
+          <p class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-2 text-center">Aperçu du Projet Fini</p>
+          <img id="img-projet-fini" src="" alt="Projet Fini" class="w-full h-40 object-cover rounded-lg border border-blue-500/5 bg-gray-900">
+        </div>
+        <div class="bg-[#050816] p-2 rounded-xl border border-blue-500/10">
+          <p class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-2 text-center">Schéma de Câblage / Composants</p>
+          <img id="img-cablage" src="" alt="Schéma de câblage" class="w-full h-40 object-cover rounded-lg border border-blue-500/5 bg-gray-900">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-center mb-6">
+        <div class="bg-[#050816] p-3 rounded-xl border border-blue-500/5">
+          <p class="text-[11px] text-gray-500 uppercase font-bold tracking-wider">Durée estimée</p>
+          <h3 id="duration" class="font-bold text-sm text-emerald-400 mt-1"></h3>
+        </div>
+        <div class="bg-[#050816] p-3 rounded-xl border border-blue-500/5">
+          <p class="text-[11px] text-gray-500 uppercase font-bold tracking-wider">Matériel requis</p>
+          <h3 id="components" class="font-bold text-xs text-gray-300 mt-1 truncate px-2"></h3>
+        </div>
+      </div>
+
+      <div class="bg-[#050816] p-4 rounded-xl border border-blue-500/5 mb-6">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3 flex items-center gap-2">
+          <i data-lucide="list-ordered" class="w-4 h-4"></i> Étapes de réalisation
+        </h4>
+        <ul id="steps-list" class="space-y-2.5 text-xs md:text-sm text-gray-300">
+          </ul>
+      </div>
+
+      <div class="border-t border-blue-500/10 my-4"></div>
+
+      <div id="project-action-zone" class="mt-4">
+          </div>
+
+    </div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIED DE PAGE -->
+  <footer class="border-t border-blue-500/5 py-6 text-center text-xs text-gray-600 mt-12">
+    &copy; 2026 NEOLAB-CI.
+  </footer>
+
+  <!-- SCRIPT LIAISON FIREBASE OBLIGATOIRE -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script> 
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <script src="projet.js"></script>
+  
+</body>
+</html>
