@@ -13,12 +13,11 @@
             <h2>NeoLab-CI</h2>
             <span>Espace Admin</span>
         </div>
-        <nav class="sidebar-menu">         
+        <nav class="sidebar-menu">
             <a href="#" class="menu-link active" onclick="switchTab(event, 'dashboard')">📊 Vue d'ensemble</a>
-            <a href="#" class="menu-link" onclick="switchTab(event, 'stock')">🔧 Gestion du Stock</a>
+            <a href="#" class="menu-link" onclick="switchTab(event, 'stock')">🛠️ Gestion du Stock</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'cours')">📚 Gestion des Cours</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'users')">👥 Utilisateurs</a>
-            <a href="#" class="menu-link" onclick="switchTab(event, 'validations')">⏳ Validations Profs</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'settings')">⚙️ Paramètres</a>
             <a href="../index.html" class="menu-link">@ Accueil</a>
         </nav>
@@ -147,7 +146,7 @@
             </div>
         </section>
         
-       <section id="users" class="content-section">
+        <section id="users" class="content-section">
             <div class="data-card">
                 <div class="card-header">
                     <h2>Élèves enregistrés</h2>
@@ -184,26 +183,7 @@
                 </table>
             </div>
         </section>
-        <section id="validations" class="content-section">
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Demandes d'inscription des Professeurs</h2>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Nom complet</th>
-                            <th>Adresse Email</th>
-                            <th>Spécialité</th>
-                            <th>Date de demande</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="prof-validation-table">
-                        </tbody>
-                </table>
-            </div>
-        </section>
+   
          <div id="creationModal" class="modal-overlay" style="display: none;">
         <div class="modal-box">
             <h2>Créer un nouveau compte</h2>
