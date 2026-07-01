@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="com.css">
 </head>
 <body>
 
@@ -32,8 +33,8 @@
 
             <div class="nav-actions">
                         <a href="pages/espace/enseignan.html" class="btn-connect">Espace enseignan</a>
-                        <a href="assets/login/auth.html" class="btn-connect">Espace Élève</a>
-                        <a href="login_admin.html" class="btn-connect">Admin</a>
+                        <a href="espace/eleve/eleve.html" class="btn-connect">Espace Élève</a>
+                        <a href="admin/&admin.html" class="btn-connect">Admin</a>
                 <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">
                     <i class="fa-solid fa-bars"></i>
                 </button>
@@ -219,5 +220,38 @@
     </footer>
 
     <script src="script.js"></script>
+   <script src="com.js"></script>
+    <div class="floating-nav-container">
+    <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
+        <i data-lucide="menu"></i>MENU
+    </button>
+    
+    <div class="floating-nav-menu" id="floating-nav-menu">
+        <a href="admin/&admin.html" class="floating-nav-item" title="Tableau de bord">
+            <i data-lucide="layout-dashboard"></i>ACCEUIL
+            <span>Dashboard</span>
+        </a>
+        <a href="pages/cours/cours.html" class="floating-nav-item" title="Mes Cours">
+            <i data-lucide="book-open"></i>COURS
+            <span>Cours</span>
+        </a>
+        <a href="pages/projet/projets.html" class="floating-nav-item" title="Mes Projets">
+            <i data-lucide="folder-kanban"></i>PROJET
+            <span>Projets</span>
+        </a>
+        <a href="pages/composant/composants.html" class="floating-nav-item" title="Mes Composants">
+            <i data-lucide="folder-kanban"></i>COMPOSANTS
+            <span>Composants</span>
+        </a>
+        <a href="#" class="floating-nav-item" title="Paramètres">
+            <i data-lucide="settings"></i>
+            <span>Paramètres</span>PARAMATRE
+        </a>
+        <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
+            <i data-lucide="log-out"></i>SORTIE
+            <span>Quitter</span>
+        </button>
+    </div>
+</div>
 </body>
 </html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Titre de la page</title>
     <link rel="stylesheet" href="composant.css">
+    <link rel="stylesheet" href="../../com.css">
 </head>
 <body>
    
@@ -939,5 +940,38 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="composant.js"></script>
+<script src="../../com.js"></script>
+    <div class="floating-nav-container">
+    <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
+        <i data-lucide="menu"></i>MENU
+    </button>
+    
+    <div class="floating-nav-menu" id="floating-nav-menu">
+        <a href="../../index.html" class="floating-nav-item" title="Tableau de bord">
+            <i data-lucide="layout-dashboard"></i>ACCEUIL
+            <span>Dashboard</span>
+        </a>
+        <a href="../cours/cours.html" class="floating-nav-item" title="Mes Cours">
+            <i data-lucide="book-open"></i>COURS
+            <span>Cours</span>
+        </a>
+        <a href="../projet/projet.html" class="floating-nav-item" title="Mes Projets">
+            <i data-lucide="folder-kanban"></i>PROJET
+            <span>Projets</span>
+        </a>
+        <a href="../composant/composants.html" class="floating-nav-item" title="Mes Composants">
+            <i data-lucide="folder-kanban"></i>COMPOSANTS
+            <span>Composants</span>
+        </a>
+        <a href="../../pages/parametres/parametres.html" class="floating-nav-item" title="Paramètres">
+            <i data-lucide="settings"></i>
+            <span>Paramètres</span>PARAMATRE
+        </a>
+        <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
+            <i data-lucide="log-out"></i>SORTIE
+            <span>Quitter</span>
+        </button>
+    </div>
+</div>
 </body>
 </html>

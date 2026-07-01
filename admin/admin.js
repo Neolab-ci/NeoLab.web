@@ -271,6 +271,7 @@ function fermerModalModifComposant() {
     document.getElementById('modifComposantForm').reset();
 }
 
+
 // Traitement de la modification dans Firebase
 document.getElementById('modifComposantForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -289,3 +290,4 @@ document.getElementById('modifComposantForm').addEventListener('submit', functio
     })
     .catch(error => console.error("Erreur lors de la modification :", error));
 });
+

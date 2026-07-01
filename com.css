@@ -1,0 +1,106 @@
+/* Conteneur principal */
+.floating-nav-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+/* Bouton déclencheur principal */
+.floating-nav-trigger {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #3b82f6; /* Bleu électrique */
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-nav-trigger:hover {
+    transform: scale(1.1) rotate(90deg);
+    background: #2563eb;
+}
+
+/* Menu déroulant (masqué par défaut) */
+.floating-nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Classe active pour afficher le menu */
+.floating-nav-container.active .floating-nav-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* Liens / Éléments du menu */
+.floating-nav-item {
+    text-decoration: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #050816;
+    border: 1px solid #1f2937;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.floating-nav-item i {
+    width: 18px;
+    height: 18px;
+}
+
+/* Tooltip (Texte au survol) */
+.floating-nav-item span {
+    position: absolute;
+    right: 60px;
+    background: #0f172a;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    border: 1px solid #334155;
+    transition: opacity 0.2s ease;
+}
+
+.floating-nav-item:hover span {
+    opacity: 1;
+}
+
+.floating-nav-item:hover {
+    background: #1e293b;
+    color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+/* Style spécial déconnexion */
+.floating-nav-item.logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: #ef4444;
+}
