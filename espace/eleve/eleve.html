@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEOLAB CI - Espace Élève</title>
     <link rel="stylesheet" href="eleve.css">
+    <link rel="stylesheet" href="../../com.css">
 </head>
 <body>
 
@@ -339,34 +340,39 @@
 
     <!-- LOGIQUE JAVASCRIPT PRINCIPALE -->
     <script src="eleve.js"></script>
-
+    <script src="../../com.js"></script>
     <div class="floating-nav-container">
     <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
         <i data-lucide="menu"></i>
     </button>
     
     <div class="floating-nav-menu" id="floating-nav-menu">
-        <a href="../../espace-eleve.html" class="floating-nav-item" title="Tableau de bord">
-            <i data-lucide="layout-dashboard"></i>
+        <a href="admin/&admin.html" class="floating-nav-item" title="Tableau de bord">
+            <i data-lucide="layout-dashboard"></i>ACCEUIL
             <span>Dashboard</span>
         </a>
-        <a href="../../espace-eleve.html?page=student-courses-grid" class="floating-nav-item" title="Mes Cours">
-            <i data-lucide="book-open"></i>
+        <a href="pages/cours/cours.html" class="floating-nav-item" title="Mes Cours">
+            <i data-lucide="book-open"></i>COURS
             <span>Cours</span>
         </a>
-        <a href="../../espace-eleve.html?page=student-projects-section" class="floating-nav-item" title="Mes Projets">
-            <i data-lucide="folder-kanban"></i>
+        <a href="pages/projet/projets.html" class="floating-nav-item" title="Mes Projets">
+            <i data-lucide="folder-kanban"></i>PROJET
             <span>Projets</span>
         </a>
-        <a href="../../espace-eleve.html?page=settings-section" class="floating-nav-item" title="Paramètres">
+        <a href="pages/composant/composants.html" class="floating-nav-item" title="Mes Composants">
+            <i data-lucide="folder-kanban"></i>COMPOSANTS
+            <span>Composants</span>
+        </a>
+        <a href="#" class="floating-nav-item" title="Paramètres">
             <i data-lucide="settings"></i>
-            <span>Paramètres</span>
+            <span>Paramètres</span>PARAMATRE
         </a>
         <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
-            <i data-lucide="log-out"></i>
+            <i data-lucide="log-out"></i>SORTIE
             <span>Quitter</span>
         </button>
     </div>
 </div>
+    
 </body>
 </html>
