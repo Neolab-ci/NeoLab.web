@@ -15,20 +15,20 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: #3b82f6; /* Bleu électrique */
+    background: #0a4ddff1; /* Bleu électrique */
     color: white;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 4px 20px rgba(170, 171, 173, 0.4);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .floating-nav-trigger:hover {
     transform: scale(1.1) rotate(90deg);
-    background: #2563eb;
+    background: #39f820;
 }
 
 /* Menu déroulant (masqué par défaut) */
@@ -93,14 +93,14 @@
 }
 
 .floating-nav-item:hover {
-    background: #1e293b;
-    color: #3b82f6;
-    border-color: #3b82f6;
+    background: #0f66f1;
+    color: #ffffff;
+    border-color: #0486ff;
 }
 
 /* Style spécial déconnexion */
 .floating-nav-item.logout:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    background: rgb(255, 0, 0);
+    color: #ffffff;
     border-color: #ef4444;
 }
