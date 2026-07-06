@@ -48,15 +48,24 @@
       </div>
     </div>
 
-    <div class="tabs-container" id="levelTabs">
+ <div class="tabs-container" id="levelTabs" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
       <button class="cat-tab active" onclick="filterCategory('all', this)">
         🌐 Tous (<span id="countAllCours">0</span>)
       </button>
       <button class="cat-tab" onclick="filterCategory('Électronique', this)">
         ⚡ Électronique (<span id="countElectro">0</span>)
       </button>
-      <button class="cat-tab" onclick="filterCategory('Technologie', this)">
-        💻 Technologie (<span id="countTechno">0</span>)
+      <button class="cat-tab" onclick="filterCategory('Informatique', this)">
+        💻 Informatique (<span id="countInfo">0</span>)
+      </button>
+      <button class="cat-tab" onclick="filterCategory('Biomédicale', this)">
+        🔬 Biomédicale (<span id="countBiomed">0</span>)
+      </button>
+      <button class="cat-tab" onclick="filterCategory('Réseaux & Sécurité', this)">
+        🌐 Réseaux & Sécurité (<span id="countReseaux">0</span>)
+      </button>
+      <button class="cat-tab" onclick="filterCategory('Robotique', this)">
+        🤖 Robotique (<span id="countRobot">0</span>)
       </button>
       <button class="cat-tab" onclick="filterCategory('TP', this)">
         🛠️ Travaux Pratiques (<span id="countTP">0</span>)

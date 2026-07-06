@@ -91,6 +91,7 @@ function ecouterProgressionEleve() {
 // 3. LOGIQUE D'AFFICHAGE & FILTRES
 // ==========================================
 function updateCourseUI() {
+ // --- MISE À JOUR DES COMPTEURS DYNAMIQUES ---
   if(document.getElementById('statCoursCount')) {
     document.getElementById('statCoursCount').textContent = `+${courses.length}`;
   }
@@ -100,11 +101,21 @@ function updateCourseUI() {
   if(document.getElementById('countElectro')) {
     document.getElementById('countElectro').textContent = courses.filter(c => c.category === 'Électronique').length;
   }
-  if(document.getElementById('countTechno')) {
-    document.getElementById('countTechno').textContent = courses.filter(c => c.category === 'Technologie').length;
+  if(document.getElementById('countInfo')) {
+    document.getElementById('countInfo').textContent = courses.filter(c => c.category === 'Informatique').length;
+  }
+  if(document.getElementById('countBiomed')) {
+    document.getElementById('countBiomed').textContent = courses.filter(c => c.category === 'Biomédicale').length;
+  }
+  if(document.getElementById('countReseaux')) {
+    document.getElementById('countReseaux').textContent = courses.filter(c => c.category === 'Réseaux & Sécurité').length;
+  }
+  if(document.getElementById('countRobot')) {
+    document.getElementById('countRobot').textContent = courses.filter(c => c.category === 'Robotique').length;
   }
   if(document.getElementById('countTP')) {
     document.getElementById('countTP').textContent = courses.filter(c => c.category === 'TP').length;
+  }
   }
   
   updateProgressBar();
@@ -122,7 +133,7 @@ function updateCourseUI() {
   }
 
   filterCourses();
-}
+
 
 function updateProgressBar() {
   const total = courses.length;
@@ -369,7 +380,7 @@ function openCourseModal(id) {
     if (mediaContainer.style.display === "none") {
       mediaContainer.style.display = "block";
       if (isVideo) {
-        // Support des URLs youtube embed directes ou classiques
+        // --- CODE POUR LA VIDÉO ---
         let videoSrc = c.videoUrl || c.mediaURL;
         if(videoSrc.includes("watch?v=")) {
             videoSrc = videoSrc.replace("watch?v=", "embed/");
@@ -378,7 +389,12 @@ function openCourseModal(id) {
         btnAction.innerHTML = "⏹️ Arrêter la vidéo";
         btnAction.style.backgroundColor = "#ef4444";
       } else {
-        mediaPlaceholder.innerHTML = `<iframe src="${mediaLien}" style="width: 100%; height: 450px; border: none;"></iframe>`;
+        // --- FIX PROPRE POUR LE LECTEUR PDF ---
+        // On utilise le visualiseur de Google pour forcer l'affichage du PDF dans l'iframe
+        const urlAbsoluePDF = new URL(mediaLien, window.location.href).href; 
+        const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(urlAbsoluePDF)}&embedded=true`;
+
+        mediaPlaceholder.innerHTML = `<iframe src="${googleViewerUrl}" style="width: 100%; height: 500px; border: none; background: #0f172a; border-radius: 6px;"></iframe>`;
         btnAction.innerHTML = "👁️ Masquer le lecteur";
         btnAction.style.backgroundColor = "#475569";
       }
