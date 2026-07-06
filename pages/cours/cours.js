@@ -1,58 +1,102 @@
 // ==========================================
-// 1. VÉRIFICATION DE LA SESSION SUR CETTE PAGE
+// CONFIGURATION FIREBASE INITIALISATION
 // ==========================================
-document.addEventListener("DOMContentLoaded", function () {
-    
-    // On écoute le changement d'état de connexion de Firebase
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            // 🔓 L'ÉLÈVE EST CONNECTÉ
-            console.log("Session active pour l'élève :", user.uid);
-            
-            // --- METS ICI LES FONCTIONS À RETENIR UNIQUEMENT POUR L'ÉLÈVE ---
-            // Exemple : afficher son nom, charger ses notes, etc.
-            // initialiserEspaceEleve(user);
+const firebaseConfig = {
+    apiKey: "AIzaSyBRGYbiSp26ba_cxj7REHKkOqSylQf1DfQ",
+    authDomain: "neolab-ci.firebaseapp.com",
+    projectId: "neolab-ci",
+    storageBucket: "neolab-ci.firebasestorage.app",
+    messagingSenderId: "121581894561",
+    appId: "1:121581894561:web:c2056aa29364fce97a69e0"
+};
 
-        } else {
-            // 🔒 AUCUN ÉLÈVE CONNECTÉ
-            console.log("Aucune session trouvée.");
-            
-            // Si cette page est PRIVÉE (réservée aux élèves), on le redirige :
-            // window.location.href = "connexion.html";
-        }
-    });
-});
+// Initialisation sécurisée de Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
 
+// ==========================================
+// VARIABLES GLOBALES DE GESTION DES COURS
+// ==========================================
 let courses = [];
 let filteredCourses = [];
 let currentCategory = 'all';
 let currentFormat = 'all';
-
-// Variables de gestion de la pagination
 let currentPage = 1;
 const itemsPerPage = 10;
 
-// Tableau contenant les IDs des cours terminés (sauvegardé dans le téléphone)
-let completedCourses = JSON.parse(localStorage.getItem('neoLabCompletedCourses')) || [];
+// Variables Session Firebase & Progression
+let currentUserUid = null;
+let completedCourses = []; 
 
-function loadCoursesFromHTML() {
-  const template = document.getElementById('course-data');
-  if (!template) return;
-  const divs = template.content.querySelectorAll('.json-course');
-  courses = Array.from(divs).map(div => JSON.parse(div.textContent.trim()));
-  updateCourseUI();
+// ==========================================
+// 1. INITIALISATION ET GESTION DE LA SESSION
+// ==========================================
+document.addEventListener("DOMContentLoaded", function () {
+    
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            currentUserUid = user.uid;
+            console.log("Élève connecté, UID :", currentUserUid);
+            
+            // Étape 1 : Écouter les cours en TEMPS RÉEL (onSnapshot)
+            ecouterCoursEnTempsReel();
+        } else {
+            console.log("Aucun élève connecté. Redirection...");
+            window.location.href = "../../assets/login/auth.html"; 
+        }
+    });
+});
+
+// ==========================================
+// 2. CHARGEMENT DES DONNÉES EN TEMPS RÉEL (FIRESTORE)
+// ==========================================
+function ecouterCoursEnTempsReel() {
+    // Changement ici : on passe en onSnapshot pour que l'apparition soit instantanée sans rafraîchir
+    db.collection("cours").onSnapshot((querySnapshot) => {
+        courses = [];
+        querySnapshot.forEach((doc) => {
+            courses.push(doc.data());
+        });
+        
+        console.log(`${courses.length} cours synchronisés depuis Firestore.`);
+        
+        // Étape 2 : Écouter la progression de l'élève connecté
+        ecouterProgressionEleve();
+    }, (error) => {
+        console.error("Erreur lors de l'écoute des cours :", error);
+    });
 }
 
+function ecouterProgressionEleve() {
+    if (!currentUserUid) return;
+
+    db.collection("progression_eleves").doc(currentUserUid)
+    .onSnapshot((doc) => {
+        if (doc.exists && doc.data().completedCourses) {
+            completedCourses = doc.data().completedCourses;
+        } else {
+            completedCourses = []; 
+        }
+        
+        // Étape 3 : Mettre à jour l'affichage de l'interface utilisateur
+        updateCourseUI();
+    }, (error) => {
+        console.error("Erreur d'écoute de la progression :", error);
+    });
+}
+
+// ==========================================
+// 3. LOGIQUE D'AFFICHAGE & FILTRES
+// ==========================================
 function updateCourseUI() {
-  // 1. Mise à jour des badges et compteurs statistiques principaux
   if(document.getElementById('statCoursCount')) {
     document.getElementById('statCoursCount').textContent = `+${courses.length}`;
   }
   if(document.getElementById('countAllCours')) {
     document.getElementById('countAllCours').textContent = courses.length;
   }
-  
-  // 2. Filtrage des compteurs par thématique
   if(document.getElementById('countElectro')) {
     document.getElementById('countElectro').textContent = courses.filter(c => c.category === 'Électronique').length;
   }
@@ -63,15 +107,19 @@ function updateCourseUI() {
     document.getElementById('countTP').textContent = courses.filter(c => c.category === 'TP').length;
   }
   
-  // 3. Calcul et affichage de la barre de progression globale
   updateProgressBar();
 
-  // 4. Liaison des actions de recherche et de tri
   const searchInput = document.getElementById('searchCourseInput');
   const sortSelect = document.getElementById('sortCourseSelect');
 
-  if(searchInput) searchInput.addEventListener('input', filterCourses);
-  if(sortSelect) sortSelect.addEventListener('change', filterCourses);
+  if(searchInput && !searchInput.dataset.listener) {
+    searchInput.addEventListener('input', filterCourses);
+    searchInput.dataset.listener = "true";
+  }
+  if(sortSelect && !sortSelect.dataset.listener) {
+    sortSelect.addEventListener('change', filterCourses);
+    sortSelect.dataset.listener = "true";
+  }
 
   filterCourses();
 }
@@ -113,22 +161,23 @@ function filterCourses() {
   const sort = sortSelect ? sortSelect.value : "recent";
 
   filteredCourses = courses.filter(c => {
-    const matchesSearch = c.title.toLowerCase().includes(search) || c.short.toLowerCase().includes(search);
-    const matchesCategory = currentCategory === 'all' || c.category === currentCategory;
-    const courseFormat = c.format || 'pdf';
+    // Ajout de replis sécurisés (|| "") au cas où certains vieux documents n'ont pas les champs
+    const titleText = c.title || c.titre || "";
+    const shortText = c.short || c.description || "";
+    
+    const matchesSearch = titleText.toLowerCase().includes(search) || shortText.toLowerCase().includes(search);
+    const matchesCategory = currentCategory === 'all' || (c.category || "Électronique") === currentCategory;
+    const courseFormat = c.format || (c.videoUrl ? 'video' : 'pdf');
     const matchesFormat = currentFormat === 'all' || courseFormat === currentFormat;
+    
     return matchesSearch && matchesCategory && matchesFormat;
   });
 
   if (sort === 'diff') {
     const diffOrder = { 'Débutant': 1, 'Intermédiaire': 2, 'Avancé': 3 };
-    filteredCourses.sort((a, b) => {
-      const orderA = diffOrder[a.level] || 99;
-      const orderB = diffOrder[b.level] || 99;
-      return orderA - orderB;
-    });
+    filteredCourses.sort((a, b) => (diffOrder[a.level || a.niveau] || 99) - (diffOrder[b.level || b.niveau] || 99));
   } else if (sort === 'recent') {
-    filteredCourses.sort((a, b) => b.id - a.id);
+    filteredCourses.sort((a, b) => (b.id || 0) - (a.id || 0));
   }
 
   const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
@@ -152,21 +201,26 @@ function renderCoursePage() {
   }
   
   container.innerHTML = pageItems.map(c => {
-    const isVideo = (c.format === "video");
-    const isCompleted = completedCourses.includes(c.id);
+    const courseId = c.id || 0;
+    const isVideo = (c.format === "video" || !!c.videoUrl);
+    const isCompleted = completedCourses.includes(courseId);
+    const displayImg = c.img || c.imageURL || "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500";
+    const displayTitle = c.title || c.titre || "Cours sans titre";
+    const displayShort = c.short || c.description || "Aucune description fournie.";
+    const displayCategory = c.category || "Électronique";
+    const displayLevel = c.level || c.niveau || "Débutant";
+
     return `
-      <div class="comp-card" onclick="openCourseModal(${c.id})" style="cursor:pointer; position:relative; ${isCompleted ? 'border: 1px solid #22c55e;' : ''}">
-        <div class="card-img" style="position:relative; height:120px; background-image: url('${c.img}'); background-size: cover; background-position: center; border-bottom: 1px solid var(--border);">
-          <span style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.7); padding:3px 6px; border-radius:4px; font-size:10px;">${isVideo ? '🎥 VIDÉO' : '📄 PDF'}</span>
-          
+      <div class="comp-card" onclick="openCourseModal(${courseId})" style="cursor:pointer; position:relative; ${isCompleted ? 'border: 1px solid #22c55e;' : ''}">
+        <div class="card-img" style="position:relative; height:120px; background-image: url('${displayImg}'); background-size: cover; background-position: center; border-bottom: 1px solid var(--border);">
+          <span style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.7); padding:3px 6px; border-radius:4px; font-size:10px; color:white;">${isVideo ? '🎥 VIDÉO' : '📄 PDF'}</span>
           ${isCompleted ? '<span style="position:absolute; bottom:10px; left:10px; background:#22c55e; color:white; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:bold;">✅ VALIDÉ</span>' : ''}
-          
-          <span class="card-badge ${c.badge || 'passif'}" style="position:absolute; top:10px; right:10px;">${c.level}</span>
+          <span class="card-badge ${c.badge || 'passif'}" style="position:absolute; top:10px; right:10px;">${displayLevel}</span>
         </div>
         <div class="card-body" style="padding:15px;">
-          <div style="font-size:11px; color:var(--brand-blue); font-weight:bold; text-transform:uppercase; margin-bottom:4px;">${c.category}</div>
-          <h3 class="card-title" style="margin:0 0 8px 0; font-size:15px; color:#f8fafc; line-height:1.3;">${c.title}</h3>
-          <p class="card-desc" style="font-size:12px; color:#94a3b8; margin:0; line-height:1.4;">${c.short}</p>
+          <div style="font-size:11px; color:#3b82f6; font-weight:bold; text-transform:uppercase; margin-bottom:4px;">${displayCategory}</div>
+          <h3 class="card-title" style="margin:0 0 8px 0; font-size:15px; color:#f8fafc; line-height:1.3;">${displayTitle}</h3>
+          <p class="card-desc" style="font-size:12px; color:#94a3b8; margin:0; line-height:1.4;">${displayShort}</p>
         </div>
       </div>
     `;
@@ -206,6 +260,9 @@ function changeCoursePage(page) {
   if(tabsElem) tabsElem.scrollIntoView({ behavior: 'smooth' });
 }
 
+// ==========================================
+// 4. GESTION DE LA MODAL ET DU QUIZ
+// ==========================================
 function openCourseModal(id) {
   const c = courses.find(course => course.id === id);
   if (!c) return;
@@ -227,21 +284,26 @@ function openCourseModal(id) {
     document.body.appendChild(modalOverlay);
   }
 
-  const isVideo = (c.format === "video");
+  const isVideo = (c.format === "video" || !!c.videoUrl);
   const isCompleted = completedCourses.includes(c.id);
+  const mediaLien = c.pdf || c.videoUrl || c.mediaURL || "#";
+  const displayTitle = c.title || c.titre || "Cours sans titre";
+  const displayShort = c.short || c.description || "";
+  const displayCategory = c.category || "Électronique";
+  const displayLevel = c.level || c.niveau || "Débutant";
 
   document.getElementById('modalContent').innerHTML = `
     <div class="modal-header">
       <div class="modal-info">
-        <div class="modal-category">// DOMAINE : ${c.category.toUpperCase()} (${c.level.toUpperCase()})</div>
-        <h2 style="margin: 4px 0 0 0; font-size: 17px; color: #f8fafc; line-height:1.3;">${c.title}</h2>
+        <div class="modal-category">// DOMAINE : ${displayCategory.toUpperCase()} (${displayLevel.toUpperCase()})</div>
+        <h2 style="margin: 4px 0 0 0; font-size: 17px; color: #f8fafc; line-height:1.3;">${displayTitle}</h2>
       </div>
       <button class="modal-close" onclick="closeCourseModal()">✕</button>
     </div>
     <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
       
       <p style="color: #94a3b8; font-size: 13px; line-height: 1.4; margin: 0 0 16px 0;">
-        ${c.short}
+        ${displayShort}
       </p>
 
       <div id="mediaPlayerContainer" style="display: none; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #000; position: relative;">
@@ -254,7 +316,7 @@ function openCourseModal(id) {
         </button>
         
         ${!isVideo ? `
-        <a id="btn-telecharger-pdf" href="${c.pdf}" download style="flex: 1; padding: 10px; background-color: #0284c7; color: white; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <a id="btn-telecharger-pdf" href="${mediaLien}" download style="flex: 1; padding: 10px; background-color: #0284c7; color: white; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
           📥 Télécharger (PDF)
         </a>
         ` : '' }
@@ -307,11 +369,16 @@ function openCourseModal(id) {
     if (mediaContainer.style.display === "none") {
       mediaContainer.style.display = "block";
       if (isVideo) {
-        mediaPlaceholder.innerHTML = `<iframe src="${c.videoUrl}?autoplay=1&rel=0&showinfo=0" style="width: 100%; height: 210px; border: none; border-radus: 6px" allow="accelerometer; clipboard-write; encrypte-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+        // Support des URLs youtube embed directes ou classiques
+        let videoSrc = c.videoUrl || c.mediaURL;
+        if(videoSrc.includes("watch?v=")) {
+            videoSrc = videoSrc.replace("watch?v=", "embed/");
+        }
+        mediaPlaceholder.innerHTML = `<iframe src="${videoSrc}?autoplay=1&rel=0&showinfo=0" style="width: 100%; height: 210px; border: none; border-radius: 6px" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
         btnAction.innerHTML = "⏹️ Arrêter la vidéo";
         btnAction.style.backgroundColor = "#ef4444";
       } else {
-        mediaPlaceholder.innerHTML = `<iframe src="${c.pdf}" style="width: 100%; height: 450px; border: none;"></iframe>`;
+        mediaPlaceholder.innerHTML = `<iframe src="${mediaLien}" style="width: 100%; height: 450px; border: none;"></iframe>`;
         btnAction.innerHTML = "👁️ Masquer le lecteur";
         btnAction.style.backgroundColor = "#475569";
       }
@@ -324,45 +391,53 @@ function openCourseModal(id) {
   };
 }
 
-// Fonction de traitement du mini-quiz anti-triche
+// Enregistrement de la validation sur Firebase Firestore
 function submitCourseQuiz(courseId) {
   const c = courses.find(course => course.id === courseId);
-  if (!c || !c.questions) return;
+  if (!c || !c.questions || !currentUserUid) return;
 
   let correctCount = 0;
   
-  // Analyse des réponses données par l'élève
   for (let i = 0; i < c.questions.length; i++) {
     const selected = document.querySelector(`input[name="question_${i}"]:checked`);
-    if (selected) {
-      if (parseInt(selected.value) === c.questions[i].correct) {
-        correctCount++;
-      }
+    if (selected && parseInt(selected.value) === c.questions[i].correct) {
+      correctCount++;
     }
   }
 
-  // Règle de validation anticheat : au moins 2 bonnes réponses sur 3
-  if (correctCount >= 2) {
+  const scoreRequis = Math.ceil(c.questions.length * 0.66);
+
+  if (correctCount >= scoreRequis) {
     if (!completedCourses.includes(courseId)) {
-      completedCourses.push(courseId);
-      localStorage.setItem('neoLabCompletedCourses', JSON.stringify(completedCourses));
+      const nouvelleListe = [...completedCourses, courseId];
+      
+      db.collection("progression_eleves").doc(currentUserUid).set({
+          completedCourses: nouvelleListe
+      }, { merge: true })
+      .then(() => {
+          alert(`🎉 Félicitations ! Score : ${correctCount}/${c.questions.length}. Le cours est officiellement validé sur ton profil NeoLab-CI !`);
+          openCourseModal(courseId); 
+      })
+      .catch((err) => {
+          console.error("Erreur de sauvegarde de progression :", err);
+      });
+    } else {
+       openCourseModal(courseId);
     }
-    
-    // Alerte succès et rechargement des visuels
-    alert(`🎉 Félicitations ! Tu as obtenu ${correctCount}/${c.questions.length}. Le cours est validé et comptabilisé !`);
-    updateCourseUI();
-    openCourseModal(courseId); // Rafraîchit la vue de la boîte modale
   } else {
-    alert(`❌ Échec de validation (${correctCount}/${c.questions.length} bonne(s) réponse(s)). Relecture conseillée ! Tu dois obtenir au moins 2 bonnes réponses.`);
+    alert(`❌ Échec de validation (${correctCount}/${c.questions.length} correct). Révise encore un peu !`);
   }
 }
 
 function forceCompleteCourse(courseId) {
-  if (!completedCourses.includes(courseId)) {
-    completedCourses.push(courseId);
-    localStorage.setItem('neoLabCompletedCourses', JSON.stringify(completedCourses));
-    updateCourseUI();
-    openCourseModal(courseId);
+  if (!completedCourses.includes(courseId) && currentUserUid) {
+    const nouvelleListe = [...completedCourses, courseId];
+    db.collection("progression_eleves").doc(currentUserUid).set({
+        completedCourses: nouvelleListe
+    }, { merge: true })
+    .then(() => {
+        openCourseModal(courseId);
+    });
   }
 }
 
@@ -375,5 +450,3 @@ function closeCourseModal() {
   }
   document.body.style.overflow = '';
 }
-
-window.onload = loadCoursesFromHTML;

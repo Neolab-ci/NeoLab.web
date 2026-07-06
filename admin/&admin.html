@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="../com.css">
     <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -74,11 +74,11 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="prof-validation-table">
-                        </tbody>
+                    <tbody id="prof-validation-table"></tbody>
                 </table>
             </div>
         </section>
+
         <section id="settings" class="content-section">
             <div class="data-card">
                 <div class="card-header">
@@ -105,7 +105,7 @@
             </div>
         </section>
 
-         <section id="stock" class="content-section">
+        <section id="stock" class="content-section">
             <div class="data-card">
                 <div class="card-header">
                     <h2>Inventaire des composants Arduino</h2>
@@ -121,8 +121,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="stock-table-body">
-                        </tbody>
+                    <tbody id="stock-table-body"></tbody>
                 </table>
             </div>
         </section>
@@ -139,13 +138,37 @@
                             <th>Aperçu</th>
                             <th>Titre du cours</th>
                             <th>Niveau</th>
-                            <th>Auteur</th>
+                            <th>Catégorie</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="cours-table-body">
-                        </tbody>
+                    <tbody id="cours-table-body"></tbody>
                 </table>
+            </div>
+
+            <div class="data-card" style="margin-top: 30px; background: #070a1e; border: 1px solid #1f2937; padding: 25px; border-radius: 12px; color: white;">
+                <h2 style="color: #3b82f6; font-size: 1.3rem; margin-bottom: 20px; font-weight: bold;">🛠️ Assigner un Nouveau Projet / TP (Kanban)</h2>
+                <form id="form-ajouter-projet" onsubmit="publierProjet(event)">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px;">UID de l'élève destinataire *</label>
+                        <input type="text" id="project-student-uid" required placeholder="Coller l'UID Firebase de l'élève" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px;">Titre du projet / TP *</label>
+                            <input type="text" id="project-title" required placeholder="Ex: Barrière Automatique RFID" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px;">ID Unique du Projet *</label>
+                            <input type="text" id="project-id" required placeholder="Ex: tp_rfid_01" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px;">Date de démarrage *</label>
+                        <input type="date" id="project-start-date" required style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; margin-top: 10px;">Envoi du projet dans le Kanban de l'élève</button>
+                </form>
             </div>
         </section>
         
@@ -163,8 +186,7 @@
                             <th>Statut</th>
                         </tr>
                     </thead>
-                    <tbody id="users-table-body">
-                        </tbody>
+                    <tbody id="users-table-body"></tbody>
                 </table>
             </div>
 
@@ -181,13 +203,13 @@
                             <th>Statut</th>
                         </tr>
                     </thead>
-                    <tbody id="profs-actifs-table-body">
-                        </tbody>
+                    <tbody id="profs-actifs-table-body"></tbody>
                 </table>
             </div>
         </section>
-   
-         <div id="creationModal" class="modal-overlay" style="display: none;">
+    </div>
+
+    <div id="creationModal" class="modal-overlay" style="display: none;">
         <div class="modal-box">
             <h2>Créer un nouveau compte</h2>
             <form id="creationUserForm">
@@ -217,17 +239,14 @@
                     <label for="new-password">Mot de passe initial</label>
                     <input type="password" id="new-password" placeholder="••••••••" required>
                 </div>
-
                 <div class="form-group" id="group-niveau">
                     <label for="new-niveau">Niveau d'études / Filière</label>
                     <input type="text" id="new-niveau" placeholder="Ex: Licence 2 Électronique">
                 </div>
-
                 <div class="form-group" id="group-specialite" style="display: none;">
                     <label for="new-specialite">Spécialité</label>
                     <input type="text" id="new-specialite" placeholder="Ex: Robotique / Arduino">
                 </div>
-
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="fermerModalCreation()">Annuler</button>
                     <button type="submit" class="btn btn-success">Créer le compte</button>
@@ -235,7 +254,6 @@
             </form>
         </div>
     </div>
-
 
     <div id="composantModal" class="modal-overlay" style="display: none;">
         <div class="modal-box">
@@ -257,7 +275,6 @@
                     <label for="comp-image">Lien URL de l'image</label>
                     <input type="text" id="comp-image" placeholder="https://lien-image.com/arduino.jpg">
                 </div>
-
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="fermerModalComposant()">Annuler</button>
                     <button type="submit" class="btn btn-success">Ajouter au Stock</button>
@@ -265,12 +282,12 @@
             </form>
         </div>
     </div>
+
     <div id="modifComposantModal" class="modal-overlay" style="display: none;">
         <div class="modal-box">
             <h2>Modifier le composant</h2>
             <form id="modifComposantForm">
                 <input type="hidden" id="edit-comp-id">
-                
                 <div class="form-group">
                     <label for="edit-comp-nom">Nom du composant</label>
                     <input type="text" id="edit-comp-nom" required>
@@ -287,7 +304,6 @@
                     <label for="edit-comp-image">Lien URL de l'image</label>
                     <input type="text" id="edit-comp-image">
                 </div>
-
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="fermerModalModifComposant()">Annuler</button>
                     <button type="submit" class="btn btn-success">Enregistrer les changements</button>
@@ -296,82 +312,202 @@
         </div>
     </div>
 
-
     <div id="coursModal" class="modal-overlay" style="display: none;">
-        <div class="modal-box">
-            <h2>Publier un nouveau cours</h2>
-            <form id="creationCoursForm">
+        <div class="modal-box" style="max-height: 85vh; overflow-y: auto; width: 650px; background: #070a1e; color: white;">
+            <h2 style="color: #f97316; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px;">📚 Publier un Nouveau Cours Dynamique</h2>
+            <form id="creationCoursForm" onsubmit="publierCours(event)">
+                
                 <div class="form-group">
-                    <label for="cours-titre">Nom / Titre du cours</label>
-                    <input type="text" id="cours-titre" placeholder="Ex: Les Capteurs Ultrasons" required>
+                    <label for="cours-titre">Nom / Titre du cours *</label>
+                    <input type="text" id="cours-titre" placeholder="Ex: Les Diodes : Descriptions et Applications" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label for="cours-id">ID Unique (Nombre) *</label>
+                        <input type="number" id="cours-id" placeholder="Ex: 5" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+                    </div>
+                    <div class="form-group">
+                        <label for="cours-categorie">Catégorie *</label>
+                        <select id="cours-categorie" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
+                            <option value="Électronique">⚡ Électronique</option>
+                            <option value="Technologie">💻 Technologie</option>
+                            <option value="TP">🛠️ Travaux Pratiques</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cours-niveau">Niveau *</label>
+                        <select id="cours-niveau" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
+                            <option value="Débutant">Débutant</option>
+                            <option value="Intermédiaire">Intermédiaire</option>
+                            <option value="Avancé">Avancé</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label for="cours-format">Format du Support *</label>
+                        <select id="cours-format" required onchange="toggleFormatFields()" style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
+                            <option value="pdf">📄 Fichier PDF</option>
+                            <option value="video">🎥 Cours Vidéo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cours-badge">Style du Badge *</label>
+                        <select id="cours-badge" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
+                            <option value="passif">Passif (Gris/Bleu)</option>
+                            <option value="actif">Actif (Orange)</option>
+                            <option value="important">Important (Rouge)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label for="cours-image">Image d'illustration (URL/Chemin) *</label>
+                        <input type="text" id="cours-image" placeholder="images/cours_diodes.jpg" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+                    </div>
+                    <div class="form-group" id="container-field-media">
+                        <label for="cours-media">Chemin du fichier PDF *</label>
+                        <input type="text" id="cours-media" placeholder="cours/diodes.pdf" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cours-desc">Petite description courte *</label>
+                    <input type="text" id="cours-desc" placeholder="Étude fondamentale des diodes et de leurs applications..." required style="background: #0f172a; border: 1px solid #334155; color: white;">
+                </div>
+
+                <div style="border-top: 1px solid #1f2937; padding-top: 15px; margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="font-size: 14px; font-weight: bold; color: #e2e8f0;">🧠 Questions du Quiz de validation</h3>
+                        <button type="button" onclick="ajouterQuestionInterface()" style="padding: 5px 10px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">➕ Ajouter une question</button>
+                    </div>
+                    <div id="dynamic-quiz-questions-container">
+                        </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="fermerModalCours()">Annuler</button>
+                    <button type="submit" class="btn btn-success">🚀 Publier le cours</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- MODAL DE MODIFICATION D'UN COURS -->
+<div id="modifCoursModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box" style="max-height: 85vh; overflow-y: auto; width: 650px; background: #070a1e; color: white;">
+        <h2 style="color: #3b82f6; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px;">📝 Modifier le Cours</h2>
+        <form id="modifCoursForm" onsubmit="mettreAJourCours(event)">
+            <input type="hidden" id="edit-cours-doc-id">
+            
+            <div class="form-group">
+                <label for="edit-cours-titre">Nom / Titre du cours *</label>
+                <input type="text" id="edit-cours-titre" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                    <label for="edit-cours-id">ID Unique (Nombre) *</label>
+                    <input type="number" id="edit-cours-id" required style="background: #0f172a; border: 1px solid #334155; color: white;">
                 </div>
                 <div class="form-group">
-                    <label for="cours-niveau">Niveau</label>
-                    <select id="cours-niveau" required>
+                    <label for="edit-cours-categorie">Catégorie *</label>
+                    <select id="edit-cours-categorie" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
+                        <option value="Électronique">⚡ Électronique</option>
+                        <option value="Technologie">💻 Technologie</option>
+                        <option value="TP">🛠️ Travaux Pratiques</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-cours-niveau">Niveau *</label>
+                    <select id="edit-cours-niveau" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
                         <option value="Débutant">Débutant</option>
                         <option value="Intermédiaire">Intermédiaire</option>
                         <option value="Avancé">Avancé</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="cours-desc">Petite description</label>
-                    <input type="text" id="cours-desc" placeholder="Ex: Maîtriser le capteur HC-SR04..." required>
-                </div>
-                <div class="form-group">
-                    <label for="cours-media">Lien du fichier (PDF ou Vidéo)</label>
-                    <input type="text" id="cours-media" placeholder="https://lien-fichier.com/cours.pdf" required>
-                </div>
-                <div class="form-group">
-                    <label for="cours-image">Lien URL de la miniature (Image)</label>
-                    <input type="text" id="cours-image" placeholder="https://lien-image.com/miniature.jpg">
-                </div>
+            </div>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="fermerModalCours()">Annuler</button>
-                    <button type="submit" class="btn btn-success">Publier le cours</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                    <label for="edit-cours-format">Format du Support *</label>
+                    <select id="edit-cours-format" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
+                        <option value="pdf">📄 Fichier PDF</option>
+                        <option value="video">🎥 Cours Vidéo</option>
+                    </select>
                 </div>
-            </form>
-        </div>
+                <div class="form-group">
+                    <label for="edit-cours-badge">Style du Badge *</label>
+                    <select id="edit-cours-badge" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
+                        <option value="passif">Passif (Gris/Bleu)</option>
+                        <option value="actif">Actif (Orange)</option>
+                        <option value="important">Important (Rouge)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                    <label for="edit-cours-image">Image d'illustration (URL/Chemin) *</label>
+                    <input type="text" id="edit-cours-image" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+                </div>
+                <div class="form-group">
+                    <label for="edit-cours-media">Lien du fichier ou URL Vidéo *</label>
+                    <input type="text" id="edit-cours-media" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="edit-cours-desc">Petite description courte *</label>
+                <input type="text" id="edit-cours-desc" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+            </div>
+
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="fermerModalModifCours()">Annuler</button>
+                <button type="submit" class="btn btn-success">💾 Enregistrer les modifications</button>
+            </div>
+        </form>
     </div>
-
-  
+</div>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <script src="admin.js"></script>
     <script src="../adm.js"></script>
+
     <div class="floating-nav-container">
-    <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
-        <i data-lucide="menu"></i>MENU
-    </button>
-    
-    <div class="floating-nav-menu" id="floating-nav-menu">
-        <a href="../index.html" class="floating-nav-item" title="Tableau de bord">
-            <i data-lucide="layout-dashboard"></i>ACCEUIL
-            <span>Dashboard</span>
-        </a>
-        <a href="../pages/cours/cours.html" class="floating-nav-item" title="Mes Cours">
-            <i data-lucide="book-open"></i>COURS
-            <span>Cours</span>
-        </a>
-         <a href="../pages/composant/composants.html" class="floating-nav-item" title="Mes Composants">
-            <i data-lucide="folder-kanban"></i>COMPOSANTS
-            <span>Composants</span>
-        </a>
-        <a href="../pages/projet/projet.html" class="floating-nav-item" title="Mes Projets">
-            <i data-lucide="folder-kanban"></i>PROJET
-            <span>Projets</span>
-        </a>
-        <a href="../pages/parametres/parametres.html" class="floating-nav-item" title="Paramètres">
-            <i data-lucide="settings"></i>
-            <span>Paramètres</span>PARAMATRE
-        </a>
-        <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
-            <i data-lucide="log-out"></i>SORTIE
-            <span>Quitter</span>
+        <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
+            <i data-lucide="menu"></i>MENU
         </button>
+        <div class="floating-nav-menu" id="floating-nav-menu">
+            <a href="../index.html" class="floating-nav-item" title="Tableau de bord">
+                <i data-lucide="layout-dashboard"></i>ACCUEIL
+                <span>Dashboard</span>
+            </a>
+            <a href="../pages/cours/cours.html" class="floating-nav-item" title="Mes Cours">
+                <i data-lucide="book-open"></i>COURS
+                <span>Cours</span>
+            </a>
+            <a href="../pages/composant/composants.html" class="floating-nav-item" title="Mes Composants">
+                <i data-lucide="folder-kanban"></i>COMPOSANTS
+                <span>Composants</span>
+            </a>
+            <a href="../pages/projet/projet.html" class="floating-nav-item" title="Mes Projets">
+                <i data-lucide="folder-kanban"></i>PROJET
+                <span>Projets</span>
+            </a>
+            <a href="../pages/parametres/parametres.html" class="floating-nav-item" title="Paramètres">
+                <i data-lucide="settings"></i>PARAMÈTRE
+                <span>Paramètres</span>
+            </a>
+            <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
+                <i data-lucide="log-out"></i>SORTIE
+                <span>Quitter</span>
+            </button>
+        </div>
     </div>
-</div>
 </body>
 </html>

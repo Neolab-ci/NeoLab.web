@@ -2,23 +2,11 @@
 // 1. VÉRIFICATION DE LA SESSION SUR CETTE PAGE
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-    
-    // On écoute le changement d'état de connexion de Firebase
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-            // 🔓 L'ÉLÈVE EST CONNECTÉ
-            console.log("Session active pour l'élève :", user.uid);
-            
-            // --- METS ICI LES FONCTIONS À RETENIR UNIQUEMENT POUR L'ÉLÈVE ---
-            // Exemple : afficher son nom, charger ses notes, etc.
-            // initialiserEspaceEleve(user);
-
+            console.log("Session active pour l'admin :", user.uid);
         } else {
-            // 🔒 AUCUN ÉLÈVE CONNECTÉ
             console.log("Aucune session trouvée.");
-            
-            // Si cette page est PRIVÉE (réservée aux élèves), on le redirige :
-            // window.location.href = "connexion.html";
         }
     });
 });
@@ -36,12 +24,13 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
+let questionCounter = 0; // Compteur pour le quiz dynamique
 
 // ==========================================
 // CHARGEMENT EN TEMPS RÉEL (READ)
 // ==========================================
 
-// MODIFICATION : Charger aussi les paramètres depuis la collection statistiques
+// Charger statistiques globales
 db.collection('statistiques').doc('globale').onSnapshot((doc) => {
     if (doc.exists) {
         const data = doc.data();
@@ -49,14 +38,11 @@ db.collection('statistiques').doc('globale').onSnapshot((doc) => {
         document.getElementById('stat-eleves').innerText = data.totalEleves || 0;
         document.getElementById('stat-composants').innerText = data.totalComposants || 0;
         document.getElementById('stat-professeurs').innerText = data.totalProfs || 0;
-        
-        // Nouvelle ligne pour le sélecteur des paramètres :
         if(data.modeInscription) {
             document.getElementById('setting-signup-mode').value = data.modeInscription;
         }
     }
 });
-
 
 // Demandes Profs
 db.collection('profs_en_attente').onSnapshot((snapshot) => {
@@ -80,7 +66,7 @@ db.collection('profs_en_attente').onSnapshot((snapshot) => {
     });
 });
 
-// Composants (avec affichage d'image)
+// Composants
 db.collection('composants').onSnapshot((snapshot) => {
     const tableBody = document.getElementById('stock-table-body');
     tableBody.innerHTML = "";
@@ -112,11 +98,11 @@ db.collection('eleves').onSnapshot((snapshot) => {
             </tr>`;
     });
 });
-// NOUVEAU : Chargement en temps réel des Professeurs Actifs
+
+// Professeurs Actifs
 db.collection('professeurs').onSnapshot((snapshot) => {
     const tableBody = document.getElementById('profs-actifs-table-body');
     tableBody.innerHTML = "";
-    
     snapshot.forEach((doc) => {
         const prof = doc.data();
         tableBody.innerHTML += `
@@ -128,20 +114,40 @@ db.collection('professeurs').onSnapshot((snapshot) => {
             </tr>`;
     });
 });
-// Cours (avec Miniature Image)
+
+// CORRECTION ANOMALIE 2 : Lecture des cours avec passage des paramètres au bouton Modifier
 db.collection('cours').onSnapshot((snapshot) => {
     const tableBody = document.getElementById('cours-table-body');
     tableBody.innerHTML = "";
     snapshot.forEach((doc) => {
         const cours = doc.data();
-        const imgTag = cours.imageURL ? `<img src="${cours.imageURL}" class="table-img" alt="miniature">` : `<div class="table-img"></div>`;
+        const docId = doc.id; 
+        const titreCours = cours.title || cours.titre || "Sans titre";
+        const imageCours = cours.img || cours.imageURL || "";
+        const niveauCours = cours.level || cours.niveau || "Non défini";
+        const mediaLien = cours.pdf || cours.videoUrl || cours.mediaURL || "#";
+        const formatCours = cours.format || (cours.videoUrl ? "video" : "pdf");
+        const badgeCours = cours.badge || "passif";
+        const categoryCours = cours.category || "Électronique";
+        const descCours = cours.short || cours.description || "";
+
+        const imgTag = imageCours ? `<img src="${imageCours}" class="table-img" alt="miniature">` : `<div class="table-img"></div>`;
+        
+        // Sécurisation des guillemets pour éviter de casser l'attribut HTML onclick
+        const escapedTitle = titreCours.replace(/'/g, "\\'");
+        const escapedDesc = descCours.replace(/'/g, "\\'");
+
         tableBody.innerHTML += `
             <tr>
                 <td>${imgTag}</td>
-                <td><a href="${cours.mediaURL}" target="_blank" style="color:var(--accent-color);font-weight:bold;text-decoration:none;">${cours.titre}</a></td>
-                <td>${cours.niveau}</td>
-                <td>${cours.auteurEmail}</td>
-                <td><button class="btn btn-secondary">Modifier</button></td>
+                <td><a href="${mediaLien}" target="_blank" style="color:var(--accent-color);font-weight:bold;text-decoration:none;">${titreCours}</a></td>
+                <td>${niveauCours}</td>
+                <td>${categoryCours}</td>
+                <td>
+                    <button class="btn btn-secondary" onclick="ouvrirModalModifCours('${docId}', '${escapedTitle}', ${cours.id || 0}, '${categoryCours}', '${niveauCours}', '${formatCours}', '${badgeCours}', '${imageCours}', '${mediaLien}', '${escapedDesc}')">
+                        Modifier
+                    </button>
+                </td>
             </tr>`;
     });
 });
@@ -157,15 +163,39 @@ function switchTab(event, sectionId) {
     document.getElementById(sectionId).classList.add('active');
 }
 
-function ouvrirModalCreation() { document.getElementById('creationModal').style.display = 'flex'; }
+function abrirModalCreation() { document.getElementById('creationModal').style.display = 'flex'; }
 function fermerModalCreation() { document.getElementById('creationModal').style.display = 'none'; document.getElementById('creationUserForm').reset(); toggleChampsRole(); }
 
-function abrirModalComposant() { document.getElementById('composantModal').style.display = 'flex'; } // Ancien alias au cas où
 function ouvrirModalComposant() { document.getElementById('composantModal').style.display = 'flex'; }
 function fermerModalComposant() { document.getElementById('composantModal').style.display = 'none'; document.getElementById('creationComposantForm').reset(); }
 
 function ouvrirModalCours() { document.getElementById('coursModal').style.display = 'flex'; }
-function fermerModalCours() { document.getElementById('coursModal').style.display = 'none'; document.getElementById('creationCoursForm').reset(); }
+function fermerModalCours() { 
+    document.getElementById('coursModal').style.display = 'none'; 
+    document.getElementById('creationCoursForm').reset(); 
+    document.getElementById('dynamic-quiz-questions-container').innerHTML = "";
+}
+
+// Fonctions de contrôle pour la modification des cours (Anomalie 2)
+function ouvrirModalModifCours(docId, title, idNum, category, level, format, badge, img, media, desc) {
+    document.getElementById('edit-cours-doc-id').value = docId;
+    document.getElementById('edit-cours-titre').value = title;
+    document.getElementById('edit-cours-id').value = idNum;
+    document.getElementById('edit-cours-categorie').value = category;
+    document.getElementById('edit-cours-niveau').value = level;
+    document.getElementById('edit-cours-format').value = format;
+    document.getElementById('edit-cours-badge').value = badge;
+    document.getElementById('edit-cours-image').value = img;
+    document.getElementById('edit-cours-media').value = media;
+    document.getElementById('edit-cours-desc').value = desc;
+
+    document.getElementById('modifCoursModal').style.display = 'flex';
+}
+
+function fermerModalModifCours() {
+    document.getElementById('modifCoursModal').style.display = 'none';
+    document.getElementById('modifCoursForm').reset();
+}
 
 function toggleChampsRole() {
     const role = document.getElementById('new-role').value;
@@ -174,17 +204,86 @@ function toggleChampsRole() {
 }
 
 // ==========================================
-// TRAITEMENT DES FORMULAIRES (SOUUMISSIONS INTERFACES)
+// GESTION DU QUIZ DYNAMIQUE DANS LA MODAL
+// ==========================================
+function toggleFormatFields() {
+    const format = document.getElementById('cours-format').value;
+    const container = document.getElementById('container-field-media');
+    
+    if (format === 'video') {
+        container.innerHTML = `
+            <label for="cours-media">Lien Embed de la Vidéo (YouTube) *</label>
+            <input type="text" id="cours-media" placeholder="https://www.youtube.com/embed/..." required style="background: #0f172a; border: 1px solid #334155; color: white;">
+        `;
+    } else {
+        container.innerHTML = `
+            <label for="cours-media">Chemin du fichier PDF *</label>
+            <input type="text" id="cours-media" placeholder="cours/diodes.pdf" required style="background: #0f172a; border: 1px solid #334155; color: white;">
+        `;
+    }
+}
+
+function ajouterQuestionInterface() {
+    const container = document.getElementById('dynamic-quiz-questions-container');
+    const questionId = questionCounter++;
+
+    const questionBlock = document.createElement('div');
+    questionBlock.id = `question-block-${questionId}`;
+    questionBlock.className = "question-entry-block";
+    questionBlock.style = "background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 6px; margin-bottom: 12px; position: relative; color: white;";
+    
+    questionBlock.innerHTML = `
+        <button type="button" onclick="supprimerQuestionInterface(${questionId})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 11px;">✕ Supprimer</button>
+        
+        <div style="margin-bottom: 8px; padding-right: 70px;">
+            <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 2px;">Intitulé de la question</label>
+            <input type="text" class="quiz-q-text" required placeholder="Ex: Rôle d'une diode ?" style="width: 100%; padding: 6px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 12px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <div>
+                <label style="display: block; font-size: 10px; color: #64748b; margin-bottom: 2px;">Option 0</label>
+                <input type="text" class="quiz-opt-0" required style="width: 100%; padding: 5px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 11px;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 10px; color: #64748b; margin-bottom: 2px;">Option 1</label>
+                <input type="text" class="quiz-opt-1" required style="width: 100%; padding: 5px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 11px;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 10px; color: #64748b; margin-bottom: 2px;">Option 2</label>
+                <input type="text" class="quiz-opt-2" required style="width: 100%; padding: 5px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 11px;">
+            </div>
+        </div>
+
+        <div>
+            <label style="font-size: 11px; color: #94a3b8; margin-right: 10px;">Réponse exacte :</label>
+            <select class="quiz-correct-index" style="padding: 3px 6px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 11px;">
+                <option value="0">Option 0</option>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+            </select>
+        </div>
+    `;
+    container.appendChild(questionBlock);
+}
+
+function supprimerQuestionInterface(id) {
+    const el = document.getElementById(`question-block-${id}`);
+    if (el) el.remove();
+}
+
+// ==========================================
+// TRAITEMENT DES FORMULAIRES (SOUMISSIONS)
 // ==========================================
 
-// 1. Ajouter Utilisateur (avec Sexe & Mot de Passe)
+// 1. Ajouter Utilisateur (Élève / Prof)
 document.getElementById('creationUserForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const role = document.getElementById('new-role').value;
     const nom = document.getElementById('new-nom').value;
     const sexe = document.getElementById('new-sexe').value;
     const email = document.getElementById('new-email').value;
-    const password = document.getElementById('new-password').value; // Prêt pour l'Auth plus tard
+    const password = document.getElementById('new-password').value;
     const dateActuelle = new Date().toLocaleDateString('fr-FR');
 
     if (role === 'eleve') {
@@ -200,7 +299,7 @@ document.getElementById('creationUserForm').addEventListener('submit', function(
     }
 });
 
-// 2. Ajouter Composant (Formulaire propre avec Image)
+// 2. Ajouter Composant Stock
 document.getElementById('creationComposantForm').addEventListener('submit', function(e) {
     e.preventDefault();
     db.collection('composants').add({
@@ -214,24 +313,130 @@ document.getElementById('creationComposantForm').addEventListener('submit', func
     });
 });
 
-// 3. Ajouter un Cours (Formulaire complet)
-document.getElementById('creationCoursForm').addEventListener('submit', function(e) {
+// CORRECTION ANOMALIE 1 : Ajout de cours via .add() pour ID auto-généré sans écrasement
+function publierCours(e) {
     e.preventDefault();
-    db.collection('cours').add({
-        titre: document.getElementById('cours-titre').value,
-        niveau: document.getElementById('cours-niveau').value,
-        description: document.getElementById('cours-desc').value,
-        mediaURL: document.getElementById('cours-media').value,
-        imageURL: document.getElementById('cours-image').value || "",
-        auteurEmail: "Admin NeoLab", // Défini par défaut pour l'admin
-        datePublication: new Date().toLocaleDateString('fr-FR')
-    }).then(() => {
-        alert("Le cours a été publié avec succès !");
-        fermerModalCours();
-    });
-});
 
-// Fonctions d'approbations existantes...
+    const courseId = parseInt(document.getElementById('cours-id').value);
+    const format = document.getElementById('cours-format').value;
+    const mediaUrl = document.getElementById('cours-media').value;
+
+    const questionsPayload = [];
+    const blocks = document.querySelectorAll('.question-entry-block');
+    
+    blocks.forEach(b => {
+        questionsPayload.push({
+            q: b.querySelector('.quiz-q-text').value,
+            options: [
+                b.querySelector('.quiz-opt-0').value,
+                b.querySelector('.quiz-opt-1').value,
+                b.querySelector('.quiz-opt-2').value
+            ],
+            correct: parseInt(b.querySelector('.quiz-correct-index').value)
+        });
+    });
+
+    const nouveauCours = {
+        id: courseId, 
+        title: document.getElementById('cours-titre').value,
+        category: document.getElementById('cours-categorie').value,
+        level: document.getElementById('cours-niveau').value,
+        badge: document.getElementById('cours-badge').value,
+        format: format,
+        img: document.getElementById('cours-image').value,
+        short: document.getElementById('cours-desc').value,
+        questions: questionsPayload,
+        auteurEmail: "Admin NeoLab",
+        datePublication: new Date().toLocaleDateString('fr-FR')
+    };
+
+    if (format === 'video') {
+        nouveauCours.videoUrl = mediaUrl;
+    } else {
+        nouveauCours.pdf = mediaUrl;
+    }
+
+    db.collection("cours").add(nouveauCours)
+    .then(() => {
+        alert("🎉 Le cours et son quiz ont été publiés sur NeoLab-CI (ID Unique Firebase) !");
+        fermerModalCours();
+    })
+    .catch(error => {
+        console.error("Erreur d'écriture du cours :", error);
+        alert("❌ Erreur de publication.");
+    });
+}
+
+// CORRECTION ANOMALIE 2 : Application des modifications du cours sur Firebase
+function mettreAJourCours(e) {
+    e.preventDefault();
+    
+    const docId = document.getElementById('edit-cours-doc-id').value;
+    const format = document.getElementById('edit-cours-format').value;
+    const mediaUrl = document.getElementById('edit-cours-media').value;
+
+    const coursMisAJour = {
+        id: parseInt(document.getElementById('edit-cours-id').value, 10),
+        title: document.getElementById('edit-cours-titre').value,
+        category: document.getElementById('edit-cours-categorie').value,
+        level: document.getElementById('edit-cours-niveau').value,
+        badge: document.getElementById('edit-cours-badge').value,
+        format: format,
+        img: document.getElementById('edit-cours-image').value,
+        short: document.getElementById('edit-cours-desc').value
+    };
+
+    if (format === 'video') {
+        coursMisAJour.videoUrl = mediaUrl;
+        coursMisAJour.pdf = firebase.firestore.FieldValue.delete(); 
+    } else {
+        coursMisAJour.pdf = mediaUrl;
+        coursMisAJour.videoUrl = firebase.firestore.FieldValue.delete(); 
+    }
+
+    db.collection('cours').doc(docId).update(coursMisAJour)
+    .then(() => {
+        alert("✨ Le cours a été mis à jour avec succès !");
+        fermerModalModifCours();
+    })
+    .catch(error => {
+        console.error("Erreur lors de la modification du cours :", error);
+        alert("❌ Impossible de modifier le cours.");
+    });
+}
+
+// 4. Envoi du projet de TP assigné à l'élève (Kanban)
+function publierProjet(e) {
+    e.preventDefault();
+
+    const studentUid = document.getElementById('project-student-uid').value.trim();
+    const projectId = document.getElementById('project-id').value.trim();
+    const title = document.getElementById('project-title').value;
+    const startDate = document.getElementById('project-start-date').value;
+
+    const nouveauSuiviProjet = {
+        projectId: projectId,
+        titreProjet: title,
+        studentUid: studentUid,
+        statut: "en_cours", 
+        dateDemarrage: startDate,
+        dateRendu: "",
+        livrableLien: "",
+        noteEtudiant: ""
+    };
+
+    db.collection("projets_eleves").doc(`${studentUid}_${projectId}`).set(nouveauSuiviProjet)
+    .then(() => {
+        alert("🎯 Projet assigné avec succès ! Envoyé dans le Kanban de l'élève.");
+        document.getElementById('form-ajouter-projet').reset();
+    })
+    .catch(error => {
+        console.error("Erreur d'assignation du projet :", error);
+        alert("❌ Impossible d'assigner le projet.");
+    });
+}
+
+// Validation Profs et modifications existantes
 function approveProf(docId, name, email, specialite) {
     db.collection('professeurs').add({ nom: name, email: email, specialite: specialite, dateApprobation: new Date().toLocaleDateString('fr-FR'), statut: 'actif' })
     .then(() => { return db.collection('profs_en_attente').doc(docId).delete(); })
@@ -239,30 +444,19 @@ function approveProf(docId, name, email, specialite) {
 }
 function rejectProf(docId, name) { if (confirm(`Supprimer la demande de ${name} ?`)) { db.collection('profs_en_attente').doc(docId).delete(); } }
 
-// RECODAGE : Enregistrement réel des paramètres dans Firebase
 function saveSettings() {
     const modeSelectionne = document.getElementById('setting-signup-mode').value;
-
-    db.collection('statistiques').doc('globale').update({
-        modeInscription: modeSelectionne
-    })
-    .then(() => {
-        alert("Configuration système mise à jour avec succès dans Firebase !");
-    })
-    .catch((error) => {
-        console.error("Erreur mise à jour paramètres: ", error);
-        alert("Une erreur est survenue lors de la sauvegarde.");
-    });
+    db.collection('statistiques').doc('globale').update({ modeInscription: modeSelectionne })
+    .then(() => { alert("Configuration système mise à jour dans Firebase !"); })
+    .catch(() => { alert("Une erreur est survenue."); });
 }
 
-// Fonctions pour ouvrir/fermer le formulaire de modification
 function ouvrirModalModifComposant(id, nom, role, quantite, imageURL) {
     document.getElementById('edit-comp-id').value = id;
     document.getElementById('edit-comp-nom').value = nom;
     document.getElementById('edit-comp-role').value = role;
     document.getElementById('edit-comp-quantite').value = quantite;
     document.getElementById('edit-comp-image').value = imageURL;
-    
     document.getElementById('modifComposantModal').style.display = 'flex';
 }
 
@@ -271,23 +465,14 @@ function fermerModalModifComposant() {
     document.getElementById('modifComposantForm').reset();
 }
 
-
-// Traitement de la modification dans Firebase
 document.getElementById('modifComposantForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
     const id = document.getElementById('edit-comp-id').value;
-    
     db.collection('composants').doc(id).update({
         nom: document.getElementById('edit-comp-nom').value,
         role: document.getElementById('edit-comp-role').value,
         quantite: parseInt(document.getElementById('edit-comp-quantite').value, 10),
         imageURL: document.getElementById('edit-comp-image').value
     })
-    .then(() => {
-        alert("Composant mis à jour avec succès !");
-        fermerModalModifComposant();
-    })
-    .catch(error => console.error("Erreur lors de la modification :", error));
+    .then(() => { alert("Composant mis à jour !"); fermerModalModifComposant(); });
 });
-
