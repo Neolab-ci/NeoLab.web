@@ -1,149 +1,396 @@
+/* ==========================================================================
+   NEOLAB CI - BASE STYLES & VARIABLES
+   ========================================================================== */
 :root {
-    --bg-main: #020617;
-    --bg-surface: #0b1329;
-    --bg-card: rgba(15, 23, 42, 0.6);
-    --border-color: rgba(56, 189, 248, 0.15);
-    --border-glow: rgba(0, 210, 255, 0.3);
-    
-    --primary: #0066ff;
-    --primary-glow: rgba(0, 102, 255, 0.5);
-    --accent: #00d2ff;
-    --accent-sky: #38bdf8;
-    
-    --text-main: #ffffff;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --primary: #3b82f6;
+    --primary-glow: rgba(59, 130, 246, 0.1);
+    --accent: #f97316;
+}
+
+/* --- THEME SOMBRE --- */
+.dark-theme {
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    
-    --font-family: 'Inter', sans-serif;
-    --transition-fast: 0.2s ease;
-    --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --border-color: #334155;
+    --primary: #3b82f6;
+    --primary-glow: rgba(59, 130, 246, 0.2);
+    --accent: #f97316;
 }
 
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    display: flex;
     background-color: var(--bg-main);
     color: var(--text-main);
-    font-family: var(--font-family);
-    line-height: 1.6;
-    overflow-x: hidden;
+    display: flex;
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
 }
 
+/* ==========================================================================
+   SIDEBAR & SYSTEME DE NAVIGATION
+   ========================================================================== */
 .sidebar {
     width: 260px;
-    height: 100vh;
-    background: #041d49;
-    padding: 30px;
-    position: fixed;
-    color: white;
+    background-color: #0f172a;
+    color: #ffffff;
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
 }
 
 .sidebar h2 {
-    margin-bottom: 40px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+    color: #3b82f6;
+    text-align: center;
 }
 
 .sidebar ul {
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.sidebar li {
+.sidebar ul li {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 14px;
-    border-radius: 12px;
+    padding: 12px 15px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-bottom: 10px;
-    transition: var(--transition-fast);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #94a3b8;
+    transition: all 0.2s ease;
 }
 
-.sidebar li:hover, .sidebar li.active {
-    background: #1ef3fa;
-    color: #007AFF;
+.sidebar ul li ion-icon, 
+.sidebar ul li i {
+    font-size: 1.3rem;
+    width: 20px;
+    height: 20px;
 }
 
-.sidebar ion-icon {
-    font-size: 22px;
-    color: #fcfdfe;
-    transition: var(--transition-fast);
+.sidebar ul li:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
 }
 
-.sidebar li:hover ion-icon, .sidebar li.active ion-icon {
-    color: #007AFF;
+.sidebar ul li.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
+#btn-logout:hover {
+    background: #rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+/* ==========================================================================
+   ZONE DE CONTENU & EN-TÊTE
+   ========================================================================== */
 .content {
-    margin-left: 260px;
+    flex-grow: 1;
     padding: 30px;
-    width: 100%;
+    overflow-y: auto;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
+    gap: 20px;
 }
 
 header input {
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    width: 300px;
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
+    color: var(--text-main);
+    padding: 12px 20px;
+    border-radius: 30px;
+    width: 350px;
+    font-size: 0.9rem;
     outline: none;
+    transition: border 0.2s;
 }
 
-/* Gestion des sections */
-section {
+header input:focus {
+    border-color: var(--primary);
+}
+
+.user-profile-header span {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* ==========================================================================
+   SECTIONS & CARDS (GRILLES STANDARD)
+   ========================================================================== */
+.content section {
     display: none;
 }
-section.active-section {
+
+.content section.active-section {
     display: block;
-    animation: fade var(--transition-smooth);
+    animation: fadeIn 0.3s ease-in-out;
 }
 
-@keyframes fade {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
 }
 
 .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 20px;
+    margin-top: 20px;
 }
 
 .card {
-    background: rgba(2, 29, 104, 0.76);
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transition: var(--transition-fast);
+    background-color: var(--bg-card);
     border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent);
-    box-shadow: 0 5px 20px var(--border-glow);
+.card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 5px;
 }
 
-.switch input:checked + .slider { background-color: var(--accent) !important; }
-.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-.switch input:checked + .slider:before { transform: translateX(22px); }
+.card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
 
-.content section.active-section {
-    display: block !important;
+/* ==========================================================================
+   GRILLE ADAPTATIVE KANBAN (PROJETS & HUB DE REALISATIONS)
+   ========================================================================== */
+.projects-kanban-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.kanban-column {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.kanban-column h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* ==========================================================================
+   INTERRUPTEUR DE THÈME (TOGGLE SWITCH)
+   ========================================================================== */
+.switch input:checked + .slider {
+    background-color: var(--primary);
+}
+
+.switch input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+/* ==========================================================================
+   BOUTON BURGER & DESIGN MOBILE RESPONSIVE (CRUCIAL)
+   ========================================================================== */
+
+/* Masqué par défaut sur les ordinateurs */
+.mobile-burger-btn {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1.6rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Zone d'ombre masquant le fond sur smartphone */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+}
+
+/* --- RÈGLES DE RUPTURE MOBILE (ÉCRANS < 992px) --- */
+@media (max-width: 992px) {
+    .mobile-burger-btn {
+        display: flex; /* Le bouton s'affiche enfin sur mobile */
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px; /* Sort complètement de l'écran par défaut */
+        width: 260px;
+        height: 100vh;
+        z-index: 999;
+        transition: left 0.3s ease-in-out;
+        box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+    }
+
+    /* Activation de la sidebar en coulissement via Javascript */
+    .sidebar.open {
+        left: 0;
+    }
+
+    /* Affiche l'arrière plan flouté au moment où le menu s'ouvre */
+    .sidebar.open + .sidebar-overlay {
+        display: block;
+    }
+
+    .content {
+        margin-left: 0 !important;
+        padding: 20px 15px !important;
+        padding-top: 85px !important; /* Laisse de l'espace en haut pour le bouton burger */
+        width: 100%;
+    }
+
+    header {
+        flex-direction: column-reverse;
+        align-items: stretch !important;
+        gap: 15px;
+    }
+
+    header input {
+        width: 100% !important;
+    }
+
+    .user-profile-header {
+        justify-content: flex-end;
+    }
+}
+
+/* Écrans encore plus fins (Smartphones verticaux) */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+}
+
+/* Animation de transition */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   COMMUTATEUR DE VUE : GRILLE VS LISTE
+   ========================================================================== */
+.view-switcher button {
+    transition: all 0.2s ease;
+}
+.view-switcher button:not(.active-view):hover {
+    background: var(--primary-glow) !important;
+    color: var(--primary) !important;
+}
+
+/* --- COMPORTEMENT EN MODE LISTE --- */
+#student-courses-grid.list-mode {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#student-courses-grid.list-mode .card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    width: 100%;
+}
+
+#student-courses-grid.list-mode .card img {
+    width: 120px !important;
+    height: 90px !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0;
+}
+
+#student-courses-grid.list-mode .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#student-courses-grid.list-mode .card a {
+    width: auto !important;
+    padding: 10px 20px !important;
+    flex-shrink: 0;
+}
+
+/* Réajustement mobile pour le mode liste */
+@media (max-width: 600px) {
+    #student-courses-grid.list-mode .card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    #student-courses-grid.list-mode .card img {
+        width: 100% !important;
+        height: 130px !important;
+    }
 }

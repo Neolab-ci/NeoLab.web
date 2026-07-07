@@ -1,3 +1,4 @@
+
 // ==========================================
 // CONFIGURATION FIREBASE INITIALISATION
 // ==========================================
@@ -91,7 +92,7 @@ function ecouterProgressionEleve() {
 // 3. LOGIQUE D'AFFICHAGE & FILTRES
 // ==========================================
 function updateCourseUI() {
- // --- MISE À JOUR DES COMPTEURS DYNAMIQUES ---
+// --- MISE À JOUR DES COMPTEURS DYNAMIQUES ---
   if(document.getElementById('statCoursCount')) {
     document.getElementById('statCoursCount').textContent = `+${courses.length}`;
   }
@@ -116,7 +117,6 @@ function updateCourseUI() {
   if(document.getElementById('countTP')) {
     document.getElementById('countTP').textContent = courses.filter(c => c.category === 'TP').length;
   }
-  }
   
   updateProgressBar();
 
@@ -133,7 +133,7 @@ function updateCourseUI() {
   }
 
   filterCourses();
-
+}
 
 function updateProgressBar() {
   const total = courses.length;
