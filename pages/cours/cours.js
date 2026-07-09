@@ -248,10 +248,14 @@ function openCourseModal(id) {
     document.body.style.overflow = 'hidden';
 
     const btnAction = document.getElementById('btn-action-principal');
-    btnAction.onclick = function() {
+        btnAction.onclick = function() {
+        const mediaContainer = document.getElementById('mediaPlayerContainer');
+        const mediaPlaceholder = document.getElementById('mediaPlaceholder');
+
         if (isVideo) {
-            const mediaContainer = document.getElementById('mediaPlayerContainer');
-            const mediaPlaceholder = document.getElementById('mediaPlaceholder');
+            // ==========================================
+            // LOGIQUE DE LECTURE VIDÉO
+            // ==========================================
             if (mediaContainer.style.display === "none") {
                 mediaContainer.style.display = "block";
                 let embed = mediaLien.includes("watch?v=") ? mediaLien.replace("watch?v=", "embed/") : mediaLien;
@@ -265,16 +269,37 @@ function openCourseModal(id) {
                 btnAction.style.backgroundColor = "#f97316";
             }
         } else {
-            // OUVERTURE DU PDF ASSOCIE UNIQUE
-            if (mediaLien && mediaLien !== "#") {
-                window.open(mediaLien, '_blank');
-            } else {
+            // ==========================================
+            // LOGIQUE DE LECTURE PDF INTÉGRÉ
+            // ==========================================
+            if (!mediaLien || mediaLien === "#") {
                 alert("Aucun fichier PDF rattaché.");
+                return;
+            }
+
+            if (mediaContainer.style.display === "none") {
+                mediaContainer.style.display = "block";
+                
+                // Utilisation d'un conteneur <object> ultra-compatible avec repli en <embed> pour forcer l'affichage dans la modal
+                mediaPlaceholder.innerHTML = `
+                    <object data="${mediaLien}" type="application/pdf" style="width:100%; height:500px; border-radius:6px;">
+                        <embed src="${mediaLien}" type="application/pdf" style="width:100%; height:500px; border-radius:6px;" />
+                    </object>
+                `;
+                
+                btnAction.innerHTML = "👁️ Masquer le cours";
+                btnAction.style.backgroundColor = "#475569";
+            } else {
+                mediaContainer.style.display = "none";
+                mediaPlaceholder.innerHTML = "";
+                btnAction.innerHTML = "📖 Consulter le cours (PDF)";
+                btnAction.style.backgroundColor = "#f97316";
             }
         }
     };
-}
 
+  
+ }
 function submitCourseQuiz(courseId) {
     const c = courses.find(course => course.id === courseId);
     if (!c || !currentUserUid) return;
