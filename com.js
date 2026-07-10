@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
     const navContainer = document.querySelector('.floating-nav-container');
     const navTrigger = document.getElementById('floating-nav-trigger');
@@ -39,3 +40,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+

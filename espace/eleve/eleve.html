@@ -165,24 +165,24 @@
         </section>
 
        <section id="cours" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
-                <div>
-                    <h1>Mes cours consultés</h1>
-                    <p style="color: var(--text-muted); margin: 0;">Historique des leçons et TP d'électronique que vous avez ouverts.</p>
-                </div>
-                <!-- BOUTONS DE COMMUTATION D'AFFICHAGE -->
-                <div class="view-switcher" style="display: flex; background: var(--bg-card); border: 1px solid var(--border-color); padding: 4px; border-radius: 8px; gap: 5px;">
-                    <button id="btn-view-grid" class="active-view" title="Affichage en Grille" style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center;">
-                        <ion-icon name="apps-outline" style="font-size: 1.2rem;"></ion-icon>
-                    </button>
-                    <button id="btn-view-list" title="Affichage en Liste" style="background: transparent; color: var(--text-muted); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center;">
-                        <ion-icon name="list-outline" style="font-size: 1.2rem;"></ion-icon>
-                    </button>
-                </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
+            <div>
+                <h1>Mes cours consultés</h1>
+                <p style="color: var(--text-muted); margin: 0;">Historique des leçons et TP d'électronique que vous avez ouverts.</p>
             </div>
-            
-            <!-- La grille possède maintenant une classe initiale 'grid-mode' -->
-            <div class="cards grid-mode" id="student-courses-grid"></div>
+            <!-- BOUTONS DE COMMUTATION D'AFFICHAGE -->
+            <div class="view-switcher" style="display: flex; background: var(--bg-card); border: 1px solid var(--border-color); padding: 4px; border-radius: 8px; gap: 5px;">
+                <button id="btn-view-grid" class="active-view" title="Affichage en Grille" style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center;">
+                    <ion-icon name="apps-outline" style="font-size: 1.2rem;"></ion-icon>
+                </button>
+                <button id="btn-view-list" title="Affichage en Liste" style="background: transparent; color: var(--text-muted); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center;">
+                    <ion-icon name="list-outline" style="font-size: 1.2rem;"></ion-icon>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Zone d'injection dynamique gérée par le script -->
+        <div class="cards grid-mode" id="student-courses-grid"></div>
         </section>
 
         <section id="devoirs" style="display: none;">
@@ -334,6 +334,31 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="eleve.js"></script>
     <script src="../../com.js"></script>
+     <div class="floating-nav-container">
+    <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
+        <i data-lucide="menu"></i>
+    </button>
+    
+    <div class="floating-nav-menu" id="floating-nav-menu">
+        <a href="../../index.html" class="floating-nav-item" title="Tableau de bord">
+            <i data-lucide="layout-dashboard"></i>ACCEUIL
+            <span>Dashboard</span>
+        </a>
+        <a href="../../pages/cours/cours.html" class="floating-nav-item" title="Mes Cours">
+            <i data-lucide="book-open"></i>COURS
+            <span>Cours</span>
+        </a>
+        
+        <a href="../../pages/composant/composants.html" class="floating-nav-item" title="Mes Composants">
+            <i data-lucide="folder-kanban"></i>COMPOSANTS
+            <span>Composants</span>
+        </a>
+        <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
+            <i data-lucide="log-out"></i>SORTIE
+            <span>Ce déconnecter</span>
+        </button>
+    </div>
+</div>
 </body>
 </html>
 

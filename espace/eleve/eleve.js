@@ -16,6 +16,11 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+// Variables globales pour la gestion des cours
+let courses = [];
+let completedCourses = [];
+let studentViewMode = 'grid'; // Mode par défaut pour l'affichage des cours ('grid' ou 'list')
+
 // ==========================================
 // CYCLE DE VIE PRINCIPAL DE L'APPLICATION (DOM)
 // ==========================================
@@ -32,7 +37,10 @@ document.addEventListener("DOMContentLoaded", function() {
             // On lance la récupération globale des données
             chargerDonneesProfil(user.uid);
             chargerSuiviProjetsEleve(user.uid);
-            activerFluxTempsReel(user.uid); // Active le flux filtré des cours vus
+            chargerCoursEtProgressionEleve(user.uid); // Nouvelle synchro temps réel des cours
+            if (typeof activerFluxTempsReel === "function") {
+                activerFluxTempsReel(user.uid); 
+            }
         } else {
             console.warn("Aucune session active. Redirection vers auth.html...");
             window.location.href = "../../assets/login/auth.html";
@@ -42,31 +50,14 @@ document.addEventListener("DOMContentLoaded", function() {
     // --- GESTION COMMUTATEUR DE VUE (GRILLE / LISTE) ---
     const btnGrid = document.getElementById('btn-view-grid');
     const btnList = document.getElementById('btn-view-list');
-    const coursesGrid = document.getElementById('student-courses-grid');
 
-    if (btnGrid && btnList && coursesGrid) {
+    if (btnGrid && btnList) {
         btnGrid.addEventListener('click', function() {
-            coursesGrid.classList.remove('list-mode');
-            coursesGrid.classList.add('grid-mode');
-            btnGrid.classList.add('active-view');
-            btnGrid.style.background = "var(--primary)";
-            btnGrid.style.color = "white";
-            
-            btnList.classList.remove('active-view');
-            btnList.style.background = "transparent";
-            btnList.style.color = "var(--text-muted)";
+            changeStudentView('grid');
         });
 
         btnList.addEventListener('click', function() {
-            coursesGrid.classList.remove('grid-mode');
-            coursesGrid.classList.add('list-mode');
-            btnList.classList.add('active-view');
-            btnList.style.background = "var(--primary)";
-            btnList.style.color = "white";
-            
-            btnGrid.classList.remove('active-view');
-            btnGrid.style.background = "transparent";
-            btnGrid.style.color = "var(--text-muted)";
+            changeStudentView('list');
         });
     }
 
@@ -76,12 +67,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const sidebarOverlay = document.getElementById('sidebar-overlay');
 
     if (mobileBurger && appSidebar && sidebarOverlay) {
-        // Ouvrir / Fermer au clic sur le bouton 3 traits
         mobileBurger.addEventListener('click', function() {
             appSidebar.classList.toggle('open');
         });
 
-        // Fermer le menu si on clique sur la zone floutée à côté
         sidebarOverlay.addEventListener('click', function() {
             appSidebar.classList.remove('open');
         });
@@ -107,7 +96,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 targetSection.style.display = 'block';
             }
 
-            // Fermeture automatique de la sidebar sur mobile après un clic sur un lien
             if (appSidebar) {
                 appSidebar.classList.remove('open');
             }
@@ -208,11 +196,8 @@ function chargerDonneesProfil(uid) {
     .then((doc) => {
         if (doc.exists) {
             const data = doc.data();
-            
-            // Génération automatique d'un avatar robotique basé sur le nom
             const avatarURL = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(data.nom)}`;
 
-            // Injection Header
             const txtName = document.getElementById('user-display-name');
             const imgAvatar = document.getElementById('user-display-avatar');
             if (txtName) txtName.innerText = `${data.nom} 👋`;
@@ -221,10 +206,8 @@ function chargerDonneesProfil(uid) {
                 imgAvatar.style.display = "block";
             }
 
-            // Alimentation des champs des paramètres
             initialiserChampsParametres(data);
 
-            // Injection Onglet Profil
             if(document.getElementById('profile-card-avatar')) document.getElementById('profile-card-avatar').src = avatarURL;
             if(document.getElementById('profile-card-nom')) document.getElementById('profile-card-nom').innerText = data.nom;
             if(document.getElementById('profile-card-email')) document.getElementById('profile-card-email').innerText = data.email;
@@ -248,66 +231,7 @@ function initialiserChampsParametres(eleveData) {
     if (inputNom) inputNom.value = eleveData.nom || "";
     if (selectSexe) selectSexe.value = eleveData.sexe || "M";
 }
-
-// ==========================================
-// SYNC EN TEMPS RÉEL DES COURS CONSULTÉS
-// ==========================================
-function activerFluxTempsReel(studentUid) {
-    const gridCours = document.getElementById('student-courses-grid');
-    const dashCount = document.getElementById('dash-cours');
-    if (!gridCours) return;
-
-    // Écoute en temps réel de la fiche de l'élève pour choper son tableau d'historique
-    db.collection('eleves').doc(studentUid).onSnapshot((docEleve) => {
-        if (!docEleve.exists) return;
-
-        const eleveData = docEleve.data();
-        const coursVusIds = eleveData.coursVus || [];
-
-        if (dashCount) dashCount.innerText = coursVusIds.length;
-
-        if (coursVusIds.length === 0) {
-            gridCours.innerHTML = `<p style="color: var(--text-muted); padding: 10px; font-style: italic;">Vous n'avez consulté aucun cours pour le moment.</p>`;
-            return;
-        }
-
-        // Récupération uniquement des cours dont l'ID est référencé dans 'coursVusIds'
-        db.collection('cours')
-          .where(firebase.firestore.FieldPath.documentId(), 'in', coursVusIds)
-          .get()
-          .then((snapshot) => {
-              gridCours.innerHTML = "";
-              
-              snapshot.forEach((doc) => {
-                  const cours = doc.data();
-                  const defaultThumb = 'https://images.unsplash.com/photo-1608564697171-2f6118823993?q=80&w=500&auto=format&fit=crop';
-                  const imageSrc = cours.imageURL || defaultThumb;
-
-                  gridCours.innerHTML += `
-                      <div class="card">
-                          <img src="${imageSrc}" alt="${cours.titre}" style="width:100%; height:130px; object-fit:cover; border-radius:10px; border: 1px solid var(--border-color);">
-                          <div class="card-body">
-                              <span style="font-size: 0.75rem; background: var(--primary-glow); color: var(--accent); padding: 3px 8px; border-radius: 20px; font-weight: bold; width: fit-content; display: inline-block;">${cours.niveau || 'Tous'}</span>
-                              <h3 style="margin: 8px 0 5px 0; font-size: 1.1rem; color: var(--text-main);">${cours.titre}</h3>
-                              <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cours.description || 'Aucune description disponible.'}</p>
-                          </div>
-                          <a href="${cours.mediaURL}" target="_blank" style="display: inline-block; text-align:center; background: var(--primary); color: white; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.9rem;">
-                              Ouvrir
-                          </a>
-                      </div>`;
-              });
-          })
-          .catch((error) => {
-              console.error("Erreur lors de la récupération des cours consultés :", error);
-          });
-    });
-
-    const gridExercices = document.getElementById('student-exercises-grid');
-    if (gridExercices) {
-        gridExercices.innerHTML = `<p style="color: var(--text-muted); padding: 10px; font-style: italic;">Aucun exercice disponible pour le moment.</p>`;
-    }
-}
-
+ 
 // ==========================================
 // SYNC ET TRAITEMENT DES PROJETS (KANBAN HUB)
 // ==========================================
@@ -459,4 +383,136 @@ function mettreAJourCompteurs(encours, rendu, valide) {
     if (document.getElementById("dash-count-encours")) document.getElementById("dash-count-encours").innerText = encours;
     if (document.getElementById("dash-count-rendu")) document.getElementById("dash-count-rendu").innerText = rendu;
     if (document.getElementById("dash-count-valide")) document.getElementById("dash-count-valide").innerText = valide;
+}
+
+// ==========================================
+// COUPLAGE DU FLUX DE COURS ET VUES DÉDIÉES
+// ==========================================
+function chargerCoursEtProgressionEleve(studentUid) {
+    // 1. Écouter la table des cours en continu
+    db.collection("cours").onSnapshot((snapshotCours) => {
+        courses = [];
+        snapshotCours.forEach(doc => {
+            courses.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Mettre à jour le compteur global du dashboard
+        const dashCoursCompteur = document.getElementById('dash-cours');
+        if (dashCoursCompteur) dashCoursCompteur.innerText = courses.length;
+
+        // 2. Écouter simultanément l'état de validation de cet élève
+        db.collection("eleves").doc(studentUid).onSnapshot((docEleve) => {
+            if (docEleve.exists && docEleve.data().completedCourses) {
+                completedCourses = docEleve.data().completedCourses.map(id => String(id));
+            } else {
+                completedCourses = [];
+            }
+            // Rafraîchir le rendu de la section cours
+            afficherCoursValidesEleve();
+        });
+    });
+}
+
+function changeStudentView(mode) {
+    studentViewMode = mode;
+    const btnGrid = document.getElementById('btn-view-grid');
+    const btnList = document.getElementById('btn-view-list');
+    const coursesGrid = document.getElementById('student-courses-grid');
+
+    if (!coursesGrid) return;
+
+    if (mode === 'grid') {
+        coursesGrid.classList.remove('list-mode');
+        coursesGrid.classList.add('grid-mode');
+        if (btnGrid && btnList) {
+            btnGrid.classList.add('active-view');
+            btnGrid.style.background = "var(--primary)";
+            btnGrid.style.color = "white";
+            btnList.classList.remove('active-view');
+            btnList.style.background = "transparent";
+            btnList.style.color = "var(--text-muted)";
+        }
+    } else {
+        coursesGrid.classList.remove('grid-mode');
+        coursesGrid.classList.add('list-mode');
+        if (btnGrid && btnList) {
+            btnList.classList.add('active-view');
+            btnList.style.background = "var(--primary)";
+            btnList.style.color = "white";
+            btnGrid.classList.remove('active-view');
+            btnGrid.style.background = "transparent";
+            btnGrid.style.color = "var(--text-muted)";
+        }
+    }
+
+    afficherCoursValidesEleve();
+}
+
+function afficherCoursValidesEleve() {
+    const container = document.getElementById('student-courses-grid');
+    if (!container) return;
+
+    // Filtrer les cours de la base pour n'afficher que ceux présents dans completedCourses
+    const coursValides = courses.filter(c => completedCourses.includes(String(c.id)));
+
+    if (coursValides.length === 0) {
+        container.style.display = "block";
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-muted); width: 100%;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">🎓</div>
+                <p>Vous n'avez pas encore validé de modules.</p>
+                <p style="font-size: 12px;">Rendez-vous dans l'Espace Cours pour passer vos premiers quiz !</p>
+            </div>
+        `;
+        return;
+    }
+
+    if (studentViewMode === 'grid') {
+        container.style.display = "grid";
+        container.style.gridTemplateColumns = "repeat(auto-fill, minmax(240px, 1fr))";
+        container.style.gap = "20px";
+    } else {
+        container.style.display = "flex";
+        container.style.flexDirection = "column";
+        container.style.gap = "12px";
+        container.style.width = "100%";
+    }
+
+    container.innerHTML = coursValides.map(c => {
+        const isVideo = (c.format === "video" || !!c.videoUrl);
+        const displayImg = c.img || 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500';
+
+        if (studentViewMode === 'grid') {
+            return `
+              <div class="comp-card" style="position:relative; border: 1px solid #22c55e; border-radius: 8px; overflow: hidden; background: var(--bg-card); padding-bottom:10px;">
+                <div class="card-img" style="position:relative; height:120px; background-image: url('${displayImg}'); background-size: cover; background-position: center;">
+                  <span style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.7); padding:3px 6px; border-radius:4px; font-size:10px; color:white;">${isVideo ? '🎥 VIDÉO' : '📄 PDF'}</span>
+                  <span style="position:absolute; bottom:10px; left:10px; background:#22c55e; color:white; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:bold;">✅ VALIDÉ</span>
+                  <span class="card-badge" style="position:absolute; top:10px; right:10px; background: var(--bg-body); padding: 3px 6px; border-radius: 4px; font-size: 10px; color: white;">${c.level || 'Débutant'}</span>
+                </div>
+                <div class="card-body" style="padding:15px;">
+                  <div style="font-size:11px; color:#3b82f6; font-weight:bold; text-transform:uppercase; margin-bottom:4px;">${c.category || 'Électronique'}</div>
+                  <h3 style="margin:0 0 8px 0; font-size:14px; color:var(--text-main, #f8fafc);">${c.title}</h3>
+                  <p style="font-size:12px; color:var(--text-muted); margin:0; line-height:1.4;">${c.short || 'Module maîtrisé avec succès.'}</p>
+                </div>
+              </div>
+            `;
+        } else {
+            return `
+              <div class="comp-card-list" style="display:flex; align-items:center; background: var(--bg-card); border-radius:8px; padding:12px; gap:15px; border:1px solid var(--border-color); border-left: 4px solid #22c55e; width: 100%;">
+                <div style="width:70px; height:50px; background-image: url('${displayImg}'); background-size: cover; background-position: center; border-radius:6px; flex-shrink:0; position:relative;">
+                  <span style="position:absolute; bottom:2px; right:2px; background:rgba(0,0,0,0.8); padding:2px; border-radius:3px; font-size:8px; color:white;">${isVideo ? '🎥' : '📄'}</span>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+                    <span style="font-size:10px; color:#3b82f6; font-weight:bold; text-transform:uppercase;">${c.category || 'Électronique'}</span>
+                    <span style="font-size:9px; background: rgba(255,255,255,0.05); color: var(--text-muted); padding:1px 4px; border-radius:3px;">${c.level || 'Débutant'}</span>
+                    <span style="font-size:10px; color:#22c55e; font-weight:bold;">• Validé</span>
+                  </div>
+                  <h3 style="margin:0; font-size:14px; color:var(--text-main, #f8fafc); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.title}</h3>
+                </div>
+              </div>
+            `;
+        }
+    }).join('');
 }
