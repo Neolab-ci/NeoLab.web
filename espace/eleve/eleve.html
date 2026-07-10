@@ -208,6 +208,51 @@
 
         <section id="messages" style="display: none;">
             <h1>Messages & Notifications</h1>
+            <div class="messaging-container">
+    <!-- Liste des conversations -->
+    <aside class="conversations-sidebar">
+        <h3>Mes Messages</h3>
+        <ul class="chat-list">
+            <li class="active">
+                <div class="chat-avatar">🎓</div>
+                <div class="chat-info">
+                    <h4>M. Dupont (Électronique)</h4>
+                    <p>Votre schéma de circuit est...</p>
+                </div>
+            </li>
+            <li>
+                <div class="chat-avatar">🤖</div>
+                <div class="chat-info">
+                    <h4>Support (Info)</h4>
+                    <p>Le bug sur l'exercice 3 est résolu.</p>
+                </div>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Zone de discussion active -->
+    <main class="chat-window">
+        <div class="chat-header">
+            <h4>M. Dupont (Électronique)</h4>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message incoming">
+                <p>Bonjour ! Avez-vous terminé le Grafcet du chariot industriel ?</p>
+                <span class="time">14:02</span>
+            </div>
+            <div class="message outgoing">
+                <p>Oui, je finalise le code et je vous l'envoie.</p>
+                <span class="time">14:05</span>
+            </div>
+        </div>
+
+        <form class="chat-input-area" id="chatForm">
+            <input type="text" id="messageInput" placeholder="Écrivez votre message ici..." required>
+            <button type="submit">Envoyer</button>
+        </form>
+    </main>
+</div>
             <p style="color: var(--text-muted);">Discussions avec les professeurs et les autres étudiants.</p>
         </section>
 

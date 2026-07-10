@@ -516,3 +516,32 @@ function afficherCoursValidesEleve() {
         }
     }).join('');
 }
+
+
+document.getElementById('chatForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Empêche le rechargement de la page
+    
+    const input = document.getElementById('messageInput');
+    const messageText = input.value.trim();
+    
+    if (messageText !== '') {
+        const chatMessages = document.getElementById('chatMessages');
+        
+        // Création du bloc message
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', 'outgoing');
+        
+        // Heure actuelle
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        
+        messageDiv.innerHTML = `<p>${messageText}</p><span class="time">${timeStr}</span>`;
+        
+        // Ajout dans la zone de chat
+        chatMessages.appendChild(messageDiv);
+        
+        // Reset du champ de texte et scroll auto vers le bas
+        input.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+});
