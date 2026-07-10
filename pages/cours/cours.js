@@ -106,10 +106,12 @@ function updateProgressBar() {
 
 function filterCategory(category, elem) {
     currentCategory = category;
+    let currentViewMode = 'grid'; // Mode par défaut : 'grid' ou 'list'
     document.querySelectorAll('#levelTabs .cat-tab').forEach(t => t.classList.remove('active'));
     if(elem) elem.classList.add('active');
     currentPage = 1; 
     filterCourses();
+   
 }
 
 function filterFormat(format, elem) {
@@ -140,7 +142,30 @@ function filterCourses() {
 
     renderCoursePage();
 }
-
+function changeViewMode(mode) {
+    currentViewMode = mode;
+    
+    // Gestion de l'état actif des boutons visuels
+    const btnGrid = document.getElementById('btnViewGrid');
+    const btnList = document.getElementById('btnViewList');
+    
+    if (btnGrid && btnList) {
+        if (mode === 'grid') {
+            btnGrid.style.background = "#334155";
+            btnGrid.style.color = "white";
+            btnList.style.background = "#1e293b";
+            btnList.style.color = "#94a3b8";
+        } else {
+            btnList.style.background = "#334155";
+            btnList.style.color = "white";
+            btnGrid.style.background = "#1e293b";
+            btnGrid.style.color = "#94a3b8";
+        }
+    }
+    
+    // Relancer l'affichage avec le nouveau mode
+    renderCoursePage();
+}
 function renderCoursePage() {
     const container = document.getElementById('coursesGridView');
     if (!container) return;
@@ -150,24 +175,58 @@ function renderCoursePage() {
         return;
     }
     
+    // Application dynamique du style du conteneur selon le mode choisi
+    if (currentViewMode === 'grid') {
+        container.style.display = "grid";
+        container.style.gridTemplateColumns = "repeat(auto-fill, minmax(220px, 1fr))";
+        container.style.gap = "20px";
+    } else {
+        container.style.display = "flex";
+        container.style.flexDirection = "column";
+        container.style.gap = "12px";
+    }
+    
     container.innerHTML = filteredCourses.map(c => {
         const isVideo = (c.format === "video" || !!c.videoUrl);
         const isCompleted = completedCourses.includes(c.id);
+        const displayImg = c.img || 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500';
 
-        return `
-          <div class="comp-card" onclick="openCourseModal('${c.id}')" style="cursor:pointer; position:relative; ${isCompleted ? 'border: 1px solid #22c55e;' : ''}">
-            <div class="card-img" style="position:relative; height:120px; background-image: url('${c.img || 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500'}'); background-size: cover; background-position: center;">
-              <span style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.7); padding:3px 6px; border-radius:4px; font-size:10px; color:white;">${isVideo ? '🎥 VIDÉO' : '📄 PDF'}</span>
-              ${isCompleted ? '<span style="position:absolute; bottom:10px; left:10px; background:#22c55e; color:white; padding:3px 6px; border-radius:4px; font-size:10px;">✅ VALIDÉ</span>' : ''}
-              <span class="card-badge passif" style="position:absolute; top:10px; right:10px;">${c.level || 'Débutant'}</span>
-            </div>
-            <div class="card-body" style="padding:15px;">
-              <div style="font-size:11px; color:#3b82f6; font-weight:bold; text-transform:uppercase; margin-bottom:4px;">${c.category || 'Électronique'}</div>
-              <h3 style="margin:0 0 8px 0; font-size:15px; color:#f8fafc;">${c.title || 'Sans titre'}</h3>
-              <p style="font-size:12px; color:#94a3b8; margin:0; line-height:1.4;">${c.short || 'Pas de description'}</p>
-            </div>
-          </div>
-        `;
+        if (currentViewMode === 'grid') {
+            // --- MODE GRILLE (Ton design d'origine) ---
+            return `
+              <div class="comp-card" onclick="openCourseModal('${c.id}')" style="cursor:pointer; position:relative; ${isCompleted ? 'border: 1px solid #22c55e;' : ''}">
+                <div class="card-img" style="position:relative; height:120px; background-image: url('${displayImg}'); background-size: cover; background-position: center;">
+                  <span style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.7); padding:3px 6px; border-radius:4px; font-size:10px; color:white;">${isVideo ? '🎥 VIDÉO' : '📄 PDF'}</span>
+                  ${isCompleted ? '<span style="position:absolute; bottom:10px; left:10px; background:#22c55e; color:white; padding:3px 6px; border-radius:4px; font-size:10px;">✅ VALIDÉ</span>' : ''}
+                  <span class="card-badge passif" style="position:absolute; top:10px; right:10px;">${c.level || 'Débutant'}</span>
+                </div>
+                <div class="card-body" style="padding:15px;">
+                  <div style="font-size:11px; color:#3b82f6; font-weight:bold; text-transform:uppercase; margin-bottom:4px;">${c.category || 'Électronique'}</div>
+                  <h3 style="margin:0 0 8px 0; font-size:15px; color:#f8fafc;">${c.title || 'Sans titre'}</h3>
+                  <p style="font-size:12px; color:#94a3b8; margin:0; line-height:1.4;">${c.short || 'Pas de description'}</p>
+                </div>
+              </div>
+            `;
+        } else {
+            // --- MODE LISTE (Design horizontal compact) ---
+            return `
+              <div class="comp-card-list" onclick="openCourseModal('${c.id}')" style="cursor:pointer; display:flex; align-items:center; background:#1e293b; border-radius:8px; padding:10px; gap:15px; border:1px solid var(--border); ${isCompleted ? 'border-left: 4px solid #22c55e;' : ''}">
+                <div style="width:80px; height:60px; background-image: url('${displayImg}'); background-size: cover; background-position: center; border-radius:6px; flex-shrink:0; position:relative;">
+                  <span style="position:absolute; bottom:2px; right:2px; background:rgba(0,0,0,0.8); padding:2px 4px; border-radius:3px; font-size:8px; color:white;">${isVideo ? '🎥' : '📄'}</span>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+                    <span style="font-size:10px; color:#3b82f6; font-weight:bold; text-transform:uppercase;">${c.category || 'Électronique'}</span>
+                    <span style="font-size:9px; background:#334155; color:#cbd5e1; padding:1px 4px; border-radius:3px;">${c.level || 'Débutant'}</span>
+                    ${isCompleted ? '<span style="font-size:9px; color:#22c55e; font-weight:bold;">✅ Validé</span>' : ''}
+                  </div>
+                  <h3 style="margin:0 0 2px 0; font-size:14px; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.title || 'Sans titre'}</h3>
+                  <p style="font-size:11px; color:#94a3b8; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.short || 'Pas de description'}</p>
+                </div>
+                <div style="color:#64748b; padding-right:5px;">➔</div>
+              </div>
+            `;
+        }
     }).join('');
 }
 

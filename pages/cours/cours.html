@@ -83,10 +83,19 @@
         🎥 Cours Vidéo
       </button>
     </div>
-
+    <!-- Boutons de changement de vue (Grille / Liste) -->
+<div class="view-switcher" style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; padding: 0 10px;">
+    <button id="btnViewGrid" onclick="changeViewMode('grid')" style="padding: 6px 12px; background: #334155; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+        ⣿ Grille
+    </button>
+    <button id="btnViewList" onclick="changeViewMode('list')" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+        ☰ Liste
+    </button>
+</div>
     <main class="grid-view" id="coursesGridView"></main>
 
     <div class="pagination"></div>
+
 
   </div>
 
