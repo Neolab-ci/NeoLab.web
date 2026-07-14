@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="com.css">
 </head>
 <body>
 
@@ -31,7 +32,8 @@
             </nav>
 
             <div class="nav-actions">
-                    <a href="assets/login/auth.html" class="btn-connect">INSCRIPTION</a>
+                        <a href="pages/espace/enseignan.html" class="btn-connect">Espace enseignan</a>
+                        <a href="espace/eleve/eleve.html" class="btn-connect">Espace Élève</a>
                 <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">
                     <i class="fa-solid fa-bars"></i>
                 </button>
@@ -217,5 +219,35 @@
     </footer>
 
     <script src="script.js"></script>
+   <script src="com.js"></script>
+    <div class="floating-nav-container">
+    <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
+        <i data-lucide="menu"></i>
+    </button>
+    
+    <div class="floating-nav-menu" id="floating-nav-menu">
+       
+        <a href="pages/cours/cours.html" class="floating-nav-item" title="">
+            <i data-lucide="book-open"></i>COURS
+            <span>Cours</span>
+        </a>
+        <a href="pages/projet/projet.html" class="floating-nav-item" title="">
+            <i data-lucide="folder-kanban"></i>PROJET
+            <span>Projets</span>
+        </a>
+        <a href="pages/composant/composants.html" class="floating-nav-item" title="">
+            <i data-lucide="folder-kanban"></i>COMPOSANTS
+            <span>Composants</span>
+        </a>
+        <a href="../../espace/eleve/eleve.html" class="floating-nav-item" title="">
+            <i data-lucide="settings"></i>
+            <span>Mon espace</span>ESPACE
+        </a>
+        <button id="floating-btn-logout" class="floating-nav-item logout" title="">
+            <i data-lucide="log-out"></i>SORTIE
+            <span>Déconnexion</span>
+        </button>
+    </div>
+</div>
 </body>
 </html>
