@@ -21,6 +21,7 @@
             <a href="#" class="menu-link" onclick="switchTab(event, 'stock')">🛠️ Gestion du Stock</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'cours')">📚 Gestion des Cours</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'users')">👥 Utilisateurs</a>
+            <a href="#" class="menu-link" onclick="switchTab(event, 'messages_contact')">📨 Messages</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'settings')">⚙️ Paramètres</a>
             <a href="../acceuil.html" class="menu-link">@ Accueil</a>
         </nav>
@@ -125,7 +126,27 @@
                 </table>
             </div>
         </section>
+        <!-- SECTION GESTION DES MESSAGES CONTACT -->
+        <section id="messages_contact" class="content-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div>
+                    <h1 style="color: white; font-size: 1.8rem; font-weight: 700;">📨 Boîte de réception</h1>
+                    <p style="color: #8c9cb8; margin: 0;">Gérez les questions et les demandes de partenariat reçues depuis le site.</p>
+                </div>
+                <div style="background: rgba(29, 97, 230, 0.1); color: #1d61e6; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.9rem;">
+                    Total : <span id="total-messages">0</span>
+                </div>
+            </div>
 
+            <!-- Grille ou liste de messages -->
+            <div id="liste-messages-admin" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                <!-- Les messages reçus s'injecteront ici dynamiquement -->
+                <div style="text-align: center; padding: 40px; color: #8c9cb8;">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>Chargement des messages...</p>
+                </div>
+            </div>
+        </section>
         <section id="cours" class="content-section">
             <div class="data-card">
                 <div class="card-header">
@@ -486,7 +507,7 @@
 
     <div class="floating-nav-container">
         <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
-            <i data-lucide="menu"></i>MENU
+            <i data-lucide="menu"></i>
         </button>
         <div class="floating-nav-menu" id="floating-nav-menu">
             <a href="../acceuil.html" class="floating-nav-item" title="Tableau de bord">

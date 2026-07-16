@@ -760,3 +760,80 @@ a {
         display: none; /* À remplacer par un menu hamburger */
     }
 }
+/* --- AJOUTS AJUSTEMENTS MENU TOGGLE & FEEDBACK --- */
+
+/* Bouton hamburger masqué par défaut sur PC */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+.menu-toggle:hover {
+    color: var(--accent-neon);
+}
+
+/* Bandeau d'état pour les formulaires (Firebase) */
+.form-feedback {
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.form-feedback.success {
+    background-color: rgba(37, 211, 102, 0.15);
+    border: 1px solid var(--whatsapp-color);
+    color: #25d366;
+}
+
+.form-feedback.error {
+    background-color: rgba(255, 77, 77, 0.15);
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Style des boutons cartes pour pouvoir cliquer dessus */
+.request-card button.request-arrow {
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s;
+}
+
+/* MEDIA QUERIES APPLIQUÉES AU MENU MOBILE */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block; /* On affiche l'icône sur mobile */
+    }
+
+    .main-nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--bg-card);
+        border-bottom: 2px solid var(--border-color);
+        flex-direction: column;
+        padding: 20px;
+        gap: 15px;
+        display: none; /* Masqué par défaut */
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+
+    /* Classe injectée par JavaScript quand on clique */
+    .main-nav.mobile-open {
+        display: flex; 
+    }
+}
