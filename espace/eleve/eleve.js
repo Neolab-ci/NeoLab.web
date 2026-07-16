@@ -545,3 +545,37 @@ document.getElementById('chatForm').addEventListener('submit', function(e) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 });
+
+
+document.getElementById('chatForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const input = document.getElementById('messageInput');
+    const messageText = input.value.trim();
+    
+    if (messageText !== '') {
+        const chatMessages = document.getElementById('chatMessages');
+        
+        // Structure de la bulle calquée sur le style Neolab
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', 'outgoing');
+        
+        // Formatage de l'heure
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        
+        messageDiv.innerHTML = `<p>${messageText}</p><span class="time">${timeStr}</span>`;
+        
+        // Insertion dynamique
+        chatMessages.appendChild(messageDiv);
+        
+        // Reset du champ
+        input.value = '';
+        
+        // Scroll automatique fluide vers le bas
+        chatMessages.scrollTo({
+            top: chatMessages.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+});
