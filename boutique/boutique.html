@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique NeoLab - NeoLab-CI</title>
+    <!-- FontAwesome pour toutes les icônes de la maquette -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fichier CSS -->
+    <link rel="stylesheet" href="boutique.css">
+</head>
+<body>
+
+    <!-- HEADER / NAVIGATION WITH SEARCH & CART -->
+    <header class="main-header">
+        <div class="container header-container">
+            
+            <a href="#" class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
+                <span>NeoLab-CI</span>
+            </a>
+
+            <!-- Menu de navigation principal -->
+            <nav class="main-nav" id="mainNav">
+                <a href="../acceuil.html">Accueil</a>
+                <a href="../pages/cours/cours.html">Cours </a>
+                <a href="../pages/projet/projet.html">Projets </a>
+                <a href="../pages/composant/composants.html">Composants</a>
+                <a href="../pages/apropo/index.html">À propos de nous</a>
+            </nav>
+
+            <!-- Actions de droite : Recherche, Panier et Compte -->
+            <div class="header-actions">
+                <div class="search-bar" id="searchBarContainer">
+                    <input type="text" id="boutiqueSearchInput" placeholder="Rechercher un produit, kit, projet...">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                </div>
+                <!-- Clic sur le panier pour ouvrir la commande -->
+                <div class="cart-icon" onclick="ouvrirModalCommande()" style="cursor: pointer;">
+                    <i class="fa-solid fa-shopping-basket"></i>
+                    <span class="cart-badge">0</span>
+                </div>
+                <a href="#" class="user-profile"><i class="fa-regular fa-user"></i></a>
+                
+                <!-- BOUTON HAMBURGER MOBILE -->
+                <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1>Boutique NeoLab</h1>
+                <p class="hero-subtitle">
+                    Tout le matériel, les kits et les projets dont vous avez besoin pour apprendre, expérimenter et innover.
+                </p>
+                <div class="hero-features">
+                    <div class="feature-item">
+                        <i class="fa-solid fa-certificate"></i>
+                        <span>Produits testés avec nos formations</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Paiement sécurisé</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        <span>Livraison rapide en Côte d'Ivoire</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fa-solid fa-headset"></i>
+                        <span>Support technique dédié</span>
+                    </div>
+                </div>
+                <a href="#produits" class="btn-discover">
+                    <i class="fa-solid fa-shopping-bag"></i> Découvrir les produits
+                </a>
+            </div>
+            <div class="hero-illustration">
+                <div class="cart-3d-wrapper">
+                    <div class="neon-cart">
+                        <i class="fa-solid fa-shopping-cart"></i>
+                        <span class="neon-logo-badge"><i class="fa-solid fa-flask"></i> NEOLAB-CI</span>
+                    </div>
+                    <div class="neon-shopping-bag">
+                        <i class="fa-solid fa-flask bag-logo"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORIES CIRCULAIRES -->
+    <section class="categories-section">
+        <div class="container scroll-container-x">
+            <div class="categories-grid">
+                <div class="category-card" onclick="filtrerBoutique('Tous')">
+                    <div class="cat-icon"><i class="fa-solid fa-border-all"></i></div>
+                    <span>Tous les articles</span>
+                </div>
+                <div class="category-card" onclick="filtrerBoutique('Composant')">
+                    <div class="cat-icon"><i class="fa-solid fa-microchip"></i></div>
+                    <span>Composants électroniques</span>
+                </div>
+                <div class="category-card" onclick="filtrerBoutique('Kit')">
+                    <div class="cat-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <span>Kits complets</span>
+                </div>
+                <div class="category-card" onclick="filtrerBoutique('Projet')">
+                    <div class="cat-icon"><i class="fa-solid fa-robot"></i></div>
+                    <span>Projets complexes</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ZONE DYNAMIQUE DES PRODUITS DE LA BOUTIQUE -->
+    <section class="products-section" id="produits">
+        <div class="container">
+            <div class="section-header">
+                <h2 id="titre-categorie-boutique">Tous les articles disponibles</h2>
+            </div>
+            <!-- Conteneur injecté dynamiquement par Firebase -->
+            <div class="products-carousel" id="boutique-products-container">
+                <p style="color: var(--text-secondary); text-align: center; grid-column: 1/-1; padding: 40px;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                    Connexion au stock NeoLab...
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL DE FINALISATION DE COMMANDE (CACHÉE PAR DÉFAUT) -->
+    <div id="modalCommande" class="modal-checkout-overlay" style="display: none;">
+        <div class="modal-checkout-box">
+            <button class="modal-close-btn" onclick="fermerModalCommande()">✕</button>
+            <h3><i class="fa-solid fa-basket-shopping"></i> Finaliser votre commande</h3>
+            
+            <div class="summary-checkout-panier">
+                <p>Articles dans le panier : <strong id="modal-total-quantite">0</strong></p>
+                <p>Montant Total : <span id="modal-total-prix" style="font-weight:700; color:var(--accent-neon);">0 FCFA</span></p>
+            </div>
+
+            <form id="formFinaliserCommande">
+                <label for="cmd-nom">Nom complet *</label>
+                <input type="text" id="cmd-nom" required placeholder="Ex: Jean Kouassi">
+
+                <label for="cmd-tel">Numéro WhatsApp / Téléphone *</label>
+                <input type="tel" id="cmd-tel" required placeholder="Ex: +225 0700000000">
+
+                <label for="cmd-email">Adresse Email *</label>
+                <input type="email" id="cmd-email" required placeholder="Ex: jean@gmail.com">
+
+                <label for="cmd-canal">Canal de transmission *</label>
+                <select id="cmd-canal" onchange="toggleModePaiementVisibility()" required>
+                    <option value="neolab">Passer la commande via NeoLab (Suivi Admin)</option>
+                    <option value="whatsapp">Envoyer directement sur WhatsApp</option>
+                </select>
+
+                <div id="bloc-mode-paiement">
+                    <label for="cmd-paiement">Mode de paiement préféré</label>
+                    <select id="cmd-paiement">
+                        <option value="Orange Money">Orange Money</option>
+                        <option value="MTN Momo">MTN Mobile Money</option>
+                        <option value="Wave">Wave</option>
+                        <option value="Moov Money">Moov Money</option>
+                        <option value="Espece">Espèce à la livraison</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit-order">Confirmer l'achat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TRUST BADGES -->
+    <section class="trust-badges-section">
+        <div class="container trust-container">
+            <div class="badge-item">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div><h4>Paiement 100% sécurisé</h4></div>
+            </div>
+            <div class="badge-item">
+                <i class="fa-solid fa-truck-fast"></i>
+                <div><h4>Livraison rapide en 24h - 72h</h4></div>
+            </div>
+            <div class="badge-item">
+                <i class="fa-solid fa-vial-circle-check"></i>
+                <div><h4>Produits testés et approuvés</h4></div>
+            </div>
+            <div class="badge-item">
+                <i class="fa-solid fa-headset"></i>
+                <div><h4>Support technique disponible</h4></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 NeoLab-CI. Tous droits réservés.</p>
+            <div class="payment-partners">
+                <span class="payment-badge">Orange Money</span>
+                <span class="payment-badge">MTN Money</span>
+                <span class="payment-badge">Wave</span>
+                <span class="payment-badge">Visa</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SDK FIREBASE BASE (v8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- Fichier Logiciel JS Boutique -->
+    <script src="boutique.js"></script>
+</body>
+</html>

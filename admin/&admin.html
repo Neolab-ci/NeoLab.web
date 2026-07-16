@@ -20,6 +20,7 @@
             <a href="#" class="menu-link active" onclick="switchTab(event, 'dashboard')">📊 Vue d'ensemble</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'stock')">🛠️ Gestion du Stock</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'cours')">📚 Gestion des Cours</a>
+            <a href="#" class="menu-link" onclick="switchTab(event, 'boutique')">� Gestion de la Boutique</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'users')">👥 Utilisateurs</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'messages_contact')">📨 Messages</a>
             <a href="#" class="menu-link" onclick="switchTab(event, 'settings')">⚙️ Paramètres</a>
@@ -79,7 +80,96 @@
                 </table>
             </div>
         </section>
+                <!-- SECTION DE GESTION DE LA BOUTIQUE NEOLAB -->
+        <section class="admin-section" id="gestion-boutique">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-store"></i> Gestion de la Boutique NeoLab</h2>
+                <p>Ajoutez des articles en stock, gérez les quantités et suivez les commandes reçues.</p>
+            </div>
 
+            <!-- GRILLE DE DEUX COLONNES : FORMULAIRE ET SUIVI DES COMMANDES -->
+            <div class="admin-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-top: 20px;">
+                
+                <!-- 1. FORMULAIRE D'AJOUT DE PRODUIT -->
+                <div class="admin-card" style="background: #111827; border: 1px solid #1f2937; padding: 25px; border-radius: 12px;">
+                    <h3 style="color: #00f0ff; margin-bottom: 20px;"><i class="fa-solid fa-plus-circle"></i> Ajouter un nouvel article</h3>
+                    
+                    <form id="form-ajouter-produit">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Nom de l'article *</label>
+                            <input type="text" id="prod-nom" required placeholder="Ex: Kit Arduino Uno Starter" style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Type de produit *</label>
+                                <select id="prod-type" required style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
+                                    <option value="Composant">Composant</option>
+                                    <option value="Kit">Kit complet</option>
+                                    <option value="Projet">Projet complexe</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Prix (FCFA) *</label>
+                                <input type="number" id="prod-prix" required placeholder="Ex: 5000" style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Quantité en Stock *</label>
+                                <input type="number" id="prod-stock" required placeholder="Ex: 15" style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
+                            </div>
+                            <div>
+                                <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Lien de l'image (URL)</label>
+                                <input type="url" id="prod-image" placeholder="https://..." style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Description de l'article *</label>
+                            <textarea id="prod-description" required rows="3" placeholder="Description technique ou contenu du kit..." style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px; resize:none;"></textarea>
+                        </div>
+
+                        <button type="submit" style="width:100%; padding:12px; background:#1d61e6; color:#fff; border:none; font-weight:700; border-radius:6px; cursor:pointer;"> Mettre en vente sur la boutique</button>
+                    </form>
+                </div>
+
+                <!-- 2. TABLEAU DE SUIVI DES COMMANDES REÇUES -->
+                <div class="admin-card" style="background: #111827; border: 1px solid #1f2937; padding: 25px; border-radius: 12px; display: flex; flex-direction: column;">
+                    <h3 style="color: #1d61e6; margin-bottom: 20px;"><i class="fa-solid fa-receipt"></i> Commandes du canal NeoLab</h3>
+                    
+                    <div style="overflow-x: auto; flex-grow: 1;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #1f2937; color: #9ca3af;">
+                                    <th style="padding: 10px;">Client</th>
+                                    <th style="padding: 10px;">Articles</th>
+                                    <th style="padding: 10px;">Total</th>
+                                    <th style="padding: 10px;">Statut</th>
+                                    <th style="padding: 10px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-liste-commandes">
+                                <!-- Rempli dynamiquement en JS -->
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #6b7280; padding: 30px;">Aucune commande en attente.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 3. INVENTAIRE / LISTE ACTUELLE DES PRODUITS EN LIGNE -->
+            <div class="admin-card" style="background: #111827; border: 1px solid #1f2937; padding: 25px; border-radius: 12px; margin-top: 30px;">
+                <h3 style="color: #fff; margin-bottom: 20px;"><i class="fa-solid fa-boxes-stacked"></i> Articles actuellement en ligne</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;" id="admin-liste-produits">
+                    <!-- Rempli dynamiquement en JS -->
+                </div>
+            </div>
+        </section>
         <section id="settings" class="content-section">
             <div class="data-card">
                 <div class="card-header">

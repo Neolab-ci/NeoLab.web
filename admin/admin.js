@@ -601,3 +601,161 @@ document.getElementById('modifComposantForm').addEventListener('submit', functio
     })
     .then(() => { alert("Composant mis à jour !"); fermerModalModifComposant(); });
 });
+// ==========================================
+// INITIALISATION DE LA GESTION BOUTIQUE
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Écouteur pour l'ajout d'un produit
+    const formProduit = document.getElementById('form-ajouter-produit');
+    if (formProduit) {
+        formProduit.addEventListener('submit', ajouterNouveauProduitBoutique);
+    }
+
+    // Lancer le chargement en temps réel des données boutique
+    ecouterProduitsBoutique();
+    ecouterCommandesBoutique();
+});
+
+// 1. AJOUTER UN PRODUIT DANS FIRESTORE
+function ajouterNouveauProduitBoutique(e) {
+    e.preventDefault();
+
+    const nom = document.getElementById('prod-nom').value;
+    const type = document.getElementById('prod-type').value;
+    const prix = parseFloat(document.getElementById('prod-prix').value);
+    const stock = parseInt(document.getElementById('prod-stock').value);
+    const image = document.getElementById('prod-image').value;
+    const description = document.getElementById('prod-description').value;
+
+    const nouveauProduit = {
+        nom: nom,
+        type: type,
+        prix: prix,
+        quantite_stock: stock,
+        imageURL: image || "",
+        description: description,
+        cree_le: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    db.collection("boutique_produits").add(nouveauProduit)
+    .then(() => {
+        alert(`🛒 L'article "${nom}" a bien été ajouté au catalogue de la boutique !`);
+        document.getElementById('form-ajouter-produit').reset();
+    })
+    .catch((error) => {
+        console.error("Erreur lors de l'ajout du produit : ", error);
+        alert("Une erreur est survenue lors de la mise en ligne.");
+    });
+}
+
+// 2. ÉCOUTER ET AFFICHER L'INVENTAIRE ACTUEL EN LIGNE
+function ecouterProduitsBoutique() {
+    const conteneurProduits = document.getElementById('admin-liste-produits');
+    if (!conteneurProduits) return;
+
+    db.collection("boutique_produits").orderBy("cree_le", "desc").onSnapshot((snapshot) => {
+        conteneurProduits.innerHTML = "";
+
+        if (snapshot.empty) {
+            conteneurProduits.innerHTML = `<p style="color: #6b7280; grid-column: 1/-1;">Aucun produit en vitrine pour l'instant.</p>`;
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const prod = doc.data();
+            const id = doc.id;
+
+            const carteHtml = document.createElement('div');
+            carteHtml.style = "background: #030712; border: 1px solid #1f2937; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;";
+            carteHtml.innerHTML = `
+                <div>
+                    <span style="font-size: 0.75rem; background: #1f2937; padding: 2px 6px; border-radius: 4px; color: #9ca3af;">${prod.type}</span>
+                    <h4 style="margin: 10px 0 5px 0; color: #fff;">${prod.nom}</h4>
+                    <p style="color: #6b7280; font-size: 0.85rem; margin-bottom: 10px;">${prod.prix.toLocaleString('fr-FR')} FCFA — Stock : <strong>${prod.quantite_stock}</strong></p>
+                </div>
+                <button onclick="supprimerProduitBoutique('${id}')" style="background: none; border: 1px solid #ef4444; color: #ef4444; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; width: 100%; margin-top: 10px;">
+                    <i class="fa-solid fa-trash"></i> Retirer du marché
+                </button>
+            `;
+            conteneurProduits.appendChild(carteHtml);
+        });
+    });
+}
+
+// SUPPRIMER UN PRODUIT DE LA BOUTIQUE
+function supprimerProduitBoutique(id) {
+    if (confirm("Êtes-vous sûr de vouloir retirer cet article de la boutique ?")) {
+        db.collection("boutique_produits").doc(id).delete()
+        .then(() => alert("Article supprimé de la vitrine."))
+        .catch(err => console.error("Erreur suppression produit:", err));
+    }
+}
+
+// 3. ÉCOUTER ET AFFICHER LES COMMANDES REÇUES
+function ecouterCommandesBoutique() {
+    const tableBody = document.getElementById('admin-liste-commandes');
+    if (!tableBody) return;
+
+    db.collection("boutique_commandes").orderBy("cree_le", "desc").onSnapshot((snapshot) => {
+        tableBody.innerHTML = "";
+
+        if (snapshot.empty) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 30px;">Aucune commande enregistrée.</td></tr>`;
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const cmd = doc.data();
+            const id = doc.id;
+
+            // Compilation lisible du panier d'achat
+            let articlesTexte = "";
+            cmd.articles.forEach(item => {
+                articlesTexte += `${item.nom} (x${item.quantite})<br>`;
+            });
+
+            const tr = document.createElement('tr');
+            tr.style = "border-bottom: 1px solid #1f2937; color: #fff;";
+            tr.innerHTML = `
+                <td style="padding: 12px; font-size: 0.85rem;">
+                    <strong>${cmd.client_nom}</strong><br>
+                    <span style="color:#9ca3af;">${cmd.client_telephone}</span>
+                </td>
+                <td style="padding: 12px; font-size: 0.85rem; color:#d1d5db;">${articlesTexte}</td>
+                <td style="padding: 12px; font-weight:700; color:#00f0ff;">${cmd.total_facture.toLocaleString('fr-FR')} F</td>
+                <td style="padding: 12px;">
+                    <span style="font-size:0.75rem; padding:3px 8px; border-radius:12px; background: ${cmd.statut === 'Livré' ? '#065f46; color:#34d399;' : '#78350f; color:#fbbf24;'}">
+                        ${cmd.statut}
+                    </span>
+                </td>
+                <td style="padding: 12px;">
+                    <button onclick="marquerCommandeLivree('${id}')" style="background:#10b981; border:none; color:#fff; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem; margin-right:5px;" title="Marquer comme livré">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button onclick="archiverCommande('${id}')" style="background:#ef4444; border:none; color:#fff; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;" title="Supprimer la commande">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    });
+}
+
+// METTRE À JOUR LE STATUT D'UNE COMMANDE
+function marquerCommandeLivree(id) {
+    db.collection("boutique_commandes").doc(id).update({
+        statut: "Livré"
+    })
+    .then(() => alert("Statut de la commande mis à jour ! ✅"))
+    .catch(err => console.error("Erreur mise à jour statut :", err));
+}
+
+// SUPPRIMER UNE COMMANDE
+function archiverCommande(id) {
+    if (confirm("Voulez-vous supprimer cette commande de la liste ?")) {
+        db.collection("boutique_commandes").doc(id).delete()
+        .then(() => alert("Commande supprimée de la liste."))
+        .catch(err => console.error("Erreur suppression commande :", err));
+    }
+}
