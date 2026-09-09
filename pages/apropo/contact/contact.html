@@ -21,7 +21,7 @@
             
             <!-- Menu de navigation principal -->
             <nav class="main-nav" id="mainNav">
-                <a href="../../index.html">Accueil</a>
+                <a href="../../../acceuil.html">Accueil</a>
                 <a href="../../cours/cours.html">Cours </a>
                 <a href="../../projet/projet.html">Projets </a>
                 <a href="../../composant/composants.html">Composants</a>
@@ -47,7 +47,8 @@
     <section class="hero-section">
         <div class="container hero-container">
             <div class="hero-content">
-                <span class="sub-title"><i class="fa-regular fa-circle-dot"></i> CONTACTEZ-NOUS</span>
+                <span class="sub-title"><i class="fa-regular fa-circle-dot"></i> CONTACTEZ-NOUS </span>
+                <span class="sub-title">Pour toutes questions via le formulaire ci-dessous</span>
                 <h1>Contactez <br><span class="highlight">NeoLab-CI</span></h1>
                 <p class="hero-desc">
                     Une question sur une formation, un certificat, un partenariat ou un problème technique ?
@@ -204,38 +205,46 @@
     <section class="request-type-section">
         <div class="container">
             <h2 class="section-title">Choisissez votre type de demande</h2>
+                        <!-- GRILLE DES TYPES DE DEMANDE -->
+            <!-- GRILLE DES TYPES DE DEMANDE -->
             <div class="request-grid">
-                <div class="request-card" data-subject="Étudiant">
-                    <div class="request-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <!-- Carte 1 -->
+                <div class="request-card" onclick="ouvrirModaleContact('etudiant')">
+                    <div class="choice-icon"><i class="fa-solid fa-user-graduate"></i></div>
                     <h3>Je suis un étudiant</h3>
                     <p>Questions sur les cours, certificats ou progression.</p>
                     <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
-                <div class="request-card" data-subject="Hôpital / Laboratoire">
-                    <div class="request-icon"><i class="fa-solid fa-hospital"></i></div>
+                <!-- Carte 2 -->
+                <div class="request-card" onclick="ouvrirModaleContact('laboratoire')">
+                    <div class="choice-icon"><i class="fa-solid fa-hospital-user"></i></div>
                     <h3>Hôpital / Laboratoire</h3>
                     <p>Demandes de formation ou de partenariat.</p>
                     <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
-                <div class="request-card" data-subject="Établissement">
-                    <div class="request-icon"><i class="fa-solid fa-school"></i></div>
+                <!-- Carte 3 -->
+                <div class="request-card" onclick="ouvrirModaleContact('etablissement')">
+                    <div class="choice-icon"><i class="fa-solid fa-school"></i></div>
                     <h3>Établissement de formation</h3>
                     <p>Collaboration et programmes pédagogiques.</p>
-                    <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="request-arrow    "><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
-                <div class="request-card" data-subject="Partenariat">
-                    <div class="request-icon"><i class="fa-solid fa-handshake"></i></div>
+                <!-- Carte 4 -->
+                <div class="request-card" onclick="ouvrirModaleContact('partenaire')">
+                    <div class="choice-icon"><i class="fa-solid fa-handshake"></i></div>
                     <h3>Devenir partenaire</h3>
                     <p>Partenariats, sponsoring ou collaboration.</p>
                     <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
-                <div class="request-card" data-subject="Technique">
-                    <div class="request-icon"><i class="fa-solid fa-bug"></i></div>
+                <!-- Carte 5 -->
+                <div class="request-card" onclick="ouvrirModaleContact('technique')">
+                    <div class="choice-icon"><i class="fa-solid fa-bug"></i></div>
                     <h3>Problème technique</h3>
-                    <p>Difficultés de connexion, bugs ou erreurs.</p>
+                    <p>Difficultés de connexion, bugs ou pannes.</p>
                     <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
+            
         </div>
     </section>
 
@@ -286,7 +295,7 @@
                 <ul>
                     <li><a href="../../../acceuil.html">Accueil</a></li>
                     <li><a href="#">Formations</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="#form-faq-section">Contact</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -308,5 +317,50 @@
     <!-- SCRIPT APPLICATION PRINCIPAL EN TYPE MODULE (REQUIS POUR FIREBASE V10) -->
     <!-- Script chargé en tant que module ES6 pour supporter les imports Firestore v10 -->
     <script type="module" src="contact.js"></script>
+    <!-- FENÊTRE MODALE DYNAMIQUE DE CONTACT -->
+<div id="modalContact" class="contact-modal-overlay" style="display: none;">
+    <div class="contact-modal-box">
+        <button class="contact-modal-close" onclick="fermerModaleContact()">✕</button>
+        
+        <!-- Contenu divisé en 2 colonnes sur grand écran -->
+        <div class="contact-modal-grid">
+            
+            <!-- Colonne Gauche : Vidéo explicative & texte descriptif -->
+            <div class="modal-left">
+                <h3 id="modal-titre">Titre de la demande</h3>
+                <p id="modal-description" style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
+                    Explications personnalisées selon le profil sélectionné...
+                </p>
+                
+                <!-- Zone Vidéo Explicative -->
+                <div class="modal-video-container">
+                    <!-- Nous utiliserons un iframe pour lire une vidéo (YouTube, Vimeo, ou locale) -->
+                    <iframe id="modal-video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Colonne Droite : Formulaire d'envoi direct -->
+            <div class="modal-right">
+                <h4><i class="fa-solid fa-paper-plane"></i> Envoyez-nous un message</h4>
+                <form id="form-contact-modal">
+                    <!-- Champ caché pour garder en mémoire le type de demande pour Firebase -->
+                    <input type="hidden" id="form-type-demande">
+
+                    <label for="contact-nom">Nom complet</label>
+                    <input type="text" id="contact-nom" required placeholder="Votre nom">
+
+                    <label for="contact-email">Email</label>
+                    <input type="email" id="contact-email" required placeholder="Votre adresse email">
+
+                    <label for="contact-message">Message</label>
+                    <textarea id="contact-message" required rows="4" placeholder="Détaillez votre besoin..."></textarea>
+
+                    <button type="submit" class="btn-send-contact">Envoyer ma demande</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
 </body>
 </html>
