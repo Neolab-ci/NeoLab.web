@@ -206,3 +206,140 @@
     font-size: 18px;
   }
 }
+
+/* ═══════════════════════════ STYLES SPÉCIFIQUES & DYNAMIQUE MOBILE ═══════════════════════════ */
+
+/* Structuration des conteneurs d'images dans la modale */
+.modal-img-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+  background: rgba(255,255,255,0.02);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.modal-img-box-single {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 160px;
+}
+
+.modal-img-box-single.schema {
+  border-left: 1px solid var(--border);
+}
+
+.img-label {
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.img-label.blue { color: var(--blue-bright); }
+.img-label.orange { color: var(--orange); }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-action-primary {
+  flex: 1;
+  padding: 12px;
+  background-color: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-action-secondary {
+  padding: 12px 18px;
+  background-color: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Optimisations dynamiques sur Écrans Mobiles */
+@media (max-width: 768px) {
+  /* Grille à 2 colonnes bien compactes sur mobile */
+  .components-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .comp-card {
+    border-radius: 10px;
+  }
+
+  .card-img {
+    height: 110px;
+  }
+
+  .card-body {
+    padding: 10px;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+  }
+
+  .card-desc {
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+  }
+
+  .btn-savoir {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+
+  .card-pin {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Onglets de catégories avec défilement horizontal tactile */
+  .cat-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cat-tab {
+    flex-shrink: 0;
+  }
+
+  /* Ajustement de la modale en affichage vertical */
+  .modal-img-box-single.schema {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+}
