@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="com.css">
 </head>
 <body>
 
@@ -27,12 +28,12 @@
      <a href="pages/cours/cours.html">Cours </a>
      <a href="pages/projet/projet.html">Projets </a>
      <a href="pages/composant/composants.html">Composants</a>
-     <a href="pages/apropo/contact/contact.html">Démande et info</a>
      <a href="pages/apropo/index.html">À propos de nous</a>
             </nav>
 
             <div class="nav-actions">
-                    <a href="assets/login/auth.html" class="btn-connect">INSCRIPTION</a>
+                        <a href="pages/espace/enseignan.html" class="btn-connect">Espace enseignan</a>
+                        <a href="espace/eleve/eleve.html" class="btn-connect">Espace Élève</a>
                 <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">
                     <i class="fa-solid fa-bars"></i>
                 </button>
@@ -55,7 +56,7 @@
                     Accédez à des cours clairs, des fiches de composants détaillées et des schémas interactifs conçus spécialement pour les élèves et passionnés de la filière électronique et technologique.
                 </p>
                 <div class="hero-buttons">
-                    <a href="assets/login/auth.html" class="btn-primary">Se connecter <i class="fa-solid fa-bolt"></i></a>
+                    <a href="boutique/boutique.html" class="btn-primary">Boutique<i class="fa-solid fa-bolt"></i></a>
                     <a href="pages/apropo/contact/contact.html" class="btn-secondary">Contacte et informations<i class="fa-solid fa-arrow-right"></i></a>
                 </div>
             </div>
@@ -85,9 +86,10 @@
             <div class="pillar-icon" style="background: rgba(0, 210, 255, 0.1); color: #00d2ff;"><i class="fa-solid fa-book-open"></i></div>
                 <h3 style="font-size: 20px; margin: 15px 0 10px; color: #fff;">1. Apprendre la Théorie</h3>
             <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Des cours structurés sur l'électronique analogique, les lois de circuits, les transistors et les mathématiques appliquées au hardware.</p>
-        </div>
+            <button class="BTN"><a href="pages/cours/cours.html">Cours </a></button>
+            </div>
 
-        <div class="pillar-item" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/maquette.jpg') no-repeat center/cover; padding: 40px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+            <div class="pillar-item" style="background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('assets/images/maquette.jpg') no-repeat center/cover; padding: 40px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
             <div class="pillar-icon" style="background: rgba(0, 102, 255, 0.1); color: #0066ff;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
                 <h3 style="font-size: 20px; margin: 15px 0 10px; color: #fff;">2. Pratiquer sur Maquette</h3>
             <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Réalisez des montages réels sur platines d'essai (breadboard) en suivant nos guides étape par étape et nos schémathèques.</p>
@@ -159,7 +161,7 @@
                     <p>Trouvez instantanément le brochage, la tension d'alimentation et le code d'exemple de chaque composant de vos kits d'étude.</p>
                 </div>
                 <div class="cta-action">
-                    <a href="#" class="btn-primary" style="background: #fff; color: #020617; box-shadow: none;">Ouvrir la Composanthèque <i class="fa-solid fa-box-archive"></i></a>
+                    <a href="pages/composant/composants.html" class="btn-primary" style="background: #fff; color: #020617; box-shadow: none;">Ouvrir la Composanthèque <i class="fa-solid fa-box-archive"></i></a>
                 </div>
             </div>
         </div>
@@ -210,8 +212,42 @@
                 <p><i class="fa-solid fa-location-dot"></i> Abidjan, Côte d'Ivoire</p>
             </div>
         </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 NeoLab-CI. Tous droits réservés.</p>
+            <button class="scroll-top" id="scrollTopBtn" aria-label="Retour en haut"><i class="fa-solid fa-arrow-up"></i></button>
+        </div>
     </footer>
 
     <script src="script.js"></script>
+   <script src="com.js"></script>
+    <div class="floating-nav-container">
+    <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
+        <i data-lucide="menu"></i>
+    </button>
+    
+    <div class="floating-nav-menu" id="floating-nav-menu">
+       
+        <a href="pages/cours/cours.html" class="floating-nav-item" title="">
+            <i data-lucide="book-open"></i>COURS
+            <span>Cours</span>
+        </a>
+        <a href="pages/projet/projet.html" class="floating-nav-item" title="">
+            <i data-lucide="folder-kanban"></i>PROJET
+            <span>Projets</span>
+        </a>
+        <a href="pages/composant/composants.html" class="floating-nav-item" title="">
+            <i data-lucide="folder-kanban"></i>COMPOSANTS
+            <span>Composants</span>
+        </a>
+        <a href="../../espace/eleve/eleve.html" class="floating-nav-item" title="">
+            <i data-lucide="settings"></i>
+            <span>Mon espace</span>ESPACE
+        </a>
+        <button id="floating-btn-logout" class="floating-nav-item logout" title="">
+            <i data-lucide="log-out"></i>SORTIE
+            <span>Déconnexion</span>
+        </button>
+    </div>
+</div>
 </body>
 </html>

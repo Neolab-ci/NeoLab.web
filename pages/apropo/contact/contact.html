@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactez NeoLab-CI</title>
+    <!-- FontAwesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fichier CSS -->
+    <link rel="stylesheet" href="contact.css">
+</head>
+<body>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="main-header">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
+                <span>NeoLab-CI</span>
+            </a>
+            
+            <!-- Menu de navigation principal -->
+            <nav class="main-nav" id="mainNav">
+                <a href="../../index.html">Accueil</a>
+                <a href="../../cours/cours.html">Cours </a>
+                <a href="../../projet/projet.html">Projets </a>
+                <a href="../../composant/composants.html">Composants</a>
+                <a href="../../apropo/index.html">À propos de nous</a>
+            </nav>
+            <div class="header-actions">
+                <div class="lang-selector">
+                    <i class="fa-solid fa-globe"></i>
+                    <span>FR</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <a href="#" class="btn-connect">Se connecter</a>
+                
+                <!-- BOUTON HAMBURGER POUR MOBILE -->
+                <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <span class="sub-title"><i class="fa-regular fa-circle-dot"></i> CONTACTEZ-NOUS</span>
+                <h1>Contactez <br><span class="highlight">NeoLab-CI</span></h1>
+                <p class="hero-desc">
+                    Une question sur une formation, un certificat, un partenariat ou un problème technique ?
+                     Notre équipe est à votre écoute.
+                </p>
+                <div class="indicator-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <p class="response-time">
+                    <i class="fa-regular fa-clock"></i> Nous vous répondons sous 24 à 48h ouvrées.
+                </p>
+            </div>
+            <div class="hero-illustration">
+                <div class="illustration-wrapper">
+                    <img src="img1.jpeg" alt="Support NeoLab-CI" class="support-avatar">
+                    <div class="floating-badge badge-mail"><i class="fa-regular fa-envelope"></i></div>
+                    <div class="floating-badge badge-chat"><i class="fa-solid fa-ellipsis"></i></div>
+                    <div class="floating-badge badge-question"><i class="fa-solid fa-question"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT QUICK CARDS -->
+    <section class="quick-contact-section">
+        <div class="container quick-grid">
+            <div class="contact-card">
+                <div class="card-icon icon-email"><i class="fa-regular fa-envelope"></i></div>
+                <h3>E-mail</h3>
+                <p class="contact-value">infoneolab2@gmail.com</p>
+                <span class="card-meta">Réponse sous 24 à 48h</span>
+            </div>
+            <div class="contact-card">
+                <div class="card-icon icon-whatsapp"><i class="fa-brands fa-whatsapp"></i></div>
+                <h3>WhatsApp</h3>
+                <p class="contact-value">+225 07 49 56 78 90</p>
+                <a href="https://wa.me/2250749567890" target="_blank" class="btn-whatsapp">Discuter sur WhatsApp</a>
+            </div>
+            <div class="contact-card">
+                <div class="card-icon icon-phone"><i class="fa-solid fa-phone"></i></div>
+                <h3>Téléphone</h3>
+                <p class="contact-value">+225 07 49 56 78 90</p>
+                <span class="card-meta">Lun - Ven : 08h00 - 18h00</span>
+            </div>
+            <div class="contact-card">
+                <div class="card-icon icon-marker"><i class="fa-solid fa-location-dot"></i></div>
+                <h3>Adresse</h3>
+                <p class="contact-value">Port-Bouët, Abidjan<br>Côte d'Ivoire</p>
+                <a href="#" class="card-link">Voir sur la carte</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORM & FAQ SECTION -->
+    <section class="form-faq-section">
+        <div class="container form-faq-grid">
+            
+            <!-- FORMULAIRE -->
+            <div class="contact-form-wrapper">
+                <h2>Envoyez-nous un message</h2>
+                <!-- Message de succès ou d'erreur dynamique -->
+                <div id="formFeedback" class="form-feedback hidden"></div>
+                
+                <form id="contactForm" class="contact-form">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="fullName"><i class="fa-regular fa-user"></i></label>
+                            <input type="text" id="fullName" placeholder="Nom complet *" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="email"><i class="fa-regular fa-envelope"></i></label>
+                            <input type="email" id="email" placeholder="Adresse e-mail *" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="phone"><i class="fa-solid fa-phone"></i></label>
+                            <input type="tel" id="phone" placeholder="Téléphone (facultatif)">
+                        </div>
+                        <div class="input-group select-group">
+                            <span class="input-label-top">Sujet *</span>
+                            <select id="subject" required>
+                                <option value="" disabled selected>Choisissez un sujet</option>
+                                <option value="Étudiant">Information formation (Étudiant)</option>
+                                <option value="Hôpital / Laboratoire">Hôpital / Laboratoire</option>
+                                <option value="Établissement">Établissement de formation</option>
+                                <option value="Partenariat">Devenir partenaire</option>
+                                <option value="Technique">Problème technique / Bug</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group textarea-group">
+                        <span class="input-label-top">Votre message *</span>
+                        <textarea id="message" rows="6" placeholder="Décrivez votre demande en détail..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="fa-regular fa-paper-plane"></i> Envoyer le message
+                    </button>
+                    <p class="form-footer-note">Vos informations sont sécurisées et ne seront jamais partagées.</p>
+                </form>
+            </div>
+
+            <!-- FAQ & HORAIRES -->
+            <div class="faq-hours-wrapper">
+                <div class="faq-container">
+                    <h2>Questions fréquentes</h2>
+                    <div class="accordion">
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span>Comment obtenir mon certificat ?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-content">
+                                <p>Une fois votre parcours de formation validé à 100%, votre 
+                                    certificat sera téléchargeable directement depuis votre tableau de bord.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span>Les formations sont-elles gratuites ?</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-content">
+                                <p>Nous proposons une sélection de modules gratuits d'initiation, 
+                                    ainsi que des parcours certifiants payants.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hours-container">
+                    <h2>Horaires d'ouverture</h2>
+                    <ul class="hours-list">
+                        <li>
+                            <span class="day"><i class="fa-regular fa-clock"></i> Lundi - Vendredi</span>
+                            <span class="time">08h00 - 18h00</span>
+                        </li>
+                        <li>
+                            <span class="day"><i class="fa-regular fa-clock"></i> Samedi</span>
+                            <span class="time">09h00 - 13h00</span>
+                        </li>
+                        <li>
+                            <span class="day"><i class="fa-regular fa-clock"></i> Dimanche</span>
+                            <span class="time highlight-closed">Fermé</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TYPE DE DEMANDE AUTOMATISÉ -->
+    <section class="request-type-section">
+        <div class="container">
+            <h2 class="section-title">Choisissez votre type de demande</h2>
+            <div class="request-grid">
+                <div class="request-card" data-subject="Étudiant">
+                    <div class="request-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h3>Je suis un étudiant</h3>
+                    <p>Questions sur les cours, certificats ou progression.</p>
+                    <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div class="request-card" data-subject="Hôpital / Laboratoire">
+                    <div class="request-icon"><i class="fa-solid fa-hospital"></i></div>
+                    <h3>Hôpital / Laboratoire</h3>
+                    <p>Demandes de formation ou de partenariat.</p>
+                    <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div class="request-card" data-subject="Établissement">
+                    <div class="request-icon"><i class="fa-solid fa-school"></i></div>
+                    <h3>Établissement de formation</h3>
+                    <p>Collaboration et programmes pédagogiques.</p>
+                    <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div class="request-card" data-subject="Partenariat">
+                    <div class="request-icon"><i class="fa-solid fa-handshake"></i></div>
+                    <h3>Devenir partenaire</h3>
+                    <p>Partenariats, sponsoring ou collaboration.</p>
+                    <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div class="request-card" data-subject="Technique">
+                    <div class="request-icon"><i class="fa-solid fa-bug"></i></div>
+                    <h3>Problème technique</h3>
+                    <p>Difficultés de connexion, bugs ou erreurs.</p>
+                    <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOCALISATION -->
+    <section class="location-social-section">
+        <div class="container loc-soc-grid">
+            <div class="location-container">
+                <h2>Notre localisation</h2>
+                <div class="map-wrapper">
+                    <div class="map-placeholder">
+                        <div class="map-marker-badge">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <div>
+                                <strong>NeoLab-CI</strong>
+                                <p>Port-Bouët, Abidjan, Côte d'Ivoire</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="social-container">
+                <h2>Suivez-nous</h2>
+                <p>Restez connectés avec NeoLab-CI sur nos réseaux sociaux.</p>
+                <div class="social-icons">
+                    <a href="#" class="social-link"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="container footer-grid">
+            <div class="footer-info">
+                <div class="logo">
+                    <i class="fa-solid fa-flask logo-icon"></i>
+                    <span class="brand">NeoLab-CI</span>
+                </div>
+                <p class="footer-desc">NeoLab-CI est une plateforme moderne dédiée aux sciences, la Technologie, 
+                    l'electronique, l'informatique, l'innovation et au biomédical.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Liens utiles</h3>
+                <ul>
+                    <li><a href="../../../acceuil.html">Accueil</a></li>
+                    <li><a href="#">Formations</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Légal</h3>
+                <ul>
+                    <li><a href="#">Politique de confidentialité</a></li>
+                </ul>
+            </div>
+            <div class="footer-newsletter">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" id="newsletterEmail" placeholder="Votre e-mail" required>
+                    <button type="submit"><i class="fa-regular fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT APPLICATION PRINCIPAL EN TYPE MODULE (REQUIS POUR FIREBASE V10) -->
+    <!-- Script chargé en tant que module ES6 pour supporter les imports Firestore v10 -->
+    <script type="module" src="contact.js"></script>
+</body>
+</html>

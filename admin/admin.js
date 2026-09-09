@@ -1,7 +1,13 @@
 // ==========================================
 // 1. VÉRIFICATION DE LA SESSION SUR CETTE PAGE
 // ==========================================
+// ==========================================
+// 1. VÉRIFICATION DE LA SESSION SUR CETTE PAGE
+// ==========================================
 document.addEventListener("DOMContentLoaded", function () {
+    // CORRECTION : On lance le chargement des messages immédiatement au chargement de la page
+    activerFluxMessagesContact();
+
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             console.log("Session active pour l'admin :", user.uid);
@@ -27,19 +33,138 @@ const db = firebase.firestore();
 let questionCounter = 0; // Compteur pour le quiz dynamique
 
 // ==========================================
+// INITIALISATION DE LA GESTION DES MESSAGES
+// ==========================================
+
+// Appel de cette fonction lors du chargement de la session Admin
+function activerFluxMessagesContact() {
+    const container = document.getElementById("liste-messages-admin");
+    const counter = document.getElementById("total-messages");
+
+    if (!container) return;
+
+    // Écoute en temps réel de la collection "messages_contact" triée par date décroissante
+    db.collection("messages_contact")
+      .orderBy("envoye_le", "desc")
+      .onSnapshot((snapshot) => {
+          container.innerHTML = "";
+          
+          if (snapshot.empty) {
+              container.innerHTML = `
+                  <div style="text-align: center; padding: 40px; background: #05112e; border: 1.5px solid #0d2352; border-radius: 12px; color: #8c9cb8;">
+                      <i class="fa-regular fa-envelope-open" style="font-size: 2.5rem; margin-bottom: 15px; color: #1d61e6;"></i>
+                      <p style="font-weight: 600;">Aucun message reçu pour le moment !</p>
+                      <p style="font-size: 0.85rem; margin-top: 5px;">Les messages envoyés via la page de contact apparaîtront ici.</p>
+                  </div>
+              `;
+              if (counter) counter.innerText = "0";
+              return;
+          }
+
+          if (counter) counter.innerText = snapshot.size;
+
+          snapshot.forEach((doc) => {
+              const msg = doc.data();
+              const msgId = doc.id;
+              
+              // Formater la date Firestore
+              let dateAffichage = "Date inconnue";
+              if (msg.envoye_le) {
+                  const dateObj = msg.envoye_le.toDate();
+                  dateAffichage = dateObj.toLocaleDateString("fr-FR", {
+                      day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"
+                  });
+              }
+
+              const cardHTML = `
+                  <div id="msg-card-${msgId}" style="background: #05112e; border: 1.5px solid #0d2352; border-radius: 12px; padding: 20px; transition: 0.3s; position: relative;">
+                      
+                      <!-- En-tête du message -->
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(13, 35, 82, 0.5); padding-bottom: 12px;">
+                          <div>
+                              <span style="font-size: 0.75rem; background: rgba(29, 97, 230, 0.15); color: #00f0ff; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; margin-right: 8px;">
+                                  ${msg.sujet || 'Général'}
+                              </span>
+                              <h3 style="color: white; margin: 5px 0 0 0; font-size: 1.1rem; font-weight: 700;">${msg.nom_complet}</h3>
+                          </div>
+                          <span style="color: #8c9cb8; font-size: 0.8rem;">
+                              <i class="fa-regular fa-clock"></i> ${dateAffichage}
+                          </span>
+                      </div>
+
+                      <!-- Corps du message -->
+                      <div style="margin-bottom: 20px;">
+                          <p style="color: #e2e8f0; font-size: 0.95rem; white-space: pre-wrap; line-height: 1.6;">${msg.message}</p>
+                      </div>
+
+                      <!-- Méta-données & Actions -->
+                      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: rgba(2, 9, 29, 0.4); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(13, 35, 82, 0.3);">
+                          <div style="display: flex; gap: 15px; color: #8c9cb8; font-size: 0.85rem;">
+                              <span><i class="fa-regular fa-envelope"></i> ${msg.email}</span>
+                              ${msg.telephone && msg.telephone !== "Non renseigné" ? `<span><i class="fa-solid fa-phone"></i> ${msg.telephone}</span>` : ''}
+                          </div>
+                          
+                          <div style="display: flex; gap: 10px;">
+                              <!-- Action : Répondre par Email -->
+                              <a href="mailto:${msg.email}?subject=R%C3%A9ponse%20NeoLab-CI%20-%20${encodeURIComponent(msg.sujet || '')}&body=Bonjour%20${encodeURIComponent(msg.nom_complet || '')},%0A%0A" 
+                                 style="background: #1d61e6; color: white; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: 0.2s;">
+                                  <i class="fa-solid fa-reply"></i> Répondre par email
+                              </a>
+                              
+                              <!-- Action : Archiver/Supprimer -->
+                              <button onclick="supprimerMessageContact('${msgId}')" 
+                                      style="background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.2); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s;">
+                                  <i class="fa-regular fa-trash-can"></i>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              `;
+              container.innerHTML += cardHTML;
+          });
+      }, (error) => {
+          console.error("Erreur de récupération des messages :", error);
+          container.innerHTML = `<p style="color: #ff4d4d; text-align: center;">Une erreur de droits d'accès est survenue.</p>`;
+      });
+}
+
+// Fonction de suppression de message
+function supprimerMessageContact(msgId) {
+    if (confirm("Voulez-vous vraiment supprimer ce message de votre boîte de réception ?")) {
+        db.collection("messages_contact").doc(msgId).delete()
+        .then(() => {
+            alert("Message supprimé avec succès.");
+        })
+        .catch((error) => {
+            console.error("Erreur de suppression :", error);
+            alert("Impossible de supprimer le message.");
+        });
+    }
+}
+// ==========================================
 // CHARGEMENT EN TEMPS RÉEL (READ)
 // ==========================================
 
-// Charger statistiques globales
+// Charger statistiques globales de manière sécurisée
 db.collection('statistiques').doc('globale').onSnapshot((doc) => {
     if (doc.exists) {
         const data = doc.data();
-        document.getElementById('stat-visiteurs').innerText = data.visiteursJour || 0;
-        document.getElementById('stat-eleves').innerText = data.totalEleves || 0;
-        document.getElementById('stat-composants').innerText = data.totalComposants || 0;
-        document.getElementById('stat-professeurs').innerText = data.totalProfs || 0;
-        if(data.modeInscription) {
-            document.getElementById('setting-signup-mode').value = data.modeInscription;
+        
+        const elVisiteurs = document.getElementById('stat-visiteurs');
+        const elEleves = document.getElementById('stat-eleves');
+        const elComposants = document.getElementById('stat-composants');
+        const elProfs = document.getElementById('stat-professeurs');
+        const elMessages = document.getElementById('stat-messages_contact');
+        const elSignupMode = document.getElementById('setting-signup-mode');
+
+        if (elVisiteurs) elVisiteurs.innerText = data.visiteursJour || 0;
+        if (elEleves) elEleves.innerText = data.totalEleves || 0;
+        if (elComposants) elComposants.innerText = data.totalComposants || 0;
+        if (elProfs) elProfs.innerText = data.totalProfs || 0;
+        if (elMessages) elMessages.innerText = data.totalMessages || 0;
+        
+        if (elSignupMode && data.modeInscription) {
+            elSignupMode.value = data.modeInscription;
         }
     }
 });
@@ -476,3 +601,161 @@ document.getElementById('modifComposantForm').addEventListener('submit', functio
     })
     .then(() => { alert("Composant mis à jour !"); fermerModalModifComposant(); });
 });
+// ==========================================
+// INITIALISATION DE LA GESTION BOUTIQUE
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Écouteur pour l'ajout d'un produit
+    const formProduit = document.getElementById('form-ajouter-produit');
+    if (formProduit) {
+        formProduit.addEventListener('submit', ajouterNouveauProduitBoutique);
+    }
+
+    // Lancer le chargement en temps réel des données boutique
+    ecouterProduitsBoutique();
+    ecouterCommandesBoutique();
+});
+
+// 1. AJOUTER UN PRODUIT DANS FIRESTORE
+function ajouterNouveauProduitBoutique(e) {
+    e.preventDefault();
+
+    const nom = document.getElementById('prod-nom').value;
+    const type = document.getElementById('prod-type').value;
+    const prix = parseFloat(document.getElementById('prod-prix').value);
+    const stock = parseInt(document.getElementById('prod-stock').value);
+    const image = document.getElementById('prod-image').value;
+    const description = document.getElementById('prod-description').value;
+
+    const nouveauProduit = {
+        nom: nom,
+        type: type,
+        prix: prix,
+        quantite_stock: stock,
+        imageURL: image || "",
+        description: description,
+        cree_le: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    db.collection("boutique_produits").add(nouveauProduit)
+    .then(() => {
+        alert(`🛒 L'article "${nom}" a bien été ajouté au catalogue de la boutique !`);
+        document.getElementById('form-ajouter-produit').reset();
+    })
+    .catch((error) => {
+        console.error("Erreur lors de l'ajout du produit : ", error);
+        alert("Une erreur est survenue lors de la mise en ligne.");
+    });
+}
+
+// 2. ÉCOUTER ET AFFICHER L'INVENTAIRE ACTUEL EN LIGNE
+function ecouterProduitsBoutique() {
+    const conteneurProduits = document.getElementById('admin-liste-produits');
+    if (!conteneurProduits) return;
+
+    db.collection("boutique_produits").orderBy("cree_le", "desc").onSnapshot((snapshot) => {
+        conteneurProduits.innerHTML = "";
+
+        if (snapshot.empty) {
+            conteneurProduits.innerHTML = `<p style="color: #6b7280; grid-column: 1/-1;">Aucun produit en vitrine pour l'instant.</p>`;
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const prod = doc.data();
+            const id = doc.id;
+
+            const carteHtml = document.createElement('div');
+            carteHtml.style = "background: #030712; border: 1px solid #1f2937; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;";
+            carteHtml.innerHTML = `
+                <div>
+                    <span style="font-size: 0.75rem; background: #1f2937; padding: 2px 6px; border-radius: 4px; color: #9ca3af;">${prod.type}</span>
+                    <h4 style="margin: 10px 0 5px 0; color: #fff;">${prod.nom}</h4>
+                    <p style="color: #6b7280; font-size: 0.85rem; margin-bottom: 10px;">${prod.prix.toLocaleString('fr-FR')} FCFA — Stock : <strong>${prod.quantite_stock}</strong></p>
+                </div>
+                <button onclick="supprimerProduitBoutique('${id}')" style="background: none; border: 1px solid #ef4444; color: #ef4444; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; width: 100%; margin-top: 10px;">
+                    <i class="fa-solid fa-trash"></i> Retirer du marché
+                </button>
+            `;
+            conteneurProduits.appendChild(carteHtml);
+        });
+    });
+}
+
+// SUPPRIMER UN PRODUIT DE LA BOUTIQUE
+function supprimerProduitBoutique(id) {
+    if (confirm("Êtes-vous sûr de vouloir retirer cet article de la boutique ?")) {
+        db.collection("boutique_produits").doc(id).delete()
+        .then(() => alert("Article supprimé de la vitrine."))
+        .catch(err => console.error("Erreur suppression produit:", err));
+    }
+}
+
+// 3. ÉCOUTER ET AFFICHER LES COMMANDES REÇUES
+function ecouterCommandesBoutique() {
+    const tableBody = document.getElementById('admin-liste-commandes');
+    if (!tableBody) return;
+
+    db.collection("boutique_commandes").orderBy("cree_le", "desc").onSnapshot((snapshot) => {
+        tableBody.innerHTML = "";
+
+        if (snapshot.empty) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 30px;">Aucune commande enregistrée.</td></tr>`;
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const cmd = doc.data();
+            const id = doc.id;
+
+            // Compilation lisible du panier d'achat
+            let articlesTexte = "";
+            cmd.articles.forEach(item => {
+                articlesTexte += `${item.nom} (x${item.quantite})<br>`;
+            });
+
+            const tr = document.createElement('tr');
+            tr.style = "border-bottom: 1px solid #1f2937; color: #fff;";
+            tr.innerHTML = `
+                <td style="padding: 12px; font-size: 0.85rem;">
+                    <strong>${cmd.client_nom}</strong><br>
+                    <span style="color:#9ca3af;">${cmd.client_telephone}</span>
+                </td>
+                <td style="padding: 12px; font-size: 0.85rem; color:#d1d5db;">${articlesTexte}</td>
+                <td style="padding: 12px; font-weight:700; color:#00f0ff;">${cmd.total_facture.toLocaleString('fr-FR')} F</td>
+                <td style="padding: 12px;">
+                    <span style="font-size:0.75rem; padding:3px 8px; border-radius:12px; background: ${cmd.statut === 'Livré' ? '#065f46; color:#34d399;' : '#78350f; color:#fbbf24;'}">
+                        ${cmd.statut}
+                    </span>
+                </td>
+                <td style="padding: 12px;">
+                    <button onclick="marquerCommandeLivree('${id}')" style="background:#10b981; border:none; color:#fff; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem; margin-right:5px;" title="Marquer comme livré">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button onclick="archiverCommande('${id}')" style="background:#ef4444; border:none; color:#fff; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;" title="Supprimer la commande">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    });
+}
+
+// METTRE À JOUR LE STATUT D'UNE COMMANDE
+function marquerCommandeLivree(id) {
+    db.collection("boutique_commandes").doc(id).update({
+        statut: "Livré"
+    })
+    .then(() => alert("Statut de la commande mis à jour ! ✅"))
+    .catch(err => console.error("Erreur mise à jour statut :", err));
+}
+
+// SUPPRIMER UNE COMMANDE
+function archiverCommande(id) {
+    if (confirm("Voulez-vous supprimer cette commande de la liste ?")) {
+        db.collection("boutique_commandes").doc(id).delete()
+        .then(() => alert("Commande supprimée de la liste."))
+        .catch(err => console.error("Erreur suppression commande :", err));
+    }
+}

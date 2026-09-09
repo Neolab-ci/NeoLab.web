@@ -84,28 +84,12 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
     const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
 
-    // 1. SI C'EST UN ADMINISTRATEUR
-    if (role === 'admin') {
-        db.collection('admins')
-          .where('email', '==', email)
-          .get()
-          .then(snapshot => {
-              if (!snapshot.empty) {
-                  alert("Connexion réussie ! Bienvenue sur le Panneau d'Administration.");
-                  window.location.href = "../../admin/&admin.html"; 
-              } else {
-                  alert("Accès refusé. Cet email n'est pas enregistré comme Administrateur.");
-              }
-          })
-          .catch(error => console.error("Erreur connexion admin:", error));
-    }
-
     // 2. SI C'EST UN ÉLÈVE (CORRIGÉ AVEC AUTH + REDIRECTION CHEZ TOI)
-    else if (role === 'eleve') {
+    if (role === 'eleve') {
         auth.signInWithEmailAndPassword(email, password)
         .then(() => {
             alert("Connexion réussie ! Redirection vers votre Espace Élève...");
-            window.location.href = "../../espace/eleve/eleve.html"; 
+            window.location.href = "../../acceuil.html"; 
         })
         .catch(error => {
             alert("Erreur : Email ou mot de passe incorrect.");
@@ -122,7 +106,7 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
           .then(snapshot => {
               if (!snapshot.empty) {
                   alert("Connexion réussie ! Redirection vers votre Espace Professeur...");
-                  window.location.href = "../../espace/professeur/professeur.html"; 
+                  window.location.href = "../../acceuil.html";  
               } else {
                   verifierSiProfEnAttente(email, password);
               }
@@ -200,7 +184,7 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
             statut: 'en_attente'
         })
         .then(() => {
-            alert("✉️ Demande d'inscription envoyée à l'administration !");
+            alert("✉️ Demande d'inscription envoyée à la NeoLab veille patienter !");
             switchForm('login'); 
         })
         .catch(error => alert("Erreur lors du dépôt de candidature : " + error.message));
