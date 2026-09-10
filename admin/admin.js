@@ -1,13 +1,33 @@
 // ==========================================
-// 1. VÉRIFICATION DE LA SESSION SUR CETTE PAGE
-// ==========================================
-// ==========================================
-// 1. VÉRIFICATION DE LA SESSION SUR CETTE PAGE
+// 1. VÉRIFICATION DE LA SESSION ET INITIALISATION
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-    // CORRECTION : On lance le chargement des messages immédiatement au chargement de la page
+    // Initialisation des icônes Lucide si disponibles
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // Gestion du menu flottant de navigation
+    const navTrigger = document.getElementById('floating-nav-trigger');
+    const navMenu = document.getElementById('floating-nav-menu');
+
+    if (navTrigger && navMenu) {
+        navTrigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            navMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!navMenu.contains(e.target) && !navTrigger.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+    }
+
+    // Lancement du flux de messages contact
     activerFluxMessagesContact();
 
+    // Écoute de l'état d'authentification
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             console.log("Session active pour l'admin :", user.uid);
@@ -33,17 +53,14 @@ const db = firebase.firestore();
 let questionCounter = 0; // Compteur pour le quiz dynamique
 
 // ==========================================
-// INITIALISATION DE LA GESTION DES MESSAGES
+// 2. GESTION DES MESSAGES CONTACT
 // ==========================================
-
-// Appel de cette fonction lors du chargement de la session Admin
 function activerFluxMessagesContact() {
     const container = document.getElementById("liste-messages-admin");
     const counter = document.getElementById("total-messages");
 
     if (!container) return;
 
-    // Écoute en temps réel de la collection "messages_contact" triée par date décroissante
     db.collection("messages_contact")
       .orderBy("envoye_le", "desc")
       .onSnapshot((snapshot) => {
@@ -67,7 +84,6 @@ function activerFluxMessagesContact() {
               const msg = doc.data();
               const msgId = doc.id;
               
-              // Formater la date Firestore
               let dateAffichage = "Date inconnue";
               if (msg.envoye_le) {
                   const dateObj = msg.envoye_le.toDate();
@@ -78,8 +94,6 @@ function activerFluxMessagesContact() {
 
               const cardHTML = `
                   <div id="msg-card-${msgId}" style="background: #05112e; border: 1.5px solid #0d2352; border-radius: 12px; padding: 20px; transition: 0.3s; position: relative;">
-                      
-                      <!-- En-tête du message -->
                       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(13, 35, 82, 0.5); padding-bottom: 12px;">
                           <div>
                               <span style="font-size: 0.75rem; background: rgba(29, 97, 230, 0.15); color: #00f0ff; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; margin-right: 8px;">
@@ -91,27 +105,19 @@ function activerFluxMessagesContact() {
                               <i class="fa-regular fa-clock"></i> ${dateAffichage}
                           </span>
                       </div>
-
-                      <!-- Corps du message -->
                       <div style="margin-bottom: 20px;">
                           <p style="color: #e2e8f0; font-size: 0.95rem; white-space: pre-wrap; line-height: 1.6;">${msg.message}</p>
                       </div>
-
-                      <!-- Méta-données & Actions -->
                       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: rgba(2, 9, 29, 0.4); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(13, 35, 82, 0.3);">
                           <div style="display: flex; gap: 15px; color: #8c9cb8; font-size: 0.85rem;">
                               <span><i class="fa-regular fa-envelope"></i> ${msg.email}</span>
                               ${msg.telephone && msg.telephone !== "Non renseigné" ? `<span><i class="fa-solid fa-phone"></i> ${msg.telephone}</span>` : ''}
                           </div>
-                          
                           <div style="display: flex; gap: 10px;">
-                              <!-- Action : Répondre par Email -->
                               <a href="mailto:${msg.email}?subject=R%C3%A9ponse%20NeoLab-CI%20-%20${encodeURIComponent(msg.sujet || '')}&body=Bonjour%20${encodeURIComponent(msg.nom_complet || '')},%0A%0A" 
                                  style="background: #1d61e6; color: white; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: 0.2s;">
                                   <i class="fa-solid fa-reply"></i> Répondre par email
                               </a>
-                              
-                              <!-- Action : Archiver/Supprimer -->
                               <button onclick="supprimerMessageContact('${msgId}')" 
                                       style="background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.2); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s;">
                                   <i class="fa-regular fa-trash-can"></i>
@@ -128,28 +134,22 @@ function activerFluxMessagesContact() {
       });
 }
 
-// Fonction de suppression de message
 function supprimerMessageContact(msgId) {
     if (confirm("Voulez-vous vraiment supprimer ce message de votre boîte de réception ?")) {
         db.collection("messages_contact").doc(msgId).delete()
-        .then(() => {
-            alert("Message supprimé avec succès.");
-        })
-        .catch((error) => {
-            console.error("Erreur de suppression :", error);
-            alert("Impossible de supprimer le message.");
-        });
+        .then(() => alert("Message supprimé avec succès."))
+        .catch((error) => console.error("Erreur de suppression :", error));
     }
 }
+
 // ==========================================
-// CHARGEMENT EN TEMPS RÉEL (READ)
+// 3. CHARGEMENT EN TEMPS RÉEL (FLUX ADMIN)
 // ==========================================
 
-// Charger statistiques globales de manière sécurisée
+// Statistiques globales
 db.collection('statistiques').doc('globale').onSnapshot((doc) => {
     if (doc.exists) {
         const data = doc.data();
-        
         const elVisiteurs = document.getElementById('stat-visiteurs');
         const elEleves = document.getElementById('stat-eleves');
         const elComposants = document.getElementById('stat-composants');
@@ -162,16 +162,14 @@ db.collection('statistiques').doc('globale').onSnapshot((doc) => {
         if (elComposants) elComposants.innerText = data.totalComposants || 0;
         if (elProfs) elProfs.innerText = data.totalProfs || 0;
         if (elMessages) elMessages.innerText = data.totalMessages || 0;
-        
-        if (elSignupMode && data.modeInscription) {
-            elSignupMode.value = data.modeInscription;
-        }
+        if (elSignupMode && data.modeInscription) elSignupMode.value = data.modeInscription;
     }
 });
 
-// Demandes Profs
+// Demandes Professeurs
 db.collection('profs_en_attente').onSnapshot((snapshot) => {
     const tableBody = document.getElementById('prof-validation-table');
+    if (!tableBody) return;
     tableBody.innerHTML = "";
     document.getElementById('stat-profs-details').innerText = `6 Actifs / ${snapshot.size} En attente ⚠️`;
 
@@ -191,27 +189,31 @@ db.collection('profs_en_attente').onSnapshot((snapshot) => {
     });
 });
 
-// Composants
+// Composants (Stock matériel)
 db.collection('composants').onSnapshot((snapshot) => {
     const tableBody = document.getElementById('stock-table-body');
+    if (!tableBody) return;
     tableBody.innerHTML = "";
     snapshot.forEach((doc) => {
         const comp = doc.data();
+        const qte = comp.quantite_stock !== undefined ? comp.quantite_stock : (comp.quantite || 0);
         const imgTag = comp.imageURL ? `<img src="${comp.imageURL}" class="table-img" alt="composant">` : `<div class="table-img" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:#718096">Pas d'img</div>`;
+        
         tableBody.innerHTML += `
             <tr>
                 <td>${imgTag}</td>
                 <td><strong>${comp.nom}</strong></td>
-                <td>${comp.role}</td>
-                <td>${comp.quantite}</td>
-                <td><button class="btn btn-secondary" onclick="ouvrirModalModifComposant('${doc.id}', '${comp.nom}', '${comp.role}', ${comp.quantite}, '${comp.imageURL || ''}')">Modifier</button></td>
+                <td>${comp.role || comp.description || ''}</td>
+                <td>${qte}</td>
+                <td><button class="btn btn-secondary" onclick="ouvrirModalModifComposant('${doc.id}', '${comp.nom.replace(/'/g, "\\'")}', '${(comp.role || '').replace(/'/g, "\\'")}', ${qte}, '${comp.imageURL || ''}')">Modifier</button></td>
             </tr>`;
     });
 });
 
-// Utilisateurs (Élèves)
+// Élèves
 db.collection('eleves').onSnapshot((snapshot) => {
     const tableBody = document.getElementById('users-table-body');
+    if (!tableBody) return;
     tableBody.innerHTML = "";
     snapshot.forEach((doc) => {
         const user = doc.data();
@@ -227,6 +229,7 @@ db.collection('eleves').onSnapshot((snapshot) => {
 // Professeurs Actifs
 db.collection('professeurs').onSnapshot((snapshot) => {
     const tableBody = document.getElementById('profs-actifs-table-body');
+    if (!tableBody) return;
     tableBody.innerHTML = "";
     snapshot.forEach((doc) => {
         const prof = doc.data();
@@ -240,9 +243,10 @@ db.collection('professeurs').onSnapshot((snapshot) => {
     });
 });
 
-// CORRECTION ANOMALIE 2 : Lecture des cours avec passage des paramètres au bouton Modifier
+// Cours
 db.collection('cours').onSnapshot((snapshot) => {
     const tableBody = document.getElementById('cours-table-body');
+    if (!tableBody) return;
     tableBody.innerHTML = "";
     snapshot.forEach((doc) => {
         const cours = doc.data();
@@ -257,8 +261,6 @@ db.collection('cours').onSnapshot((snapshot) => {
         const descCours = cours.short || cours.description || "";
 
         const imgTag = imageCours ? `<img src="${imageCours}" class="table-img" alt="miniature">` : `<div class="table-img"></div>`;
-        
-        // Sécurisation des guillemets pour éviter de casser l'attribut HTML onclick
         const escapedTitle = titreCours.replace(/'/g, "\\'");
         const escapedDesc = descCours.replace(/'/g, "\\'");
 
@@ -278,7 +280,7 @@ db.collection('cours').onSnapshot((snapshot) => {
 });
 
 // ==========================================
-// NAVIGATION ET OUVERTURE/FERMETURE MODALS
+// 4. NAVIGATION & FENÊTRES MODALES
 // ==========================================
 function switchTab(event, sectionId) {
     event.preventDefault();
@@ -301,7 +303,6 @@ function fermerModalCours() {
     document.getElementById('dynamic-quiz-questions-container').innerHTML = "";
 }
 
-// Fonctions de contrôle pour la modification des cours (Anomalie 2)
 function ouvrirModalModifCours(docId, title, idNum, category, level, format, badge, img, media, desc) {
     document.getElementById('edit-cours-doc-id').value = docId;
     document.getElementById('edit-cours-titre').value = title;
@@ -313,7 +314,6 @@ function ouvrirModalModifCours(docId, title, idNum, category, level, format, bad
     document.getElementById('edit-cours-image').value = img;
     document.getElementById('edit-cours-media').value = media;
     document.getElementById('edit-cours-desc').value = desc;
-
     document.getElementById('modifCoursModal').style.display = 'flex';
 }
 
@@ -329,7 +329,7 @@ function toggleChampsRole() {
 }
 
 // ==========================================
-// GESTION DU QUIZ DYNAMIQUE DANS LA MODAL
+// 5. QUIZ DYNAMIQUE EN MODALE
 // ==========================================
 function toggleFormatFields() {
     const format = document.getElementById('cours-format').value;
@@ -398,11 +398,11 @@ function supprimerQuestionInterface(id) {
 }
 
 // ==========================================
-// TRAITEMENT DES FORMULAIRES (SOUMISSIONS)
+// 6. SOUMISSION DES FORMULAIRES DE CRÉATION
 // ==========================================
 
-// 1. Ajouter Utilisateur (Élève / Prof)
-document.getElementById('creationUserForm').addEventListener('submit', function(e) {
+// Création d'utilisateur
+document.getElementById('creationUserForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     const role = document.getElementById('new-role').value;
     const nom = document.getElementById('new-nom').value;
@@ -424,13 +424,15 @@ document.getElementById('creationUserForm').addEventListener('submit', function(
     }
 });
 
-// 2. Ajouter Composant Stock
-document.getElementById('creationComposantForm').addEventListener('submit', function(e) {
+// Ajout de composant au stock matériel
+document.getElementById('creationComposantForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
+    const qte = parseInt(document.getElementById('comp-quantite').value, 10);
     db.collection('composants').add({
         nom: document.getElementById('comp-nom').value,
         role: document.getElementById('comp-role').value,
-        quantite: parseInt(document.getElementById('comp-quantite').value, 10),
+        quantite: qte,
+        quantite_stock: qte, // Double clé pour assurer la compatibilité globale
         imageURL: document.getElementById('comp-image').value || ""
     }).then(() => {
         alert("Composant ajouté au stock !");
@@ -438,18 +440,15 @@ document.getElementById('creationComposantForm').addEventListener('submit', func
     });
 });
 
-// CORRECTION ANOMALIE 1 : Ajout de cours via .add() pour ID auto-généré sans écrasement
+// Publication de cours
 function publierCours(e) {
     e.preventDefault();
-
     const courseId = parseInt(document.getElementById('cours-id').value);
     const format = document.getElementById('cours-format').value;
     const mediaUrl = document.getElementById('cours-media').value;
 
     const questionsPayload = [];
-    const blocks = document.querySelectorAll('.question-entry-block');
-    
-    blocks.forEach(b => {
+    document.querySelectorAll('.question-entry-block').forEach(b => {
         questionsPayload.push({
             q: b.querySelector('.quiz-q-text').value,
             options: [
@@ -475,27 +474,20 @@ function publierCours(e) {
         datePublication: new Date().toLocaleDateString('fr-FR')
     };
 
-    if (format === 'video') {
-        nouveauCours.videoUrl = mediaUrl;
-    } else {
-        nouveauCours.pdf = mediaUrl;
-    }
+    if (format === 'video') nouveauCours.videoUrl = mediaUrl;
+    else nouveauCours.pdf = mediaUrl;
 
     db.collection("cours").add(nouveauCours)
     .then(() => {
-        alert("🎉 Le cours et son quiz ont été publiés sur NeoLab-CI (ID Unique Firebase) !");
+        alert("🎉 Cours publié avec succès !");
         fermerModalCours();
     })
-    .catch(error => {
-        console.error("Erreur d'écriture du cours :", error);
-        alert("❌ Erreur de publication.");
-    });
+    .catch(error => console.error("Erreur de publication du cours :", error));
 }
 
-// CORRECTION ANOMALIE 2 : Application des modifications du cours sur Firebase
+// Mise à jour d'un cours
 function mettreAJourCours(e) {
     e.preventDefault();
-    
     const docId = document.getElementById('edit-cours-doc-id').value;
     const format = document.getElementById('edit-cours-format').value;
     const mediaUrl = document.getElementById('edit-cours-media').value;
@@ -524,56 +516,47 @@ function mettreAJourCours(e) {
         alert("✨ Le cours a été mis à jour avec succès !");
         fermerModalModifCours();
     })
-    .catch(error => {
-        console.error("Erreur lors de la modification du cours :", error);
-        alert("❌ Impossible de modifier le cours.");
-    });
+    .catch(error => console.error("Erreur lors de la modification du cours :", error));
 }
 
-// 4. Envoi du projet de TP assigné à l'élève (Kanban)
+// Assignation de TP (Kanban Élève)
 function publierProjet(e) {
     e.preventDefault();
-
     const studentUid = document.getElementById('project-student-uid').value.trim();
     const projectId = document.getElementById('project-id').value.trim();
-    const title = document.getElementById('project-title').value;
-    const startDate = document.getElementById('project-start-date').value;
 
-    const nouveauSuiviProjet = {
+    db.collection("projets_eleves").doc(`${studentUid}_${projectId}`).set({
         projectId: projectId,
-        titreProjet: title,
+        titreProjet: document.getElementById('project-title').value,
         studentUid: studentUid,
         statut: "en_cours", 
-        dateDemarrage: startDate,
-        dateRendu: "",
-        livrableLien: "",
-        noteEtudiant: ""
-    };
-
-    db.collection("projets_eleves").doc(`${studentUid}_${projectId}`).set(nouveauSuiviProjet)
+        dateDemarrage: document.getElementById('project-start-date').value,
+        dateRendu: "", livrableLien: "", noteEtudiant: ""
+    })
     .then(() => {
-        alert("🎯 Projet assigné avec succès ! Envoyé dans le Kanban de l'élève.");
+        alert("🎯 Projet assigné avec succès au Kanban !");
         document.getElementById('form-ajouter-projet').reset();
     })
-    .catch(error => {
-        console.error("Erreur d'assignation du projet :", error);
-        alert("❌ Impossible d'assigner le projet.");
-    });
+    .catch(error => console.error("Erreur d'assignation du projet :", error));
 }
 
-// Validation Profs et modifications existantes
+// Approbation et refoul ement Professeurs
 function approveProf(docId, name, email, specialite) {
     db.collection('professeurs').add({ nom: name, email: email, specialite: specialite, dateApprobation: new Date().toLocaleDateString('fr-FR'), statut: 'actif' })
-    .then(() => { return db.collection('profs_en_attente').doc(docId).delete(); })
-    .then(() => { alert(`Professeur ${name} validé.`); });
+    .then(() => db.collection('profs_en_attente').doc(docId).delete())
+    .then(() => alert(`Professeur ${name} validé.`));
 }
-function rejectProf(docId, name) { if (confirm(`Supprimer la demande de ${name} ?`)) { db.collection('profs_en_attente').doc(docId).delete(); } }
+function rejectProf(docId, name) { 
+    if (confirm(`Supprimer la demande de ${name} ?`)) { 
+        db.collection('profs_en_attente').doc(docId).delete(); 
+    } 
+}
 
 function saveSettings() {
     const modeSelectionne = document.getElementById('setting-signup-mode').value;
     db.collection('statistiques').doc('globale').update({ modeInscription: modeSelectionne })
-    .then(() => { alert("Configuration système mise à jour dans Firebase !"); })
-    .catch(() => { alert("Une erreur est survenue."); });
+    .then(() => alert("Configuration système mise à jour !"))
+    .catch(() => alert("Une erreur est survenue."));
 }
 
 function ouvrirModalModifComposant(id, nom, role, quantite, imageURL) {
@@ -590,72 +573,58 @@ function fermerModalModifComposant() {
     document.getElementById('modifComposantForm').reset();
 }
 
-document.getElementById('modifComposantForm').addEventListener('submit', function(e) {
+document.getElementById('modifComposantForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     const id = document.getElementById('edit-comp-id').value;
+    const qte = parseInt(document.getElementById('edit-comp-quantite').value, 10);
+    
     db.collection('composants').doc(id).update({
         nom: document.getElementById('edit-comp-nom').value,
         role: document.getElementById('edit-comp-role').value,
-        quantite: parseInt(document.getElementById('edit-comp-quantite').value, 10),
+        quantite: qte,
+        quantite_stock: qte,
         imageURL: document.getElementById('edit-comp-image').value
     })
     .then(() => { alert("Composant mis à jour !"); fermerModalModifComposant(); });
 });
+
 // ==========================================
-// INITIALISATION DE LA GESTION BOUTIQUE
+// 7. GESTION DU CATALOGUE ET COMMANDES BOUTIQUE
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Écouteur pour l'ajout d'un produit
     const formProduit = document.getElementById('form-ajouter-produit');
-    if (formProduit) {
-        formProduit.addEventListener('submit', ajouterNouveauProduitBoutique);
-    }
+    if (formProduit) formProduit.addEventListener('submit', ajouterNouveauProduitBoutique);
 
-    // Lancer le chargement en temps réel des données boutique
     ecouterProduitsBoutique();
     ecouterCommandesBoutique();
 });
 
-// 1. AJOUTER UN PRODUIT DANS FIRESTORE
 function ajouterNouveauProduitBoutique(e) {
     e.preventDefault();
-
     const nom = document.getElementById('prod-nom').value;
-    const type = document.getElementById('prod-type').value;
-    const prix = parseFloat(document.getElementById('prod-prix').value);
-    const stock = parseInt(document.getElementById('prod-stock').value);
-    const image = document.getElementById('prod-image').value;
-    const description = document.getElementById('prod-description').value;
 
-    const nouveauProduit = {
+    db.collection("boutique_produits").add({
         nom: nom,
-        type: type,
-        prix: prix,
-        quantite_stock: stock,
-        imageURL: image || "",
-        description: description,
+        type: document.getElementById('prod-type').value,
+        prix: parseFloat(document.getElementById('prod-prix').value),
+        quantite_stock: parseInt(document.getElementById('prod-stock').value, 10),
+        imageURL: document.getElementById('prod-image').value || "",
+        description: document.getElementById('prod-description').value,
         cree_le: firebase.firestore.FieldValue.serverTimestamp()
-    };
-
-    db.collection("boutique_produits").add(nouveauProduit)
+    })
     .then(() => {
         alert(`🛒 L'article "${nom}" a bien été ajouté au catalogue de la boutique !`);
         document.getElementById('form-ajouter-produit').reset();
     })
-    .catch((error) => {
-        console.error("Erreur lors de l'ajout du produit : ", error);
-        alert("Une erreur est survenue lors de la mise en ligne.");
-    });
+    .catch(error => console.error("Erreur d'ajout du produit : ", error));
 }
 
-// 2. ÉCOUTER ET AFFICHER L'INVENTAIRE ACTUEL EN LIGNE
 function ecouterProduitsBoutique() {
     const conteneurProduits = document.getElementById('admin-liste-produits');
     if (!conteneurProduits) return;
 
     db.collection("boutique_produits").orderBy("cree_le", "desc").onSnapshot((snapshot) => {
         conteneurProduits.innerHTML = "";
-
         if (snapshot.empty) {
             conteneurProduits.innerHTML = `<p style="color: #6b7280; grid-column: 1/-1;">Aucun produit en vitrine pour l'instant.</p>`;
             return;
@@ -664,14 +633,13 @@ function ecouterProduitsBoutique() {
         snapshot.forEach((doc) => {
             const prod = doc.data();
             const id = doc.id;
-
             const carteHtml = document.createElement('div');
             carteHtml.style = "background: #030712; border: 1px solid #1f2937; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;";
             carteHtml.innerHTML = `
                 <div>
                     <span style="font-size: 0.75rem; background: #1f2937; padding: 2px 6px; border-radius: 4px; color: #9ca3af;">${prod.type}</span>
                     <h4 style="margin: 10px 0 5px 0; color: #fff;">${prod.nom}</h4>
-                    <p style="color: #6b7280; font-size: 0.85rem; margin-bottom: 10px;">${prod.prix.toLocaleString('fr-FR')} FCFA — Stock : <strong>${prod.quantite_stock}</strong></p>
+                    <p style="color: #6b7280; font-size: 0.85rem; margin-bottom: 10px;">${(prod.prix || 0).toLocaleString('fr-FR')} FCFA — Stock : <strong>${prod.quantite_stock}</strong></p>
                 </div>
                 <button onclick="supprimerProduitBoutique('${id}')" style="background: none; border: 1px solid #ef4444; color: #ef4444; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; width: 100%; margin-top: 10px;">
                     <i class="fa-solid fa-trash"></i> Retirer du marché
@@ -682,7 +650,6 @@ function ecouterProduitsBoutique() {
     });
 }
 
-// SUPPRIMER UN PRODUIT DE LA BOUTIQUE
 function supprimerProduitBoutique(id) {
     if (confirm("Êtes-vous sûr de vouloir retirer cet article de la boutique ?")) {
         db.collection("boutique_produits").doc(id).delete()
@@ -691,14 +658,12 @@ function supprimerProduitBoutique(id) {
     }
 }
 
-// 3. ÉCOUTER ET AFFICHER LES COMMANDES REÇUES
 function ecouterCommandesBoutique() {
     const tableBody = document.getElementById('admin-liste-commandes');
     if (!tableBody) return;
 
     db.collection("boutique_commandes").orderBy("cree_le", "desc").onSnapshot((snapshot) => {
         tableBody.innerHTML = "";
-
         if (snapshot.empty) {
             tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 30px;">Aucune commande enregistrée.</td></tr>`;
             return;
@@ -707,25 +672,23 @@ function ecouterCommandesBoutique() {
         snapshot.forEach((doc) => {
             const cmd = doc.data();
             const id = doc.id;
-
-            // Compilation lisible du panier d'achat
             let articlesTexte = "";
-            cmd.articles.forEach(item => {
-                articlesTexte += `${item.nom} (x${item.quantite})<br>`;
-            });
+            if (cmd.articles) {
+                cmd.articles.forEach(item => { articlesTexte += `${item.nom} (x${item.quantite})<br>`; });
+            }
 
             const tr = document.createElement('tr');
             tr.style = "border-bottom: 1px solid #1f2937; color: #fff;";
             tr.innerHTML = `
                 <td style="padding: 12px; font-size: 0.85rem;">
-                    <strong>${cmd.client_nom}</strong><br>
-                    <span style="color:#9ca3af;">${cmd.client_telephone}</span>
+                    <strong>${cmd.client_nom || 'Client inconnu'}</strong><br>
+                    <span style="color:#9ca3af;">${cmd.client_telephone || ''}</span>
                 </td>
                 <td style="padding: 12px; font-size: 0.85rem; color:#d1d5db;">${articlesTexte}</td>
-                <td style="padding: 12px; font-weight:700; color:#00f0ff;">${cmd.total_facture.toLocaleString('fr-FR')} F</td>
+                <td style="padding: 12px; font-weight:700; color:#00f0ff;">${(cmd.total_facture || 0).toLocaleString('fr-FR')} F</td>
                 <td style="padding: 12px;">
                     <span style="font-size:0.75rem; padding:3px 8px; border-radius:12px; background: ${cmd.statut === 'Livré' ? '#065f46; color:#34d399;' : '#78350f; color:#fbbf24;'}">
-                        ${cmd.statut}
+                        ${cmd.statut || 'En attente'}
                     </span>
                 </td>
                 <td style="padding: 12px;">
@@ -742,16 +705,12 @@ function ecouterCommandesBoutique() {
     });
 }
 
-// METTRE À JOUR LE STATUT D'UNE COMMANDE
 function marquerCommandeLivree(id) {
-    db.collection("boutique_commandes").doc(id).update({
-        statut: "Livré"
-    })
+    db.collection("boutique_commandes").doc(id).update({ statut: "Livré" })
     .then(() => alert("Statut de la commande mis à jour ! ✅"))
     .catch(err => console.error("Erreur mise à jour statut :", err));
 }
 
-// SUPPRIMER UNE COMMANDE
 function archiverCommande(id) {
     if (confirm("Voulez-vous supprimer cette commande de la liste ?")) {
         db.collection("boutique_commandes").doc(id).delete()

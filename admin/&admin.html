@@ -3,628 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoLab-CI — Administration</title>
-    <link rel="stylesheet" href="admin.css">
-    <link rel="stylesheet" href="../com.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>NeoLab-CI - Administration</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Styles CSS -->
+    <link rel="stylesheet" href="admin.css">
 </head>
-<body>
+<body class="admin-body">
 
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <h2>NeoLab-CI</h2>
-            <span>Espace Admin</span>
+    <!-- ========================================== -->
+    <!-- MENU FLOOTTANT DE NAVIGATION               -->
+    <!-- ========================================== -->
+    <div class="floating-nav-container">
+        <button id="floating-nav-trigger" class="floating-nav-btn" title="Menu rapide">
+            <i data-lucide="menu"></i>
+        </button>
+        <div id="floating-nav-menu" class="floating-nav-menu">
+            <a href="index.html" class="floating-nav-item"><i data-lucide="home"></i> Accueil</a>
+            <a href="espace-eleve.html" class="floating-nav-item"><i data-lucide="graduation-cap"></i> Espace Élève</a>
+            <a href="espace-prof.html" class="floating-nav-item"><i data-lucide="user-check"></i> Espace Prof</a>
+            <a href="composants.html" class="floating-nav-item"><i data-lucide="cpu"></i> Composants</a>
+            <a href="shop.html" class="floating-nav-item"><i data-lucide="shopping-bag"></i> Boutique</a>
+            <a href="contact.html" class="floating-nav-item"><i data-lucide="mail"></i> Contact</a>
         </div>
-        <nav class="sidebar-menu">
-            <a href="#" class="menu-link active" onclick="switchTab(event, 'dashboard')">📊 Vue d'ensemble</a>
-            <a href="#" class="menu-link" onclick="switchTab(event, 'stock')">🛠️ Gestion du Stock</a>
-            <a href="#" class="menu-link" onclick="switchTab(event, 'cours')">📚 Gestion des Cours</a>
-            <a href="#" class="menu-link" onclick="switchTab(event, 'boutique')">� Gestion de la Boutique</a>
-            <a href="#" class="menu-link" onclick="switchTab(event, 'users')">👥 Utilisateurs</a>
-            <a href="#" class="menu-link" onclick="switchTab(event, 'messages_contact')">📨 Messages</a>
-            <a href="#" class="menu-link" onclick="switchTab(event, 'settings')">⚙️ Paramètres</a>
-            <a href="../acceuil.html" class="menu-link">@ Accueil</a>
-        </nav>
     </div>
 
-    <div class="main-content">
-        
-        <header class="main-header">
-            <h1>Panneau de Contrôle</h1>
-            <div class="user-profile">
-                <span>Admin NeoLab</span>
-                <div class="avatar"></div>
+    <!-- MAIN WRAPPER -->
+    <div class="admin-dashboard-container">
+
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand">
+                <h2>NeoLab<span>-CI</span></h2>
+                <span class="badge-role">Admin</span>
             </div>
-        </header>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-link active" onclick="switchTab(event, 'tab-vue-ensemble')">
+                    <i class="fa-solid fa-chart-line"></i> Vue d'ensemble
+                </a>
+                <a href="#" class="menu-link" onclick="switchTab(event, 'tab-stock')">
+                    <i class="fa-solid fa-boxes-stacked"></i> Stock Matériel
+                </a>
+                <a href="#" class="menu-link" onclick="switchTab(event, 'tab-cours')">
+                    <i class="fa-solid fa-book-open"></i> Cours & Quiz
+                </a>
+                <a href="#" class="menu-link" onclick="switchTab(event, 'tab-boutique')">
+                    <i class="fa-solid fa-store"></i> Boutique
+                </a>
+                <a href="#" class="menu-link" onclick="switchTab(event, 'tab-messages')">
+                    <i class="fa-solid fa-envelope"></i> Messages (<span id="total-messages">0</span>)
+                </a>
+                <a href="#" class="menu-link" onclick="switchTab(event, 'tab-utilisateurs')">
+                    <i class="fa-solid fa-users"></i> Utilisateurs
+                </a>
+            </nav>
+        </aside>
 
-        <section id="dashboard" class="content-section active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Visiteurs Jour</h3>
-                    <p class="stat-number" id="stat-visiteurs">0</p>
-                    <span class="stat-trend positive">+12% vs hier</span>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Élèves</h3>
-                    <p class="stat-number" id="stat-eleves">0</p>
-                    <span class="stat-sub">Inscriptions directes</span>
-                </div>
-                <div class="stat-card">
-                    <h3>Professeurs</h3>
-                    <p class="stat-number" id="stat-professeurs">0</p>
-                    <span class="stat-sub-alert" id="stat-profs-details">0 Actifs / 0 En attente</span>
-                </div>
-                <div class="stat-card">
-                    <h3>Stock Matériel</h3>
-                    <p class="stat-number" id="stat-composants">0</p>
-                    <span class="stat-sub">Composants Arduino</span>
-                </div>
-            </div>
+        <!-- MAIN CONTENT AREA -->
+        <main class="admin-main">
 
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Centre de Validation Professeurs</h2>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Email</th>
-                            <th>Spécialité</th>
-                            <th>Date Demande</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="prof-validation-table"></tbody>
-                </table>
-            </div>
-        </section>
-                <!-- SECTION DE GESTION DE LA BOUTIQUE NEOLAB -->
-        <section class="admin-section" id="gestion-boutique">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-store"></i> Gestion de la Boutique NeoLab</h2>
-                <p>Ajoutez des articles en stock, gérez les quantités et suivez les commandes reçues.</p>
-            </div>
+            <!-- SECTION 1: VUE D'ENSEMBLE -->
+            <section id="tab-vue-ensemble" class="content-section active">
+                <header class="section-header">
+                    <h1>Tableau de Bord Administration</h1>
+                    <p>Suivi en temps réel de la plateforme NeoLab-CI.</p>
+                </header>
 
-            <!-- GRILLE DE DEUX COLONNES : FORMULAIRE ET SUIVI DES COMMANDES -->
-            <div class="admin-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-top: 20px;">
-                
-                <!-- 1. FORMULAIRE D'AJOUT DE PRODUIT -->
-                <div class="admin-card" style="background: #111827; border: 1px solid #1f2937; padding: 25px; border-radius: 12px;">
-                    <h3 style="color: #00f0ff; margin-bottom: 20px;"><i class="fa-solid fa-plus-circle"></i> Ajouter un nouvel article</h3>
-                    
-                    <form id="form-ajouter-produit">
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Nom de l'article *</label>
-                            <input type="text" id="prod-nom" required placeholder="Ex: Kit Arduino Uno Starter" style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-eye card-icon"></i>
+                        <div>
+                            <h3>Visiteurs Jour</h3>
+                            <p id="stat-visiteurs">0</p>
                         </div>
-
-                        <div class="form-group" style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div>
-                                <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Type de produit *</label>
-                                <select id="prod-type" required style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
-                                    <option value="Composant">Composant</option>
-                                    <option value="Kit">Kit complet</option>
-                                    <option value="Projet">Projet complexe</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Prix (FCFA) *</label>
-                                <input type="number" id="prod-prix" required placeholder="Ex: 5000" style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
-                            </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-user-graduate card-icon"></i>
+                        <div>
+                            <h3>Élèves</h3>
+                            <p id="stat-eleves">0</p>
                         </div>
-
-                        <div class="form-group" style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div>
-                                <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Quantité en Stock *</label>
-                                <input type="number" id="prod-stock" required placeholder="Ex: 15" style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
-                            </div>
-                            <div>
-                                <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Lien de l'image (URL)</label>
-                                <input type="url" id="prod-image" placeholder="https://..." style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px;">
-                            </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-microchip card-icon"></i>
+                        <div>
+                            <h3>Composants Stock</h3>
+                            <p id="stat-composants">0</p>
                         </div>
-
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block; color:#9ca3af; margin-bottom:5px; font-size:0.9rem;">Description de l'article *</label>
-                            <textarea id="prod-description" required rows="3" placeholder="Description technique ou contenu du kit..." style="width:100%; padding:10px; background:#030712; border:1px solid #374151; color:#fff; border-radius:6px; resize:none;"></textarea>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-chalkboard-user card-icon"></i>
+                        <div>
+                            <h3>Professeurs</h3>
+                            <p id="stat-professeurs">0</p>
                         </div>
-
-                        <button type="submit" style="width:100%; padding:12px; background:#1d61e6; color:#fff; border:none; font-weight:700; border-radius:6px; cursor:pointer;"> Mettre en vente sur la boutique</button>
-                    </form>
+                    </div>
                 </div>
 
-                <!-- 2. TABLEAU DE SUIVI DES COMMANDES REÇUES -->
-                <div class="admin-card" style="background: #111827; border: 1px solid #1f2937; padding: 25px; border-radius: 12px; display: flex; flex-direction: column;">
-                    <h3 style="color: #1d61e6; margin-bottom: 20px;"><i class="fa-solid fa-receipt"></i> Commandes du canal NeoLab</h3>
-                    
-                    <div style="overflow-x: auto; flex-grow: 1;">
-                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                <!-- Demandes Profs en attente -->
+                <div class="card-box margin-top">
+                    <div class="card-box-header">
+                        <h2>Demandes de Validation Professeurs</h2>
+                        <span id="stat-profs-details" class="status-badge warning">0 En attente</span>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Spécialité</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prof-validation-table">
+                            <!-- Injections dynamiques via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 2: STOCK MATÉRIEL -->
+            <section id="tab-stock" class="content-section">
+                <header class="section-header flex-between">
+                    <div>
+                        <h1>Stock Matériel Arduino</h1>
+                        <p>Gérez les composants disponibles pour les cours et les travaux pratiques.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="ouvrirModalComposant()">+ Nouveau Composant</button>
+                </header>
+
+                <div class="card-box">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Nom</th>
+                                <th>Rôle / Description</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-table-body">
+                            <!-- Injections dynamiques JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 3: COURS ET QUIZ -->
+            <section id="tab-cours" class="content-section">
+                <header class="section-header flex-between">
+                    <div>
+                        <h1>Gestion des Cours & Quiz</h1>
+                        <p>Publiez et modifiez les cours interactifs du catalogue.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="ouvrirModalCours()">+ Nouveau Cours</button>
+                </header>
+
+                <div class="card-box">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Visuel</th>
+                                <th>Titre</th>
+                                <th>Niveau</th>
+                                <th>Catégorie</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cours-table-body">
+                            <!-- Injections dynamiques JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 4: BOUTIQUE -->
+            <section id="tab-boutique" class="content-section">
+                <header class="section-header">
+                    <h1>Gestion de la Boutique</h1>
+                    <p>Ajoutez des articles en vente et suivez les commandes clients.</p>
+                </header>
+
+                <div class="grid-2-cols">
+                    <!-- Formulaire d'ajout boutique -->
+                    <div class="card-box">
+                        <h2>Ajouter un Article au Marché</h2>
+                        <form id="form-ajouter-produit" class="admin-form">
+                            <div class="form-group">
+                                <label>Nom du Produit *</label>
+                                <input type="text" id="prod-nom" required placeholder="Ex: Kit Arduino Uno Ultimate">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Catégorie *</label>
+                                    <select id="prod-type" required>
+                                        <option value="Module">Module</option>
+                                        <option value="Capteur">Capteur</option>
+                                        <option value="Kit Complet">Kit Complet</option>
+                                        <option value="Accessoire">Accessoire</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Prix (FCFA) *</label>
+                                    <input type="number" id="prod-prix" required placeholder="Ex: 15000">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Quantité en Stock *</label>
+                                    <input type="number" id="prod-stock" required placeholder="Ex: 10">
+                                </div>
+                                <div class="form-group">
+                                    <label>Lien de l'Image</label>
+                                    <input type="text" id="prod-image" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="prod-description" rows="3" placeholder="Fiche technique succincte..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary full-width">Publier l'Article</button>
+                        </form>
+                    </div>
+
+                    <!-- Catalogue Vitrine Admin -->
+                    <div class="card-box">
+                        <h2>Articles en Vitrine</h2>
+                        <div id="admin-liste-produits" class="produits-grid-admin">
+                            <!-- Injection dynamique JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Commandes de la boutique -->
+                <div class="card-box margin-top">
+                    <h2>Commandes Récentes</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Articles</th>
+                                <th>Total</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-liste-commandes">
+                            <!-- Injection dynamique JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 5: MESSAGES CONTACT -->
+            <section id="tab-messages" class="content-section">
+                <header class="section-header">
+                    <h1>Boîte de Réception (Contact)</h1>
+                    <p>Consultez et répondez aux messages reçus depuis le portail web.</p>
+                </header>
+
+                <div id="liste-messages-admin" class="messages-container">
+                    <!-- Injection dynamique des messages contact via JS -->
+                </div>
+            </section>
+
+            <!-- SECTION 6: UTILISATEURS -->
+            <section id="tab-utilisateurs" class="content-section">
+                <header class="section-header flex-between">
+                    <div>
+                        <h1>Comptes Utilisateurs</h1>
+                        <p>Gérez l'ensemble des accès élèves et enseignants.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="abrirModalCreation()">+ Nouveau Compte</button>
+                </header>
+
+                <div class="grid-2-cols">
+                    <div class="card-box">
+                        <h2>Élèves Inscrits</h2>
+                        <table class="data-table">
                             <thead>
-                                <tr style="border-bottom: 2px solid #1f2937; color: #9ca3af;">
-                                    <th style="padding: 10px;">Client</th>
-                                    <th style="padding: 10px;">Articles</th>
-                                    <th style="padding: 10px;">Total</th>
-                                    <th style="padding: 10px;">Statut</th>
-                                    <th style="padding: 10px;">Actions</th>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Filière</th>
+                                    <th>Statut</th>
                                 </tr>
                             </thead>
-                            <tbody id="admin-liste-commandes">
-                                <!-- Rempli dynamiquement en JS -->
+                            <tbody id="users-table-body">
+                                <!-- Injections dynamiques -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-box">
+                        <h2>Professeurs Actifs</h2>
+                        <table class="data-table">
+                            <thead>
                                 <tr>
-                                    <td colspan="5" style="text-align: center; color: #6b7280; padding: 30px;">Aucune commande en attente.</td>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Spécialité</th>
+                                    <th>Statut</th>
                                 </tr>
+                            </thead>
+                            <tbody id="profs-actifs-table-body">
+                                <!-- Injections dynamiques -->
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </section>
 
-            </div>
-
-            <!-- 3. INVENTAIRE / LISTE ACTUELLE DES PRODUITS EN LIGNE -->
-            <div class="admin-card" style="background: #111827; border: 1px solid #1f2937; padding: 25px; border-radius: 12px; margin-top: 30px;">
-                <h3 style="color: #fff; margin-bottom: 20px;"><i class="fa-solid fa-boxes-stacked"></i> Articles actuellement en ligne</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;" id="admin-liste-produits">
-                    <!-- Rempli dynamiquement en JS -->
-                </div>
-            </div>
-        </section>
-        <section id="settings" class="content-section">
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Paramètres Généraux de l'Application</h2>
-                </div>
-                <div class="settings-form">
-                    <h3>🔧 Configuration Firebase</h3>
-                    <div class="form-group">
-                        <label>ID du projet de test Firebase</label>
-                        <input type="text" value="neolab-ci" readonly>
-                    </div>
-                    
-                    <h3>🔒 Sécurité & Accès</h3>
-                    <div class="form-group">
-                        <label>Mode d'inscription des Professeurs</label>
-                        <select id="setting-signup-mode">
-                            <option value="Validation manuelle par l'admin (Recommandé)">Validation manuelle par l'admin (Recommandé)</option>
-                            <option value="Ouvert à tous">Ouvert à tous</option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-success" onclick="saveSettings()">Enregistrer les modifications</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="stock" class="content-section">
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Inventaire des composants Arduino</h2>
-                    <button class="btn btn-primary" onclick="ouvrirModalComposant()">+ Ajouter un composant</button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Composant</th>
-                            <th>Rôle</th>
-                            <th>Quantité</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stock-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-        <!-- SECTION GESTION DES MESSAGES CONTACT -->
-        <section id="messages_contact" class="content-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <div>
-                    <h1 style="color: white; font-size: 1.8rem; font-weight: 700;">📨 Boîte de réception</h1>
-                    <p style="color: #8c9cb8; margin: 0;">Gérez les questions et les demandes de partenariat reçues depuis le site.</p>
-                </div>
-                <div style="background: rgba(29, 97, 230, 0.1); color: #1d61e6; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.9rem;">
-                    Total : <span id="total-messages">0</span>
-                </div>
-            </div>
-
-            <!-- Grille ou liste de messages -->
-            <div id="liste-messages-admin" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
-                <!-- Les messages reçus s'injecteront ici dynamiquement -->
-                <div style="text-align: center; padding: 40px; color: #8c9cb8;">
-                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                    <p>Chargement des messages...</p>
-                </div>
-            </div>
-        </section>
-        <section id="cours" class="content-section">
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Cours en ligne mis à disposition</h2>
-                    <button class="btn btn-primary" onclick="ouvrirModalCours()">+ Ajouter un cours</button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Aperçu</th>
-                            <th>Titre du cours</th>
-                            <th>Niveau</th>
-                            <th>Catégorie</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cours-table-body"></tbody>
-                </table>
-            </div>
-
-            <div class="data-card" style="margin-top: 30px; background: #070a1e; border: 1px solid #1f2937; padding: 25px; border-radius: 12px; color: white;">
-                <h2 style="color: #3b82f6; font-size: 1.3rem; margin-bottom: 20px; font-weight: bold;">🛠️ Assigner un Nouveau Projet / TP (Kanban)</h2>
-                <form id="form-ajouter-projet" onsubmit="publierProjet(event)">
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label style="display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px;">UID de l'élève destinataire *</label>
-                        <input type="text" id="project-student-uid" required placeholder="Coller l'UID Firebase de l'élève" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px;">
-                        <div>
-                            <label style="display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px;">Titre du projet / TP *</label>
-                            <input type="text" id="project-title" required placeholder="Ex: Barrière Automatique RFID" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px;">ID Unique du Projet *</label>
-                            <input type="text" id="project-id" required placeholder="Ex: tp_rfid_01" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label style="display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px;">Date de démarrage *</label>
-                        <input type="date" id="project-start-date" required style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; margin-top: 10px;">Envoi du projet dans le Kanban de l'élève</button>
-                </form>
-            </div>
-        </section>
-        
-        <section id="users" class="content-section">
-            <div class="data-card">
-                <div class="card-header">
-                    <h2>Élèves enregistrés</h2>
-                    <button class="btn btn-primary" onclick="ouvrirModalCreation()">+ Créer un compte</button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Nom complet</th>
-                            <th>Filière / Niveau</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table-body"></tbody>
-                </table>
-            </div>
-
-            <div class="data-card" style="margin-top: 30px;">
-                <div class="card-header">
-                    <h2>Professeurs actifs</h2>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Nom complet</th>
-                            <th>Adresse Email</th>
-                            <th>Spécialité</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody id="profs-actifs-table-body"></tbody>
-                </table>
-            </div>
-        </section>
+        </main>
     </div>
 
-    <div id="creationModal" class="modal-overlay" style="display: none;">
-        <div class="modal-box">
-            <h2>Créer un nouveau compte</h2>
-            <form id="creationUserForm">
-                <div class="form-group">
-                    <label for="new-role">Type de compte</label>
-                    <select id="new-role" onchange="toggleChampsRole()" required>
-                        <option value="eleve" selected>Élève</option>
-                        <option value="professeur">Professeur (Actif directement)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="new-nom">Nom complet</label>
-                    <input type="text" id="new-nom" placeholder="Ex: Jean Koffi" required>
-                </div>
-                <div class="form-group">
-                    <label for="new-sexe">Genre (Sexe)</label>
-                    <select id="new-sexe" required>
-                        <option value="Homme">Homme</option>
-                        <option value="Femme">Femme</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="new-email">Adresse Email</label>
-                    <input type="email" id="new-email" placeholder="Ex: jean.k@gmail.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="new-password">Mot de passe initial</label>
-                    <input type="password" id="new-password" placeholder="••••••••" required>
-                </div>
-                <div class="form-group" id="group-niveau">
-                    <label for="new-niveau">Niveau d'études / Filière</label>
-                    <input type="text" id="new-niveau" placeholder="Ex: Licence 2 Électronique">
-                </div>
-                <div class="form-group" id="group-specialite" style="display: none;">
-                    <label for="new-specialite">Spécialité</label>
-                    <input type="text" id="new-specialite" placeholder="Ex: Robotique / Arduino">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="fermerModalCreation()">Annuler</button>
-                    <button type="submit" class="btn btn-success">Créer le compte</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="composantModal" class="modal-overlay" style="display: none;">
-        <div class="modal-box">
-            <h2>Ajouter un nouveau composant</h2>
-            <form id="creationComposantForm">
-                <div class="form-group">
-                    <label for="comp-nom">Nom du composant</label>
-                    <input type="text" id="comp-nom" placeholder="Ex: Arduino Uno R3" required>
-                </div>
-                <div class="form-group">
-                    <label for="comp-role">Rôle / Description courte</label>
-                    <input type="text" id="comp-role" placeholder="Ex: Microcontrôleur principal" required>
-                </div>
-                <div class="form-group">
-                    <label for="comp-quantite">Quantité disponible</label>
-                    <input type="number" id="comp-quantite" placeholder="Ex: 10" required>
-                </div>
-                <div class="form-group">
-                    <label for="comp-image">Lien URL de l'image</label>
-                    <input type="text" id="comp-image" placeholder="https://lien-image.com/arduino.jpg">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="fermerModalComposant()">Annuler</button>
-                    <button type="submit" class="btn btn-success">Ajouter au Stock</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="modifComposantModal" class="modal-overlay" style="display: none;">
-        <div class="modal-box">
-            <h2>Modifier le composant</h2>
-            <form id="modifComposantForm">
-                <input type="hidden" id="edit-comp-id">
-                <div class="form-group">
-                    <label for="edit-comp-nom">Nom du composant</label>
-                    <input type="text" id="edit-comp-nom" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-comp-role">Rôle / Description</label>
-                    <input type="text" id="edit-comp-role" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-comp-quantite">Quantité en stock</label>
-                    <input type="number" id="edit-comp-quantite" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-comp-image">Lien URL de l'image</label>
-                    <input type="text" id="edit-comp-image">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="fermerModalModifComposant()">Annuler</button>
-                    <button type="submit" class="btn btn-success">Enregistrer les changements</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="coursModal" class="modal-overlay" style="display: none;">
-        <div class="modal-box" style="max-height: 85vh; overflow-y: auto; width: 650px; background: #070a1e; color: white;">
-            <h2 style="color: #f97316; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px;">📚 Publier un Nouveau Cours Dynamique</h2>
-            <form id="creationCoursForm" onsubmit="publierCours(event)">
-                
-                <div class="form-group">
-                    <label for="cours-titre">Nom / Titre du cours *</label>
-                    <input type="text" id="cours-titre" placeholder="Ex: Les Diodes : Descriptions et Applications" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <label for="cours-id">ID Unique (Nombre) *</label>
-                        <input type="number" id="cours-id" placeholder="Ex: 5" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-                    </div>
-                    <div class="form-group">
-                        <label for="cours-categorie">Catégorie *</label>
-                        <select id="cours-categorie" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
-                            <option value="Électronique">⚡ Électronique & Systèmes Embarqués</option>
-                            <option value="Informatique">💻 Informatique & Programmation</option>
-                            <option value="Biomédicale">🔬 Maintenance Biomédicale</option>
-                            <option value="Réseaux & Sécurité">🌐 Réseaux & Cybersécurité</option>
-                            <option value="Robotique">🤖 Automatismes & Robotique</option>
-                            <option value="TP">🛠️ Travaux Pratiques</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="cours-niveau">Niveau *</label>
-                        <select id="cours-niveau" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
-                            <option value="Débutant">Débutant</option>
-                            <option value="Intermédiaire">Intermédiaire</option>
-                            <option value="Avancé">Avancé</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <label for="cours-format">Format du Support *</label>
-                        <select id="cours-format" required onchange="toggleFormatFields()" style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
-                            <option value="pdf">📄 Fichier PDF</option>
-                            <option value="video">🎥 Cours Vidéo</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="cours-badge">Style du Badge *</label>
-                        <select id="cours-badge" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
-                            <option value="passif">Passif (Gris/Bleu)</option>
-                            <option value="actif">Actif (Orange)</option>
-                            <option value="important">Important (Rouge)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <label for="cours-image">Image d'illustration (URL/Chemin) *</label>
-                        <input type="text" id="cours-image" placeholder="images/cours_diodes.jpg" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-                    </div>
-                    <div class="form-group" id="container-field-media">
-                        <label for="cours-media">Chemin du fichier PDF *</label>
-                        <input type="text" id="cours-media" placeholder="cours/diodes.pdf" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="cours-desc">Petite description courte *</label>
-                    <input type="text" id="cours-desc" placeholder="Étude fondamentale des diodes et de leurs applications..." required style="background: #0f172a; border: 1px solid #334155; color: white;">
-                </div>
-
-                <div style="border-top: 1px solid #1f2937; padding-top: 15px; margin-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="font-size: 14px; font-weight: bold; color: #e2e8f0;">🧠 Questions du Quiz de validation</h3>
-                        <button type="button" onclick="ajouterQuestionInterface()" style="padding: 5px 10px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">➕ Ajouter une question</button>
-                    </div>
-                    <div id="dynamic-quiz-questions-container">
-                        </div>
-                </div>
-
-                <div class="modal-actions" style="margin-top: 20px;">
-                    <button type="button" class="btn btn-secondary" onclick="fermerModalCours()">Annuler</button>
-                    <button type="submit" class="btn btn-success">🚀 Publier le cours</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- MODAL DE MODIFICATION D'UN COURS -->
-<div id="modifCoursModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box" style="max-height: 85vh; overflow-y: auto; width: 650px; background: #070a1e; color: white;">
-        <h2 style="color: #3b82f6; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px;">📝 Modifier le Cours</h2>
-        <form id="modifCoursForm" onsubmit="mettreAJourCours(event)">
-            <input type="hidden" id="edit-cours-doc-id">
-            
-            <div class="form-group">
-                <label for="edit-cours-titre">Nom / Titre du cours *</label>
-                <input type="text" id="edit-cours-titre" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                <div class="form-group">
-                    <label for="edit-cours-id">ID Unique (Nombre) *</label>
-                    <input type="number" id="edit-cours-id" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-                </div>
-                <div class="form-group">
-                    <label for="edit-cours-categorie">Catégorie *</label>
-                   <select id="edit-cours-categorie" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
-                        <option value="Électronique">⚡ Électronique & Systèmes Embarqués</option>
-                        <option value="Informatique">💻 Informatique & Programmation</option>
-                        <option value="Biomédicale">🔬 Maintenance Biomédicale</option>
-                        <option value="Réseaux & Sécurité">🌐 Réseaux & Cybersécurité</option>
-                        <option value="Robotique">🤖 Automatismes & Robotique</option>
-                        <option value="TP">🛠️ Travaux Pratiques</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="edit-cours-niveau">Niveau *</label>
-                    <select id="edit-cours-niveau" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
-                        <option value="Débutant">Débutant</option>
-                        <option value="Intermédiaire">Intermédiaire</option>
-                        <option value="Avancé">Avancé</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="form-group">
-                    <label for="edit-cours-format">Format du Support *</label>
-                    <select id="edit-cours-format" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
-                        <option value="pdf">📄 Fichier PDF</option>
-                        <option value="video">🎥 Cours Vidéo</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="edit-cours-badge">Style du Badge *</label>
-                    <select id="edit-cours-badge" required style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 4px;">
-                        <option value="passif">Passif (Gris/Bleu)</option>
-                        <option value="actif">Actif (Orange)</option>
-                        <option value="important">Important (Rouge)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="form-group">
-                    <label for="edit-cours-image">Image d'illustration (URL/Chemin) *</label>
-                    <input type="text" id="edit-cours-image" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-                </div>
-                <div class="form-group">
-                    <label for="edit-cours-media">Lien du fichier ou URL Vidéo *</label>
-                    <input type="text" id="edit-cours-media" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="edit-cours-desc">Petite description courte *</label>
-                <input type="text" id="edit-cours-desc" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-            </div>
-
-            <div class="modal-actions" style="margin-top: 20px;">
-                <button type="button" class="btn btn-secondary" onclick="fermerModalModifCours()">Annuler</button>
-                <button type="submit" class="btn btn-success">💾 Enregistrer les modifications</button>
-            </div>
-        </form>
-    </div>
-</div>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="admin.js"></script>
-    <script src="../adm.js"></script>
-
-    <div class="floating-nav-container">
-        <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
-            <i data-lucide="menu"></i>
-        </button>
-        <div class="floating-nav-menu" id="floating-nav-menu">
-            <a href="../acceuil.html" class="floating-nav-item" title="Tableau de bord">
-                <i data-lucide="layout-dashboard"></i>ACCUEIL
-                <span>Dashboard</span>
-            </a>
-            <a href="../pages/cours/cours.html" class="floating-nav-item" title="Mes Cours">
-                <i data-lucide="book-open"></i>COURS
-                <span>Cours</span>
-            </a>
-            <a href="../pages/composant/composants.html" class="floating-nav-item" title="Mes Composants">
-                <i data-lucide="folder-kanban"></i>COMPOSANTS
-                <span>Composants</span>
-            </a>
-            <a href="../pages/projet/projet.html" class="floating-nav-item" title="Mes Projets">
-                <i data-lucide="folder-kanban"></i>PROJET
-                <span>Projets</span>
-            </a>
-            <a href="../pages/parametres/parametres.html" class="floating-nav-item" title="Paramètres">
-                <i data-lucide="settings"></i>PARAMÈTRE
-                <span>Paramètres</span>
-            </a>
-            <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
-                <i data-lucide="log-out"></i>SORTIE
-                <span>Quitter</span>
-            </button>
-        </div>
-    </div>
 </body>
 </html>
