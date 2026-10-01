@@ -540,7 +540,7 @@ function publierProjet(e) {
     .catch(error => console.error("Erreur d'assignation du projet :", error));
 }
 
-// Approbation et refoul ement Professeurs
+// Approbation et ina-ppobation Professeurs
 function approveProf(docId, name, email, specialite) {
     db.collection('professeurs').add({ nom: name, email: email, specialite: specialite, dateApprobation: new Date().toLocaleDateString('fr-FR'), statut: 'actif' })
     .then(() => db.collection('profs_en_attente').doc(docId).delete())
