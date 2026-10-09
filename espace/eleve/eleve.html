@@ -14,7 +14,7 @@
         <ion-icon name="menu-outline"></ion-icon>
     </button>
 
-    <!-- SIDEBAR AVEC CLASSE MOBILE OVERLAY -->
+    <!-- SIDEBAR -->
     <div class="sidebar" id="app-sidebar">
         <h2>NEOLAB CI</h2>
         <ul>
@@ -47,7 +47,7 @@
             </li>
             <li data-page="messages">
                 <ion-icon name="chatbubble-outline"></ion-icon>
-                Messages
+                Messages & Support
             </li>
             <li data-page="profil">
                 <ion-icon name="person-circle-outline"></ion-icon>
@@ -64,30 +64,29 @@
         </ul>
     </div>
 
-    <!-- ZONE DE COUVERTURE POUR FERMER LE MENU EN CLIQUANT À CÔTÉ -->
+    <!-- ZONE DE COUVERTURE POUR MOBILE -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
     <div class="content">
         <header>
-            <input type="text" placeholder="Rechercher...">
+            <input type="text" id="global-search-input" placeholder="Rechercher un cours ou un projet...">
             <div class="user-profile-header" style="display: flex; align-items: center; gap: 12px;">
                 <span id="user-display-name">Vérification... 👋</span>
                 <img id="user-display-avatar" src="" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); display: none;">
             </div>
         </header>
 
-        <!-- ONGLETS ET SECTIONS DU MENU CONTENT -->
-
+        <!-- DASHBOARD -->
         <section id="dashboard" class="active-section" style="display: block;">
             <h1>Tableau de bord</h1>
             <div class="cards">
                 <div class="card">
                     <h2 id="dash-cours">0</h2>
-                    <p>Cours suivis</p>
+                    <p>Cours au catalogue</p>
                 </div>
                 <div class="card">
-                    <h2 id="dash-moyenne">--</h2>
-                    <p>Moyenne</p>
+                    <h2 id="dash-filiere">--</h2>
+                    <p>Ma Filière actuelle</p>
                 </div>
                 <div class="card">
                     <h2 id="dash-temps">0 h</h2>
@@ -99,42 +98,38 @@
                 </div>
             </div>
 
-            <!-- INTEGRATION HUB DE REALISATION DU PROJET DANS LE TABLEAU DE BORD -->
+            <!-- HUB DE RÉALISATIONS PROJETS -->
             <div style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 20px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-top: 25px; margin-bottom: 20px;">
                     <div style="padding: 10px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-radius: 12px;">
                         <i data-lucide="folder-git-2" style="width: 24px; height: 24px;"></i>
                     </div>
                     <div>
-                        <h2 style="font-size: 1.5rem; font-weight: bold; color: white; margin: 0;">Mon Hub de Réalisations</h2>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Suivez l'état de validation de vos TP et maquettes électroniques Arduino.</p>
+                        <h2 style="font-size: 1.5rem; font-weight: bold; margin: 0;">Mon Hub de Réalisations</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Suivez l'état de validation de vos TP et maquettes.</p>
                     </div>
                 </div>
 
-                <!-- Grille à 3 Colonnes de Statuts -->
                 <div class="projects-kanban-grid">
-                    <!-- Colonne 1 : En cours -->
-                    <div class="card" style="display: flex; flex-direction: column; background: #0B1120; border: 1px solid rgba(59, 130, 246, 0.15);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 15px;">
-                            <span style="font-size: 0.85rem; font-weight: bold; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px;">En cours</span>
+                    <div class="card" style="display: flex; flex-direction: column; background: var(--bg-card); border: 1px solid rgba(59, 130, 246, 0.15);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                            <span style="font-size: 0.85rem; font-weight: bold; color: #3b82f6; text-transform: uppercase;">En cours</span>
                             <span id="dash-count-encours" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; font-weight: bold;">0</span>
                         </div>
                         <div id="dash-liste-encours" style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1;"></div>
                     </div>
 
-                    <!-- Colonne 2 : En révision -->
-                    <div class="card" style="display: flex; flex-direction: column; background: #0B1120; border: 1px solid rgba(245, 158, 11, 0.15);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 15px;">
-                            <span style="font-size: 0.85rem; font-weight: bold; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px;">En révision</span>
+                    <div class="card" style="display: flex; flex-direction: column; background: var(--bg-card); border: 1px solid rgba(245, 158, 11, 0.15);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                            <span style="font-size: 0.85rem; font-weight: bold; color: #f59e0b; text-transform: uppercase;">En révision</span>
                             <span id="dash-count-rendu" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; font-weight: bold;">0</span>
                         </div>
                         <div id="dash-liste-rendu" style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1;"></div>
                     </div>
 
-                    <!-- Colonne 3 : Validés -->
-                    <div class="card" style="display: flex; flex-direction: column; background: #0B1120; border: 1px solid rgba(16, 185, 129, 0.15);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 15px;">
-                            <span style="font-size: 0.85rem; font-weight: bold; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px;">Validés 🏆</span>
+                    <div class="card" style="display: flex; flex-direction: column; background: var(--bg-card); border: 1px solid rgba(16, 185, 129, 0.15);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                            <span style="font-size: 0.85rem; font-weight: bold; color: #10b981; text-transform: uppercase;">Validés 🏆</span>
                             <span id="dash-count-valide" style="background: rgba(16, 185, 129, 0.1); color: #10b981; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; font-weight: bold;">0</span>
                         </div>
                         <div id="dash-liste-valide" style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1;"></div>
@@ -143,6 +138,7 @@
             </div>
         </section>
 
+        <!-- SECTION HUB PROJETS -->
         <section id="student-projects-section" class="content-section" style="display: none;">
             <div class="section-header">
                 <h2>Mon Hub de Projets</h2>
@@ -164,27 +160,35 @@
             </div>
         </section>
 
-       <section id="cours" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
-            <div>
-                <h1>Mes cours consultés</h1>
-                <p style="color: var(--text-muted); margin: 0;">Historique des leçons et TP d'électronique que vous avez ouverts.</p>
+        <!-- SECTION COURS (AVEC FILTRE FILIÈRE) -->
+        <section id="cours" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
+                <div>
+                    <h1>Catalogue & Support de Cours</h1>
+                    <p style="color: var(--text-muted); margin: 0;">Consultez vos cours filtrés par filière d'apprentissage.</p>
+                </div>
+                
+                <!-- SÉLECTEUR DE FILIÈRE ET MODE D'AFFICHAGE -->
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="select-filter-filiere" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-weight: 600;">
+                        <option value="toutes">Toutes les filières</option>
+                    </select>
+
+                    <div class="view-switcher" style="display: flex; background: var(--bg-card); border: 1px solid var(--border-color); padding: 4px; border-radius: 8px; gap: 5px;">
+                        <button id="btn-view-grid" class="active-view" title="Affichage en Grille" style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center;">
+                            <ion-icon name="apps-outline" style="font-size: 1.2rem;"></ion-icon>
+                        </button>
+                        <button id="btn-view-list" title="Affichage en Liste" style="background: transparent; color: var(--text-muted); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center;">
+                            <ion-icon name="list-outline" style="font-size: 1.2rem;"></ion-icon>
+                        </button>
+                    </div>
+                </div>
             </div>
-            <!-- BOUTONS DE COMMUTATION D'AFFICHAGE -->
-            <div class="view-switcher" style="display: flex; background: var(--bg-card); border: 1px solid var(--border-color); padding: 4px; border-radius: 8px; gap: 5px;">
-                <button id="btn-view-grid" class="active-view" title="Affichage en Grille" style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center;">
-                    <ion-icon name="apps-outline" style="font-size: 1.2rem;"></ion-icon>
-                </button>
-                <button id="btn-view-list" title="Affichage en Liste" style="background: transparent; color: var(--text-muted); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center;">
-                    <ion-icon name="list-outline" style="font-size: 1.2rem;"></ion-icon>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Zone d'injection dynamique gérée par le script -->
-        <div class="cards grid-mode" id="student-courses-grid"></div>
+            
+            <div class="cards grid-mode" id="student-courses-grid"></div>
         </section>
 
+        <!-- DEVOIRS -->
         <section id="devoirs" style="display: none;">
             <h1>Mes devoirs & Exercices</h1>
             <p style="color: var(--text-muted); margin-bottom: 25px;">Retrouvez ici les exercices et travaux pratiques assignés.</p>
@@ -198,7 +202,7 @@
 
         <section id="ressources" style="display: none;">
             <h1>Ressources</h1>
-            <p style="color: var(--text-muted);">Fichiers d'aide, documentations techniques et fiches Arduino.</p>
+            <p style="color: var(--text-muted);">Fichiers d'aide, documentations techniques et fiches de révision.</p>
         </section>
 
         <section id="certificats" style="display: none;">
@@ -206,60 +210,31 @@
             <p style="color: var(--text-muted);">Vos diplômes et certificats NeoLab-CI validés.</p>
         </section>
 
-<section id="messages" style="display: none;">
-   
-    <h1>Espace Messagerie</h1>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-        Échangez avec vos enseignants en Informatique, Électronique et Biomédical.
-    </p>
+        <!-- MESSAGERIE CONNECTÉE À FIRESTORE -->
+        <section id="messages" style="display: none;">
+            <h1>Poser une question à l'administration / Formateur</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                Envoyez directement votre message à l'équipe pédagogique.
+            </p>
 
-    <div class="messaging-container">
-        <aside class="conversations-sidebar">
-            <ul class="chat-list">
-                <li class="active">
-                    <div class="chat-avatar">🎓</div>
-                    <div class="chat-info">
-                        <h4>M. Dupont (Électronique)</h4>
-                        <p>Votre schéma de circuit est...</p>
+            <div class="card" style="max-width: 600px; padding: 25px;">
+                <form id="contactFormStudent">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; font-weight:bold;">Sujet de votre demande *</label>
+                        <input type="text" id="msg-sujet" required placeholder="Ex: Incompréhension sur le cours de programmation" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-main);">
                     </div>
-                </li>
-                <li>
-                    <div class="chat-avatar">🤖</div>
-                    <div class="chat-info">
-                        <h4>Support (Informatique)</h4>
-                        <p>Le bug sur l'exercice 3 est résolu.</p>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; font-weight:bold;">Message *</label>
+                        <textarea id="msg-contenu" required rows="5" placeholder="Décrivez clairement votre question..." style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-main); resize:none;"></textarea>
                     </div>
-                </li>
-            </ul>
-        </aside>
-
-        <main class="chat-window">
-            <div class="chat-header">
-                <h4>M. Dupont (Électronique)</h4>
+                    <button type="submit" class="btn" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                        📤 Envoyer le message
+                    </button>
+                </form>
             </div>
-            
-            <div class="chat-messages" id="chatMessages">
-                <div class="message incoming">
-                    <p>Bonjour ! Avez-vous terminé le Grafcet du chariot industriel ?</p>
-                    <span class="time">14:02</span>
-                </div>
-                <div class="message outgoing">
-                    <p>Oui, je finalise le code et je vous l'envoie.</p>
-                    <span class="time">14:05</span>
-                </div>
-            </div>
+        </section>
 
-            <form class="chat-input-area" id="chatForm">
-                <input type="text" id="messageInput" placeholder="Écrivez votre message ici..." required>
-                <button type="submit">
-                    <span class="btn-text">Envoyer</span>
-                </button>
-            </form>
-        </main>
-    </div>
-</section>
-        
-
+        <!-- PROFIL -->
         <section id="profil" style="display: none;">
             <h1>Mon profil</h1>
             <div class="card" style="max-width: 500px; margin-top: 20px;">
@@ -275,10 +250,9 @@
             </div>
         </section>
 
+        <!-- PARAMÈTRES -->
         <section id="settings" style="display: none;">
             <h1>Paramètres de mon compte</h1>
-            <p style="color: var(--text-muted); margin-bottom: 25px;">Gérer votre compte.</p>
-            <!-- Bloc paramètres inchangé -->
             <div class="settings-container" style="display: flex; flex-direction: column; gap: 30px; max-width: 600px;">
                 <div class="card" style="padding: 20px;">
                     <h3 style="margin-bottom: 15px; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
@@ -295,6 +269,7 @@
                         </label>
                     </div>
                 </div>
+
                 <div class="card" style="padding: 20px;">
                     <h3 style="margin-bottom: 15px; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
                         <ion-icon name="person-outline" style="color: var(--accent);"></ion-icon> Informations personnelles
@@ -306,16 +281,17 @@
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted);">Genre</label>
-                            <select id="settings-sexe" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: #fff; color: #000;">
-                                <option value="M">Masculin</option>
-                                <option value="F">Féminin</option>
+                            <select id="settings-sexe" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);">
+                                <option value="Homme">Homme</option>
+                                <option value="Femme">Femme</option>
                             </select>
                         </div>
-                        <button type="submit" style="background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; align-self: flex-start;">
+                        <button type="submit" style="background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer;">
                             Sauvegarder les modifications
                         </button>
                     </form>
                 </div>
+
                 <div class="card" style="padding: 20px;">
                     <h3 style="margin-bottom: 15px; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
                         <ion-icon name="lock-closed-outline" style="color: var(--accent);"></ion-icon> Sécurité du compte
@@ -325,7 +301,7 @@
                             <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted);">Nouveau mot de passe</label>
                             <input type="password" id="settings-new-password" required minlength="6" placeholder="Minimum 6 caractères" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: transparent; color: var(--text-main);">
                         </div>
-                        <button type="submit" style="background: #e74c3c; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; align-self: flex-start;">
+                        <button type="submit" style="background: #e74c3c; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer;">
                             Mettre à jour le mot de passe
                         </button>
                     </form>
@@ -334,47 +310,7 @@
         </section>
     </div>
 
-    <!-- MODAL DE VISUALISATION (RE-STYLISEE RESPONSIVE) -->
-    <div id="modal-projet-eleve" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 15px; display: none;">
-        <div class="modal-content-box" style="background: #0B1120; border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 16px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px; position: relative; color: white;">
-            <button onclick="fermerModalProjet()" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #9ca3af; cursor: pointer;">
-                <i data-lucide="x" style="width: 24px; height: 24px;"></i>
-            </button>
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <div>
-                    <span id="modal-cat" style="font-size: 0.7rem; font-weight: bold; padding: 3px 8px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; border-radius: 4px; text-transform: uppercase;">Catégorie</span>
-                    <h3 id="modal-titre" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; margin-bottom: 5px; color: white;">Nom du Projet</h3>
-                    <p id="modal-desc" style="color: #9ca3af; font-size: 0.85rem; line-height: 1.4;">Description...</p>
-                </div>
-                <div class="modal-grid-info" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; background: #050816; padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem;">
-                    <div>
-                        <span style="color: #6b7280; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 2px;">Composants requis</span>
-                        <p id="modal-composants" style="color: #93c5fd; margin: 0;">Chargement...</p>
-                    </div>
-                    <div>
-                        <span style="color: #6b7280; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 2px;">Durée estimée</span>
-                        <p id="modal-duree" style="color: #34d399; margin: 0;">Loading...</p>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <div>
-                        <span style="display: block; font-size: 0.75rem; color: #6b7280; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">Maquette de rendu</span>
-                        <img id="modal-img-projet" src="" alt="Projet" style="width: 100%; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #1f2937;">
-                    </div>
-                    <div>
-                        <span style="display: block; font-size: 0.75rem; color: #6b7280; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">Montage de câblage</span>
-                        <img id="modal-img-cablage" src="" alt="Câblage" style="width: 100%; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #1f2937;">
-                    </div>
-                </div>
-                <div>
-                    <span style="display: block; font-size: 0.75rem; color: #6b7280; font-weight: bold; margin-bottom: 8px; text-transform: uppercase;">Fiche Technique & Étapes</span>
-                    <ul id="modal-etapes" style="padding: 15px; background: #050816; border-radius: 10px; border: 1px solid #1f2937; list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 0; font-size: 0.8rem;"></ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PLACEMENT DES SCRIPTS -->
+    <!-- SCRIPTS -->
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -382,32 +318,5 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="eleve.js"></script>
-    <script src="../../com.js"></script>
-     <div class="floating-nav-container">
-    <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
-        <i data-lucide="menu"></i>
-    </button>
-    
-    <div class="floating-nav-menu" id="floating-nav-menu">
-        <a href="../../acceuil.html" class="floating-nav-item" title="Tableau de bord">
-            <i data-lucide="layout-dashboard"></i>ACCEUIL
-            <span>Dashboard</span>
-        </a>
-        <a href="../../pages/cours/cours.html" class="floating-nav-item" title="Mes Cours">
-            <i data-lucide="book-open"></i>COURS
-            <span>Cours</span>
-        </a>
-        
-        <a href="../../pages/composant/composants.html" class="floating-nav-item" title="Mes Composants">
-            <i data-lucide="folder-kanban"></i>COMPOSANTS
-            <span>Composants</span>
-        </a>
-        <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
-            <i data-lucide="log-out"></i>SORTIE
-            <span>Ce déconnecter</span>
-        </button>
-    </div>
-</div>
 </body>
 </html>
-
