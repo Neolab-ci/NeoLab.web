@@ -1,42 +1,6 @@
 // ==========================================
-// 1. VÉRIFICATION DE LA SESSION ET INITIALISATION
+// 1. INITIALISATION ET AUTHENTIFICATION
 // ==========================================
-document.addEventListener("DOMContentLoaded", function () {
-    // Initialisation des icônes Lucide si disponibles
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-
-    // Gestion du menu flottant de navigation
-    const navTrigger = document.getElementById('floating-nav-trigger');
-    const navMenu = document.getElementById('floating-nav-menu');
-
-    if (navTrigger && navMenu) {
-        navTrigger.addEventListener('click', function (e) {
-            e.stopPropagation();
-            navMenu.classList.toggle('active');
-        });
-
-        document.addEventListener('click', function (e) {
-            if (!navMenu.contains(e.target) && !navTrigger.contains(e.target)) {
-                navMenu.classList.remove('active');
-            }
-        });
-    }
-
-    // Lancement du flux de messages contact
-    activerFluxMessagesContact();
-
-    // Écoute de l'état d'authentification
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            console.log("Session active pour l'admin :", user.uid);
-        } else {
-            console.log("Aucune session trouvée.");
-        }
-    });
-});
-
 const firebaseConfig = {
     apiKey: "AIzaSyBRGYbiSp26ba_cxj7REHKkOqSylQf1DfQ",
     authDomain: "neolab-ci.firebaseapp.com",
@@ -50,276 +14,86 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
-let questionCounter = 0; // Compteur pour le quiz dynamique
 
-// ==========================================
-// 2. GESTION DES MESSAGES CONTACT
-// ==========================================
-function activerFluxMessagesContact() {
-    const container = document.getElementById("liste-messages-admin");
-    const counter = document.getElementById("total-messages");
-
-    if (!container) return;
-
-    db.collection("messages_contact")
-      .orderBy("envoye_le", "desc")
-      .onSnapshot((snapshot) => {
-          container.innerHTML = "";
-          
-          if (snapshot.empty) {
-              container.innerHTML = `
-                  <div style="text-align: center; padding: 40px; background: #05112e; border: 1.5px solid #0d2352; border-radius: 12px; color: #8c9cb8;">
-                      <i class="fa-regular fa-envelope-open" style="font-size: 2.5rem; margin-bottom: 15px; color: #1d61e6;"></i>
-                      <p style="font-weight: 600;">Aucun message reçu pour le moment !</p>
-                      <p style="font-size: 0.85rem; margin-top: 5px;">Les messages envoyés via la page de contact apparaîtront ici.</p>
-                  </div>
-              `;
-              if (counter) counter.innerText = "0";
-              return;
-          }
-
-          if (counter) counter.innerText = snapshot.size;
-
-          snapshot.forEach((doc) => {
-              const msg = doc.data();
-              const msgId = doc.id;
-              
-              let dateAffichage = "Date inconnue";
-              if (msg.envoye_le) {
-                  const dateObj = msg.envoye_le.toDate();
-                  dateAffichage = dateObj.toLocaleDateString("fr-FR", {
-                      day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"
-                  });
-              }
-
-              const cardHTML = `
-                  <div id="msg-card-${msgId}" style="background: #05112e; border: 1.5px solid #0d2352; border-radius: 12px; padding: 20px; transition: 0.3s; position: relative;">
-                      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(13, 35, 82, 0.5); padding-bottom: 12px;">
-                          <div>
-                              <span style="font-size: 0.75rem; background: rgba(29, 97, 230, 0.15); color: #00f0ff; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; margin-right: 8px;">
-                                  ${msg.sujet || 'Général'}
-                              </span>
-                              <h3 style="color: white; margin: 5px 0 0 0; font-size: 1.1rem; font-weight: 700;">${msg.nom_complet}</h3>
-                          </div>
-                          <span style="color: #8c9cb8; font-size: 0.8rem;">
-                              <i class="fa-regular fa-clock"></i> ${dateAffichage}
-                          </span>
-                      </div>
-                      <div style="margin-bottom: 20px;">
-                          <p style="color: #e2e8f0; font-size: 0.95rem; white-space: pre-wrap; line-height: 1.6;">${msg.message}</p>
-                      </div>
-                      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: rgba(2, 9, 29, 0.4); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(13, 35, 82, 0.3);">
-                          <div style="display: flex; gap: 15px; color: #8c9cb8; font-size: 0.85rem;">
-                              <span><i class="fa-regular fa-envelope"></i> ${msg.email}</span>
-                              ${msg.telephone && msg.telephone !== "Non renseigné" ? `<span><i class="fa-solid fa-phone"></i> ${msg.telephone}</span>` : ''}
-                          </div>
-                          <div style="display: flex; gap: 10px;">
-                              <a href="mailto:${msg.email}?subject=R%C3%A9ponse%20NeoLab-CI%20-%20${encodeURIComponent(msg.sujet || '')}&body=Bonjour%20${encodeURIComponent(msg.nom_complet || '')},%0A%0A" 
-                                 style="background: #1d61e6; color: white; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: 0.2s;">
-                                  <i class="fa-solid fa-reply"></i> Répondre par email
-                              </a>
-                              <button onclick="supprimerMessageContact('${msgId}')" 
-                                      style="background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.2); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s;">
-                                  <i class="fa-regular fa-trash-can"></i>
-                              </button>
-                          </div>
-                      </div>
-                  </div>
-              `;
-              container.innerHTML += cardHTML;
-          });
-      }, (error) => {
-          console.error("Erreur de récupération des messages :", error);
-          container.innerHTML = `<p style="color: #ff4d4d; text-align: center;">Une erreur de droits d'accès est survenue.</p>`;
-      });
-}
-
-function supprimerMessageContact(msgId) {
-    if (confirm("Voulez-vous vraiment supprimer ce message de votre boîte de réception ?")) {
-        db.collection("messages_contact").doc(msgId).delete()
-        .then(() => alert("Message supprimé avec succès."))
-        .catch((error) => console.error("Erreur de suppression :", error));
+document.addEventListener("DOMContentLoaded", function () {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
     }
-}
 
-// ==========================================
-// 3. CHARGEMENT EN TEMPS RÉEL (FLUX ADMIN)
-// ==========================================
-
-// Statistiques globales
-db.collection('statistiques').doc('globale').onSnapshot((doc) => {
-    if (doc.exists) {
-        const data = doc.data();
-        const elVisiteurs = document.getElementById('stat-visiteurs');
-        const elEleves = document.getElementById('stat-eleves');
-        const elComposants = document.getElementById('stat-composants');
-        const elProfs = document.getElementById('stat-professeurs');
-        const elMessages = document.getElementById('stat-messages_contact');
-        const elSignupMode = document.getElementById('setting-signup-mode');
-
-        if (elVisiteurs) elVisiteurs.innerText = data.visiteursJour || 0;
-        if (elEleves) elEleves.innerText = data.totalEleves || 0;
-        if (elComposants) elComposants.innerText = data.totalComposants || 0;
-        if (elProfs) elProfs.innerText = data.totalProfs || 0;
-        if (elMessages) elMessages.innerText = data.totalMessages || 0;
-        if (elSignupMode && data.modeInscription) elSignupMode.value = data.modeInscription;
-    }
-});
-
-// Demandes Professeurs
-db.collection('profs_en_attente').onSnapshot((snapshot) => {
-    const tableBody = document.getElementById('prof-validation-table');
-    if (!tableBody) return;
-    tableBody.innerHTML = "";
-    document.getElementById('stat-profs-details').innerText = `6 Actifs / ${snapshot.size} En attente ⚠️`;
-
-    snapshot.forEach((doc) => {
-        const prof = doc.data();
-        tableBody.innerHTML += `
-            <tr>
-                <td>${prof.nom}</td>
-                <td>${prof.email}</td>
-                <td>${prof.specialite}</td>
-                <td>${prof.dateDemande}</td>
-                <td>
-                    <button class="btn btn-success" onclick="approveProf('${doc.id}', '${prof.nom}', '${prof.email}', '${prof.specialite}')">Accepter</button>
-                    <button class="btn btn-danger" onclick="rejectProf('${doc.id}', '${prof.nom}')">Refuser</button>
-                </td>
-            </tr>`;
+    // Gestion de l'état de connexion Admin
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            console.log("Connecté en tant qu'admin :", user.email);
+            chargerDonneesAdmin();
+        } else {
+            console.log("Aucun utilisateur connecté, redirection login...");
+            window.location.href = "login_admin.html";
+        }
     });
+
+    // Formulaire d'ajout de produit boutique
+    const formProduit = document.getElementById('form-ajouter-produit');
+    if (formProduit) formProduit.addEventListener('submit', ajouterNouveauProduitBoutique);
+
+    // Formulaire d'ajout de filière
+    const formFiliere = document.getElementById('creationFiliereForm');
+    if (formFiliere) formFiliere.addEventListener('submit', ajouterFiliere);
 });
 
-// Composants (Stock matériel)
-db.collection('composants').onSnapshot((snapshot) => {
-    const tableBody = document.getElementById('stock-table-body');
-    if (!tableBody) return;
-    tableBody.innerHTML = "";
-    snapshot.forEach((doc) => {
-        const comp = doc.data();
-        const qte = comp.quantite_stock !== undefined ? comp.quantite_stock : (comp.quantite || 0);
-        const imgTag = comp.imageURL ? `<img src="${comp.imageURL}" class="table-img" alt="composant">` : `<div class="table-img" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:#718096">Pas d'img</div>`;
-        
-        tableBody.innerHTML += `
-            <tr>
-                <td>${imgTag}</td>
-                <td><strong>${comp.nom}</strong></td>
-                <td>${comp.role || comp.description || ''}</td>
-                <td>${qte}</td>
-                <td><button class="btn btn-secondary" onclick="ouvrirModalModifComposant('${doc.id}', '${comp.nom.replace(/'/g, "\\'")}', '${(comp.role || '').replace(/'/g, "\\'")}', ${qte}, '${comp.imageURL || ''}')">Modifier</button></td>
-            </tr>`;
-    });
-});
-
-// Élèves
-db.collection('eleves').onSnapshot((snapshot) => {
-    const tableBody = document.getElementById('users-table-body');
-    if (!tableBody) return;
-    tableBody.innerHTML = "";
-    snapshot.forEach((doc) => {
-        const user = doc.data();
-        tableBody.innerHTML += `
-            <tr>
-                <td>${user.nom} (${user.sexe || 'N/A'})</td>
-                <td>Filière: ${user.niveauEtudes || 'Non définie'}</td>
-                <td><span class="badge badge-success">Élève Actif</span></td>
-            </tr>`;
-    });
-});
-
-// Professeurs Actifs
-db.collection('professeurs').onSnapshot((snapshot) => {
-    const tableBody = document.getElementById('profs-actifs-table-body');
-    if (!tableBody) return;
-    tableBody.innerHTML = "";
-    snapshot.forEach((doc) => {
-        const prof = doc.data();
-        tableBody.innerHTML += `
-            <tr>
-                <td><strong>${prof.nom}</strong> (${prof.sexe || 'N/A'})</td>
-                <td>${prof.email}</td>
-                <td>${prof.specialite || 'Général'}</td>
-                <td><span class="badge badge-success" style="background-color: var(--success-color); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">Prof Actif</span></td>
-            </tr>`;
-    });
-});
-
-// Cours
-db.collection('cours').onSnapshot((snapshot) => {
-    const tableBody = document.getElementById('cours-table-body');
-    if (!tableBody) return;
-    tableBody.innerHTML = "";
-    snapshot.forEach((doc) => {
-        const cours = doc.data();
-        const docId = doc.id; 
-        const titreCours = cours.title || cours.titre || "Sans titre";
-        const imageCours = cours.img || cours.imageURL || "";
-        const niveauCours = cours.level || cours.niveau || "Non défini";
-        const mediaLien = cours.pdf || cours.videoUrl || cours.mediaURL || "#";
-        const formatCours = cours.format || (cours.videoUrl ? "video" : "pdf");
-        const badgeCours = cours.badge || "passif";
-        const categoryCours = cours.category || "Électronique";
-        const descCours = cours.short || cours.description || "";
-
-        const imgTag = imageCours ? `<img src="${imageCours}" class="table-img" alt="miniature">` : `<div class="table-img"></div>`;
-        const escapedTitle = titreCours.replace(/'/g, "\\'");
-        const escapedDesc = descCours.replace(/'/g, "\\'");
-
-        tableBody.innerHTML += `
-            <tr>
-                <td>${imgTag}</td>
-                <td><a href="${mediaLien}" target="_blank" style="color:var(--accent-color);font-weight:bold;text-decoration:none;">${titreCours}</a></td>
-                <td>${niveauCours}</td>
-                <td>${categoryCours}</td>
-                <td>
-                    <button class="btn btn-secondary" onclick="ouvrirModalModifCours('${docId}', '${escapedTitle}', ${cours.id || 0}, '${categoryCours}', '${niveauCours}', '${formatCours}', '${badgeCours}', '${imageCours}', '${mediaLien}', '${escapedDesc}')">
-                        Modifier
-                    </button>
-                </td>
-            </tr>`;
-    });
-});
-
-// ==========================================
-// 4. NAVIGATION & FENÊTRES MODALES
-// ==========================================
+// Navigation entre Onglets
 function switchTab(event, sectionId) {
-    event.preventDefault();
+    if (event) event.preventDefault();
     document.querySelectorAll('.menu-link').forEach(link => link.classList.remove('active'));
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    document.getElementById(sectionId).classList.add('active');
+    
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
+    const sec = document.getElementById(sectionId);
+    if (sec) sec.classList.add('active');
 }
 
-function abrirModalCreation() { document.getElementById('creationModal').style.display = 'flex'; }
-function fermerModalCreation() { document.getElementById('creationModal').style.display = 'none'; document.getElementById('creationUserForm').reset(); toggleChampsRole(); }
+// ==========================================
+// 2. MODALES (OUVERTURE & FERMETURE CORRIGÉES)
+// ==========================================
+function ouvrirModalCreation() { 
+    const el = document.getElementById('creationModal');
+    if(el) el.style.display = 'flex'; 
+}
+function fermerModalCreation() { 
+    const el = document.getElementById('creationModal');
+    if(el) el.style.display = 'none'; 
+    document.getElementById('creationUserForm')?.reset(); 
+}
 
-function ouvrirModalComposant() { document.getElementById('composantModal').style.display = 'flex'; }
-function fermerModalComposant() { document.getElementById('composantModal').style.display = 'none'; document.getElementById('creationComposantForm').reset(); }
+function ouvrirModalComposant() { 
+    const el = document.getElementById('composantModal');
+    if(el) el.style.display = 'flex'; 
+}
+function fermerModalComposant() { 
+    const el = document.getElementById('composantModal');
+    if(el) el.style.display = 'none'; 
+    document.getElementById('creationComposantForm')?.reset(); 
+}
 
-function ouvrirModalCours() { document.getElementById('coursModal').style.display = 'flex'; }
+function ouvrirModalCours() { 
+    const el = document.getElementById('coursModal');
+    if(el) el.style.display = 'flex'; 
+}
 function fermerModalCours() { 
-    document.getElementById('coursModal').style.display = 'none'; 
-    document.getElementById('creationCoursForm').reset(); 
-    document.getElementById('dynamic-quiz-questions-container').innerHTML = "";
+    const el = document.getElementById('coursModal');
+    if(el) el.style.display = 'none'; 
+    document.getElementById('creationCoursForm')?.reset(); 
 }
 
-function ouvrirModalModifCours(docId, title, idNum, category, level, format, badge, img, media, desc) {
-    document.getElementById('edit-cours-doc-id').value = docId;
-    document.getElementById('edit-cours-titre').value = title;
-    document.getElementById('edit-cours-id').value = idNum;
-    document.getElementById('edit-cours-categorie').value = category;
-    document.getElementById('edit-cours-niveau').value = level;
-    document.getElementById('edit-cours-format').value = format;
-    document.getElementById('edit-cours-badge').value = badge;
-    document.getElementById('edit-cours-image').value = img;
-    document.getElementById('edit-cours-media').value = media;
-    document.getElementById('edit-cours-desc').value = desc;
-    document.getElementById('modifCoursModal').style.display = 'flex';
+function ouvrirModalFiliere() {
+    const el = document.getElementById('filiereModal');
+    if(el) el.style.display = 'flex';
 }
-
-function fermerModalModifCours() {
-    document.getElementById('modifCoursModal').style.display = 'none';
-    document.getElementById('modifCoursForm').reset();
+function fermerModalFiliere() {
+    const el = document.getElementById('filiereModal');
+    if(el) el.style.display = 'none';
+    document.getElementById('creationFiliereForm')?.reset();
 }
 
 function toggleChampsRole() {
@@ -329,392 +103,174 @@ function toggleChampsRole() {
 }
 
 // ==========================================
-// 5. QUIZ DYNAMIQUE EN MODALE
+// 3. CHARGEMENT DE TOUTES LES DONNÉES FIRESTORE
 // ==========================================
-function toggleFormatFields() {
-    const format = document.getElementById('cours-format').value;
-    const container = document.getElementById('container-field-media');
+function chargerDonneesAdmin() {
     
-    if (format === 'video') {
-        container.innerHTML = `
-            <label for="cours-media">Lien Embed de la Vidéo (YouTube) *</label>
-            <input type="text" id="cours-media" placeholder="https://www.youtube.com/embed/..." required style="background: #0f172a; border: 1px solid #334155; color: white;">
-        `;
-    } else {
-        container.innerHTML = `
-            <label for="cours-media">Chemin du fichier PDF *</label>
-            <input type="text" id="cours-media" placeholder="cours/diodes.pdf" required style="background: #0f172a; border: 1px solid #334155; color: white;">
-        `;
-    }
-}
+    // Charger les Filières
+    db.collection('filieres').onSnapshot((snapshot) => {
+        const tbody = document.getElementById('filieres-table-body');
+        const selectCours = document.getElementById('cours-categorie');
+        if (tbody) tbody.innerHTML = "";
+        if (selectCours) selectCours.innerHTML = "";
 
-function ajouterQuestionInterface() {
-    const container = document.getElementById('dynamic-quiz-questions-container');
-    const questionId = questionCounter++;
+        snapshot.forEach((doc) => {
+            const fil = doc.data();
+            const id = doc.id;
+            
+            if (tbody) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${fil.nom || id}</strong></td>
+                        <td>${fil.description || ''}</td>
+                        <td><span class="badge badge-success">Active</span></td>
+                        <td>
+                            <button class="btn btn-danger" onclick="supprimerFiliere('${id}')">Supprimer</button>
+                        </td>
+                    </tr>`;
+            }
 
-    const questionBlock = document.createElement('div');
-    questionBlock.id = `question-block-${questionId}`;
-    questionBlock.className = "question-entry-block";
-    questionBlock.style = "background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 6px; margin-bottom: 12px; position: relative; color: white;";
-    
-    questionBlock.innerHTML = `
-        <button type="button" onclick="supprimerQuestionInterface(${questionId})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 11px;">✕ Supprimer</button>
-        
-        <div style="margin-bottom: 8px; padding-right: 70px;">
-            <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 2px;">Intitulé de la question</label>
-            <input type="text" class="quiz-q-text" required placeholder="Ex: Rôle d'une diode ?" style="width: 100%; padding: 6px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 12px;">
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-            <div>
-                <label style="display: block; font-size: 10px; color: #64748b; margin-bottom: 2px;">Option 0</label>
-                <input type="text" class="quiz-opt-0" required style="width: 100%; padding: 5px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 11px;">
-            </div>
-            <div>
-                <label style="display: block; font-size: 10px; color: #64748b; margin-bottom: 2px;">Option 1</label>
-                <input type="text" class="quiz-opt-1" required style="width: 100%; padding: 5px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 11px;">
-            </div>
-            <div>
-                <label style="display: block; font-size: 10px; color: #64748b; margin-bottom: 2px;">Option 2</label>
-                <input type="text" class="quiz-opt-2" required style="width: 100%; padding: 5px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 11px;">
-            </div>
-        </div>
-
-        <div>
-            <label style="font-size: 11px; color: #94a3b8; margin-right: 10px;">Réponse exacte :</label>
-            <select class="quiz-correct-index" style="padding: 3px 6px; background: #070a1e; border: 1px solid #1f2937; border-radius: 4px; color: white; font-size: 11px;">
-                <option value="0">Option 0</option>
-                <option value="1">Option 1</option>
-                <option value="2">Option 2</option>
-            </select>
-        </div>
-    `;
-    container.appendChild(questionBlock);
-}
-
-function supprimerQuestionInterface(id) {
-    const el = document.getElementById(`question-block-${id}`);
-    if (el) el.remove();
-}
-
-// ==========================================
-// 6. SOUMISSION DES FORMULAIRES DE CRÉATION
-// ==========================================
-
-// Création d'utilisateur
-document.getElementById('creationUserForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const role = document.getElementById('new-role').value;
-    const nom = document.getElementById('new-nom').value;
-    const sexe = document.getElementById('new-sexe').value;
-    const email = document.getElementById('new-email').value;
-    const password = document.getElementById('new-password').value;
-    const dateActuelle = new Date().toLocaleDateString('fr-FR');
-
-    if (role === 'eleve') {
-        db.collection('eleves').add({
-            nom: nom, email: email, sexe: sexe, password_init: password,
-            niveauEtudes: document.getElementById('new-niveau').value, dateInscription: dateActuelle
-        }).then(() => { alert(`Élève ${nom} créé !`); fermerModalCreation(); });
-    } else {
-        db.collection('professeurs').add({
-            nom: nom, email: email, sexe: sexe, password_init: password,
-            specialite: document.getElementById('new-specialite').value, dateApprobation: dateActuelle, statut: 'actif'
-        }).then(() => { alert(`Professeur ${nom} créé !`); fermerModalCreation(); });
-    }
-});
-
-// Ajout de composant au stock matériel
-document.getElementById('creationComposantForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const qte = parseInt(document.getElementById('comp-quantite').value, 10);
-    db.collection('composants').add({
-        nom: document.getElementById('comp-nom').value,
-        role: document.getElementById('comp-role').value,
-        quantite: qte,
-        quantite_stock: qte, // Double clé pour assurer la compatibilité globale
-        imageURL: document.getElementById('comp-image').value || ""
-    }).then(() => {
-        alert("Composant ajouté au stock !");
-        fermerModalComposant();
-    });
-});
-
-// Publication de cours
-function publierCours(e) {
-    e.preventDefault();
-    const courseId = parseInt(document.getElementById('cours-id').value);
-    const format = document.getElementById('cours-format').value;
-    const mediaUrl = document.getElementById('cours-media').value;
-
-    const questionsPayload = [];
-    document.querySelectorAll('.question-entry-block').forEach(b => {
-        questionsPayload.push({
-            q: b.querySelector('.quiz-q-text').value,
-            options: [
-                b.querySelector('.quiz-opt-0').value,
-                b.querySelector('.quiz-opt-1').value,
-                b.querySelector('.quiz-opt-2').value
-            ],
-            correct: parseInt(b.querySelector('.quiz-correct-index').value)
+            if (selectCours) {
+                selectCours.innerHTML += `<option value="${id}">${fil.nom || id}</option>`;
+            }
         });
     });
 
-    const nouveauCours = {
-        id: courseId, 
-        title: document.getElementById('cours-titre').value,
-        category: document.getElementById('cours-categorie').value,
-        level: document.getElementById('cours-niveau').value,
-        badge: document.getElementById('cours-badge').value,
-        format: format,
-        img: document.getElementById('cours-image').value,
-        short: document.getElementById('cours-desc').value,
-        questions: questionsPayload,
-        auteurEmail: "Admin NeoLab",
-        datePublication: new Date().toLocaleDateString('fr-FR')
-    };
+    // Charger les Cours
+    db.collection('cours').onSnapshot((snapshot) => {
+        const tbody = document.getElementById('cours-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        snapshot.forEach((doc) => {
+            const cours = doc.data();
+            tbody.innerHTML += `
+                <tr>
+                    <td>📄</td>
+                    <td><strong>${cours.titre || cours.title}</strong></td>
+                    <td>${cours.niveau || cours.level || 'BTS 1'}</td>
+                    <td>${cours.filiere_id || cours.category || 'Général'}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="supprimerCours('${doc.id}')">Supprimer</button>
+                    </td>
+                </tr>`;
+        });
+    });
 
-    if (format === 'video') nouveauCours.videoUrl = mediaUrl;
-    else nouveauCours.pdf = mediaUrl;
+    // Charger les Produits Boutique
+    db.collection('boutique_produits').onSnapshot((snapshot) => {
+        const container = document.getElementById('admin-liste-produits');
+        if (!container) return;
+        container.innerHTML = "";
+        snapshot.forEach((doc) => {
+            const p = doc.data();
+            container.innerHTML += `
+                <div style="background:#fff; border:1px solid #ccc; padding:15px; border-radius:8px;">
+                    <h4>${p.nom}</h4>
+                    <p>Prix : ${p.prix} FCFA | Stock : ${p.quantite_stock}</p>
+                    <button class="btn btn-danger" onclick="supprimerProduit('${doc.id}')">Retirer</button>
+                </div>`;
+        });
+    });
 
-    db.collection("cours").add(nouveauCours)
-    .then(() => {
-        alert("🎉 Cours publié avec succès !");
-        fermerModalCours();
-    })
-    .catch(error => console.error("Erreur de publication du cours :", error));
+    // Charger les Composants Stock
+    db.collection('composants').onSnapshot((snapshot) => {
+        const tbody = document.getElementById('stock-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        snapshot.forEach((doc) => {
+            const c = doc.data();
+            tbody.innerHTML += `
+                <tr>
+                    <td>🔧</td>
+                    <td><strong>${c.nom}</strong></td>
+                    <td>${c.role || ''}</td>
+                    <td>${c.quantite || c.quantite_stock}</td>
+                    <td><button class="btn btn-danger" onclick="supprimerComposant('${doc.id}')">Supprimer</button></td>
+                </tr>`;
+        });
+    });
+
+    // Charger les Élèves
+    db.collection('eleves').onSnapshot((snapshot) => {
+        const tbody = document.getElementById('users-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        snapshot.forEach((doc) => {
+            const e = doc.data();
+            tbody.innerHTML += `
+                <tr>
+                    <td>${e.nom}</td>
+                    <td>${e.niveauEtudes || 'N/A'}</td>
+                    <td>Actif</td>
+                </tr>`;
+        });
+    });
 }
-
-// Mise à jour d'un cours
-function mettreAJourCours(e) {
-    e.preventDefault();
-    const docId = document.getElementById('edit-cours-doc-id').value;
-    const format = document.getElementById('edit-cours-format').value;
-    const mediaUrl = document.getElementById('edit-cours-media').value;
-
-    const coursMisAJour = {
-        id: parseInt(document.getElementById('edit-cours-id').value, 10),
-        title: document.getElementById('edit-cours-titre').value,
-        category: document.getElementById('edit-cours-categorie').value,
-        level: document.getElementById('edit-cours-niveau').value,
-        badge: document.getElementById('edit-cours-badge').value,
-        format: format,
-        img: document.getElementById('edit-cours-image').value,
-        short: document.getElementById('edit-cours-desc').value
-    };
-
-    if (format === 'video') {
-        coursMisAJour.videoUrl = mediaUrl;
-        coursMisAJour.pdf = firebase.firestore.FieldValue.delete(); 
-    } else {
-        coursMisAJour.pdf = mediaUrl;
-        coursMisAJour.videoUrl = firebase.firestore.FieldValue.delete(); 
-    }
-
-    db.collection('cours').doc(docId).update(coursMisAJour)
-    .then(() => {
-        alert("✨ Le cours a été mis à jour avec succès !");
-        fermerModalModifCours();
-    })
-    .catch(error => console.error("Erreur lors de la modification du cours :", error));
-}
-
-// Assignation de TP (Kanban Élève)
-function publierProjet(e) {
-    e.preventDefault();
-    const studentUid = document.getElementById('project-student-uid').value.trim();
-    const projectId = document.getElementById('project-id').value.trim();
-
-    db.collection("projets_eleves").doc(`${studentUid}_${projectId}`).set({
-        projectId: projectId,
-        titreProjet: document.getElementById('project-title').value,
-        studentUid: studentUid,
-        statut: "en_cours", 
-        dateDemarrage: document.getElementById('project-start-date').value,
-        dateRendu: "", livrableLien: "", noteEtudiant: ""
-    })
-    .then(() => {
-        alert("🎯 Projet assigné avec succès au Kanban !");
-        document.getElementById('form-ajouter-projet').reset();
-    })
-    .catch(error => console.error("Erreur d'assignation du projet :", error));
-}
-
-// Approbation et ina-ppobation Professeurs
-function approveProf(docId, name, email, specialite) {
-    db.collection('professeurs').add({ nom: name, email: email, specialite: specialite, dateApprobation: new Date().toLocaleDateString('fr-FR'), statut: 'actif' })
-    .then(() => db.collection('profs_en_attente').doc(docId).delete())
-    .then(() => alert(`Professeur ${name} validé.`));
-}
-function rejectProf(docId, name) { 
-    if (confirm(`Supprimer la demande de ${name} ?`)) { 
-        db.collection('profs_en_attente').doc(docId).delete(); 
-    } 
-}
-
-function saveSettings() {
-    const modeSelectionne = document.getElementById('setting-signup-mode').value;
-    db.collection('statistiques').doc('globale').update({ modeInscription: modeSelectionne })
-    .then(() => alert("Configuration système mise à jour !"))
-    .catch(() => alert("Une erreur est survenue."));
-}
-
-function ouvrirModalModifComposant(id, nom, role, quantite, imageURL) {
-    document.getElementById('edit-comp-id').value = id;
-    document.getElementById('edit-comp-nom').value = nom;
-    document.getElementById('edit-comp-role').value = role;
-    document.getElementById('edit-comp-quantite').value = quantite;
-    document.getElementById('edit-comp-image').value = imageURL;
-    document.getElementById('modifComposantModal').style.display = 'flex';
-}
-
-function fermerModalModifComposant() {
-    document.getElementById('modifComposantModal').style.display = 'none';
-    document.getElementById('modifComposantForm').reset();
-}
-
-document.getElementById('modifComposantForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const id = document.getElementById('edit-comp-id').value;
-    const qte = parseInt(document.getElementById('edit-comp-quantite').value, 10);
-    
-    db.collection('composants').doc(id).update({
-        nom: document.getElementById('edit-comp-nom').value,
-        role: document.getElementById('edit-comp-role').value,
-        quantite: qte,
-        quantite_stock: qte,
-        imageURL: document.getElementById('edit-comp-image').value
-    })
-    .then(() => { alert("Composant mis à jour !"); fermerModalModifComposant(); });
-});
 
 // ==========================================
-// 7. GESTION DU CATALOGUE ET COMMANDES BOUTIQUE
+// 4. SOUMISSION ET ACTIONS D'AJOUT
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    const formProduit = document.getElementById('form-ajouter-produit');
-    if (formProduit) formProduit.addEventListener('submit', ajouterNouveauProduitBoutique);
 
-    ecouterProduitsBoutique();
-    ecouterCommandesBoutique();
-});
+// Ajouter Filière
+function ajouterFiliere(e) {
+    e.preventDefault();
+    const id = document.getElementById('fil-id').value.toLowerCase().trim();
+    const nom = document.getElementById('fil-nom').value;
+    const desc = document.getElementById('fil-desc').value;
 
+    db.collection('filieres').doc(id).set({
+        nom: nom,
+        description: desc,
+        actif: true
+    }).then(() => {
+        alert("Filière ajoutée !");
+        fermerModalFiliere();
+    }).catch(err => console.error("Erreur ajout filière:", err));
+}
+
+// Ajouter Produit
 function ajouterNouveauProduitBoutique(e) {
     e.preventDefault();
-    const nom = document.getElementById('prod-nom').value;
-
     db.collection("boutique_produits").add({
-        nom: nom,
+        nom: document.getElementById('prod-nom').value,
         type: document.getElementById('prod-type').value,
         prix: parseFloat(document.getElementById('prod-prix').value),
         quantite_stock: parseInt(document.getElementById('prod-stock').value, 10),
         imageURL: document.getElementById('prod-image').value || "",
         description: document.getElementById('prod-description').value,
         cree_le: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
-        alert(`🛒 L'article "${nom}" a bien été ajouté au catalogue de la boutique !`);
+    }).then(() => {
+        alert("Article mis en vente !");
         document.getElementById('form-ajouter-produit').reset();
-    })
-    .catch(error => console.error("Erreur d'ajout du produit : ", error));
+    }).catch(err => alert("Erreur d'ajout : " + err.message));
 }
 
-function ecouterProduitsBoutique() {
-    const conteneurProduits = document.getElementById('admin-liste-produits');
-    if (!conteneurProduits) return;
-
-    db.collection("boutique_produits").orderBy("cree_le", "desc").onSnapshot((snapshot) => {
-        conteneurProduits.innerHTML = "";
-        if (snapshot.empty) {
-            conteneurProduits.innerHTML = `<p style="color: #6b7280; grid-column: 1/-1;">Aucun produit en vitrine pour l'instant.</p>`;
-            return;
-        }
-
-        snapshot.forEach((doc) => {
-            const prod = doc.data();
-            const id = doc.id;
-            const carteHtml = document.createElement('div');
-            carteHtml.style = "background: #030712; border: 1px solid #1f2937; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;";
-            carteHtml.innerHTML = `
-                <div>
-                    <span style="font-size: 0.75rem; background: #1f2937; padding: 2px 6px; border-radius: 4px; color: #9ca3af;">${prod.type}</span>
-                    <h4 style="margin: 10px 0 5px 0; color: #fff;">${prod.nom}</h4>
-                    <p style="color: #6b7280; font-size: 0.85rem; margin-bottom: 10px;">${(prod.prix || 0).toLocaleString('fr-FR')} FCFA — Stock : <strong>${prod.quantite_stock}</strong></p>
-                </div>
-                <button onclick="supprimerProduitBoutique('${id}')" style="background: none; border: 1px solid #ef4444; color: #ef4444; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; width: 100%; margin-top: 10px;">
-                    <i class="fa-solid fa-trash"></i> Retirer du marché
-                </button>
-            `;
-            conteneurProduits.appendChild(carteHtml);
-        });
-    });
+// Publier Cours
+function publierCours(e) {
+    e.preventDefault();
+    db.collection("cours").add({
+        titre: document.getElementById('cours-titre').value,
+        filiere_id: document.getElementById('cours-categorie').value,
+        niveau: document.getElementById('cours-niveau').value,
+        media_url: document.getElementById('cours-media').value,
+        description: document.getElementById('cours-desc').value,
+        date_creation: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        alert("Cours publié !");
+        fermerModalCours();
+    }).catch(err => alert("Erreur publication cours : " + err.message));
 }
 
-function supprimerProduitBoutique(id) {
-    if (confirm("Êtes-vous sûr de vouloir retirer cet article de la boutique ?")) {
-        db.collection("boutique_produits").doc(id).delete()
-        .then(() => alert("Article supprimé de la vitrine."))
-        .catch(err => console.error("Erreur suppression produit:", err));
-    }
+// Suppressions
+function supprimerFiliere(id) {
+    if(confirm("Supprimer cette filière ?")) db.collection('filieres').doc(id).delete();
 }
-
-function ecouterCommandesBoutique() {
-    const tableBody = document.getElementById('admin-liste-commandes');
-    if (!tableBody) return;
-
-    db.collection("boutique_commandes").orderBy("cree_le", "desc").onSnapshot((snapshot) => {
-        tableBody.innerHTML = "";
-        if (snapshot.empty) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 30px;">Aucune commande enregistrée.</td></tr>`;
-            return;
-        }
-
-        snapshot.forEach((doc) => {
-            const cmd = doc.data();
-            const id = doc.id;
-            let articlesTexte = "";
-            if (cmd.articles) {
-                cmd.articles.forEach(item => { articlesTexte += `${item.nom} (x${item.quantite})<br>`; });
-            }
-
-            const tr = document.createElement('tr');
-            tr.style = "border-bottom: 1px solid #1f2937; color: #fff;";
-            tr.innerHTML = `
-                <td style="padding: 12px; font-size: 0.85rem;">
-                    <strong>${cmd.client_nom || 'Client inconnu'}</strong><br>
-                    <span style="color:#9ca3af;">${cmd.client_telephone || ''}</span>
-                </td>
-                <td style="padding: 12px; font-size: 0.85rem; color:#d1d5db;">${articlesTexte}</td>
-                <td style="padding: 12px; font-weight:700; color:#00f0ff;">${(cmd.total_facture || 0).toLocaleString('fr-FR')} F</td>
-                <td style="padding: 12px;">
-                    <span style="font-size:0.75rem; padding:3px 8px; border-radius:12px; background: ${cmd.statut === 'Livré' ? '#065f46; color:#34d399;' : '#78350f; color:#fbbf24;'}">
-                        ${cmd.statut || 'En attente'}
-                    </span>
-                </td>
-                <td style="padding: 12px;">
-                    <button onclick="marquerCommandeLivree('${id}')" style="background:#10b981; border:none; color:#fff; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem; margin-right:5px;" title="Marquer comme livré">
-                        <i class="fa-solid fa-check"></i>
-                    </button>
-                    <button onclick="archiverCommande('${id}')" style="background:#ef4444; border:none; color:#fff; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;" title="Supprimer la commande">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>
-            `;
-            tableBody.appendChild(tr);
-        });
-    });
+function supprimerProduit(id) {
+    if(confirm("Supprimer ce produit ?")) db.collection('boutique_produits').doc(id).delete();
 }
-
-function marquerCommandeLivree(id) {
-    db.collection("boutique_commandes").doc(id).update({ statut: "Livré" })
-    .then(() => alert("Statut de la commande mis à jour ! ✅"))
-    .catch(err => console.error("Erreur mise à jour statut :", err));
+function supprimerCours(id) {
+    if(confirm("Supprimer ce cours ?")) db.collection('cours').doc(id).delete();
 }
-
-function archiverCommande(id) {
-    if (confirm("Voulez-vous supprimer cette commande de la liste ?")) {
-        db.collection("boutique_commandes").doc(id).delete()
-        .then(() => alert("Commande supprimée de la liste."))
-        .catch(err => console.error("Erreur suppression commande :", err));
-    }
+function supprimerComposant(id) {
+    if(confirm("Supprimer ce composant ?")) db.collection('composants').doc(id).delete();
 }
