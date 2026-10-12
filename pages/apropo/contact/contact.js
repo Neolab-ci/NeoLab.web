@@ -1,9 +1,5 @@
-// IMPORTATION DES SERVICES FIREBASE DEPUIS LE CDN OFFICIEL
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
 // ==========================================
-// 1. CONFIGURATION DE VOTRE PROJET FIREBASE
+// CONFIGURATION ET INITIALISATION FIREBASE (COMPAT)
 // ==========================================
 const firebaseConfig = {
     apiKey: "AIzaSyBRGYbiSp26ba_cxj7REHKkOqSylQf1DfQ",
@@ -14,14 +10,91 @@ const firebaseConfig = {
     appId: "1:121581894561:web:c2056aa29364fce97a69e0"
 };
 
-// Initialisation unique et moderne de Firebase et Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+const auth = firebase.auth();
 
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // 2. LOGIQUE DU MENU HAMBURGER (MOBILE TOGGLE)
+    // 1. GESTION DU THÈME (CLAIR PAR DÉFAUT)
+    // ==========================================
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        if (themeIcon) {
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        }
+    } else {
+        document.body.classList.remove('dark-theme');
+        if (themeIcon) {
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            if (isDark) {
+                localStorage.setItem('theme', 'dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+        });
+    }
+
+    // ==========================================
+    // 2. ÉTAT DE CONNEXION & AUTO-REMPLISSAGE DU NOM
+    // ==========================================
+    auth.onAuthStateChanged((user) => {
+        const authActionContainer = document.getElementById('dynamic-auth-action');
+        const inputFullName = document.getElementById('fullName');
+        const inputEmail = document.getElementById('email');
+
+        if (user) {
+            console.log("Utilisateur connecté :", user.email);
+
+            // Remplacer le bouton de connexion par "Espace Élève"
+            if (authActionContainer) {
+                authActionContainer.innerHTML = `<a href="../../../espace/eleve/eleve.html" class="btn-connect" style="background: var(--primary-color); color: white;">Mon Espace Élève</a>`;
+            }
+
+            // Récupérer le nom dans Firestore (collection 'eleves') pour pré-remplir le formulaire
+            db.collection('eleves').doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (inputFullName && data.nom) {
+                        inputFullName.value = data.nom;
+                    }
+                }
+            }).catch(err => console.log("Erreur lecture profil:", err));
+
+            if (inputEmail && user.email) {
+                inputEmail.value = user.email;
+            }
+
+        } else {
+            console.log("Visiteur non connecté.");
+            if (authActionContainer) {
+                authActionContainer.innerHTML = `<a href="../../login/auth.html" class="btn-connect">Se connecter</a>`;
+            }
+        }
+    });
+
+    // ==========================================
+    // 3. MENU HAMBURGER (MOBILE TOGGLE)
     // ==========================================
     const menuToggle = document.getElementById('menuToggle');
     const mainNav = document.getElementById('mainNav');
@@ -29,8 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (menuToggle && mainNav) {
         menuToggle.addEventListener('click', () => {
             mainNav.classList.toggle('mobile-open');
-            
-            // Changement d'icône fluide (bars <=> xmark)
             const icon = menuToggle.querySelector('i');
             if (mainNav.classList.contains('mobile-open')) {
                 icon.className = "fa-solid fa-xmark";
@@ -41,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 3. ENVOI DU FORMULAIRE DE CONTACT VERS FIREBASE
+    // 4. ENVOI DU FORMULAIRE DE CONTACT VERS FIREBASE
     // ==========================================
     const contactForm = document.getElementById('contactForm');
     const formFeedback = document.getElementById('formFeedback');
@@ -49,76 +120,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Stoppe le rechargement de la page
+            e.preventDefault();
 
-            // Récupération dynamique des valeurs saisies
             const fullName = document.getElementById('fullName').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const subject = document.getElementById('subject').value;
             const message = document.getElementById('message').value.trim();
 
-            // Modification visuelle du bouton pendant l'envoi (Loading state)
             const originalBtnText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Traitement en cours...';
             submitBtn.disabled = true;
 
             try {
-                // Envoi des données dans une collection Firestore nommée "messages_contact"
-                await addDoc(collection(db, "messages_contact"), {
+                await db.collection("messages_contact").add({
                     nom_complet: fullName,
                     email: email,
                     telephone: phone ? phone : "Non renseigné",
                     sujet: subject,
                     message: message,
-                    envoye_le: serverTimestamp() // Ajoute l'heure du serveur automatiquement
+                    envoye_le: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Retour visuel positif de succès
                 formFeedback.textContent = `Merci ${fullName}, votre demande a bien été envoyée à l'équipe !`;
                 formFeedback.className = "form-feedback success";
                 formFeedback.classList.remove('hidden');
-                
-                // Reset complet du formulaire
                 contactForm.reset();
 
             } catch (error) {
                 console.error("Erreur Firebase: ", error);
-                // Retour visuel négatif en cas de coupure ou problème technique
                 formFeedback.textContent = "Une erreur est survenue lors de l'envoi. Veuillez réessayer.";
                 formFeedback.className = "form-feedback error";
                 formFeedback.classList.remove('hidden');
             } finally {
-                // Rétablissement du bouton
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
-                
-                // Défilement fluide vers le haut du formulaire pour voir le message
                 formFeedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
     }
 
     // ==========================================
-    // 4. AUTOMATISATION DES CARTES "TYPE DE DEMANDE"
-    // ==========================================
-    const requestCards = document.querySelectorAll('.request-card');
-    const subjectSelect = document.getElementById('subject');
-
-    requestCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const targetSubject = card.getAttribute('data-subject');
-            if (subjectSelect) {
-                subjectSelect.value = targetSubject;
-                
-                // Scroll fluide vers le formulaire de contact
-                contactForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        });
-    });
-
-    // ==========================================
-    // 5. BONUS : ACCORDÉON FAQ INTERACTIF
+    // 5. ACCORDÉON FAQ INTERACTIF
     // ==========================================
     const accordionHeaders = document.querySelectorAll('.accordion-header');
     accordionHeaders.forEach(header => {
@@ -143,43 +186,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ========================================================
-// BASE DE DONNÉES ET CONFIGURATION DES CONTENUS DYNAMIQUES
-// ========================================================
-
+// ==========================================
+// CONFIGURATION DES CONTENUS DE LA MODALE
+// ==========================================
 const infosDemandes = {
     'etudiant': {
         titre: "Espace Étudiant NeoLab-CI",
-        description: "Obtenez un accompagnement personnalisé, des conseils sur vos cours de robotique, d'électronique et sur la préparation de vos certificats de compétences.",
+        description: "Obtenez un accompagnement personnalisé, des conseils sur vos cours et sur la préparation de vos certificats.",
         videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
     },
     'laboratoire': {
         titre: "Équipements Hospitalier & Laboratoire",
-        description: "Besoin de composants spécifiques, de conseils d'ingénierie ou d'un partenariat de recherche ? Découvrez comment NeoLab-CI accompagne la technologie médicale.",
+        description: "Besoin de composants spécifiques, de conseils d'ingénierie ou d'un partenariat de recherche ?",
         videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
     },
     'etablissement': {
         titre: "Établissement de Formation & Écoles",
-        description: "Nous construisons des programmes pédagogiques sur mesure et fournissons des kits d'apprentissage pour équiper vos salles de TP d'électronique.",
+        description: "Nous construisons des programmes pédagogiques sur mesure et fournissons des kits d'apprentissage.",
         videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
     },
     'partenaire': {
         titre: "Devenir Partenaire Officiel",
-        description: "Propulsez l'innovation technologique en Côte d'Ivoire. Découvrez nos programmes de sponsoring, d'incubation et de projets en co-conception.",
+        description: "Propulsez l'innovation technologique en Côte d'Ivoire grâce à nos programmes de sponsoring.",
         videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
     },
     'technique': {
         titre: "Support & Assistance Technique",
-        description: "Une panne sur un kit ? Un bug sur la plateforme ou un composant défectueux ? Regardez cette rapide vidéo de diagnostic avant de nous écrire.",
+        description: "Une panne sur un kit ? Un bug sur la plateforme ? Regardez cette rapide vidéo de diagnostic.",
         videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
     }
 };
 
-// ========================================================
-// FONCTIONS DE CONTRÔLE DE LA MODALE (Globales pour le HTML)
-// ========================================================
 window.ouvrirModaleContact = function(type) {
-    console.log("Clic détecté pour le type :", type); // Pour débugger dans ta console
     const infos = infosDemandes[type];
     if (!infos) return;
 
@@ -195,8 +233,6 @@ window.ouvrirModaleContact = function(type) {
         inputType.value = type;
         iframe.src = infos.videoUrl;
         modal.style.display = 'flex';
-    } else {
-        console.error("Erreur : Un des éléments HTML de la modale est introuvable.");
     }
 };
 
@@ -210,45 +246,33 @@ window.fermerModaleContact = function() {
     if (form) form.reset();
 };
 
-// ========================================================
-// ENREGISTREMENT DU MESSAGE DANS FIREBASE
-// ========================================================
+// Envoi modale vers Firestore
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('form-contact-modal');
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-
             const typeDemande = document.getElementById('form-type-demande').value;
             const nom = document.getElementById('contact-nom').value;
             const email = document.getElementById('contact-email').value;
             const message = document.getElementById('contact-message').value;
 
-            const nouveauMessage = {
+            db.collection("messages_contact").add({
                 type_client: typeDemande,
                 nom_complet: nom,
                 email_client: email,
                 message_contents: message,
                 envoye_le: firebase.firestore.FieldValue.serverTimestamp(),
                 statut: "Non lu"
-            };
-
-            // Vérifier si Firestore (db) est disponible
-            if (typeof db !== "undefined") {
-                db.collection("messages_contact").add(nouveauMessage)
-                .then(() => {
-                    alert(`Merci ${nom} ! Votre demande a été transmise avec succès à l'équipe NeoLab-CI. 🚀`);
-                    fermerModaleContact();
-                })
-                .catch((error) => {
-                    console.error("Erreur d'envoi Firestore : ", error);
-                    alert("Une erreur technique est survenue.");
-                });
-            } else {
-                console.error("Firebase 'db' n'est pas initialisé sur cette page.");
-                alert(`[Mode Test] Message de ${nom} simulé avec succès ! (Activez Firebase pour l'enregistrement réel)`);
+            })
+            .then(() => {
+                alert(`Merci ${nom} ! Votre demande a été transmise avec succès.`);
                 fermerModaleContact();
-            }
+            })
+            .catch((error) => {
+                console.error("Erreur d'envoi : ", error);
+                alert("Une erreur technique est survenue.");
+            });
         });
     }
 });

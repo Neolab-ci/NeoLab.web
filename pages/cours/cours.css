@@ -1,21 +1,28 @@
 /* ==========================================================================
-   CHARTE GRAPHIQUE NEOLAB-CI (Thème Sombre & Moderne)
+   CHARTE GRAPHIQUE NEOLAB-CI (Thème Blanc par défaut + Dark Mode)
    ========================================================================== */
 :root {
-  --bg-main: #0b0f19;         /* Fond principal de l'application */
-  --bg-card: #131926;         /* Fond des cartes et de la modale */
-  --border: #1e293b;          /* Bordures subtiles */
-  --text-main: #f8fafc;       /* Texte blanc/lumineux */
-  --text-muted: #94a3b8;      /* Texte secondaire gris */
+  --bg-main: #f8fafc;         /* Fond principal clair */
+  --bg-card: #ffffff;         /* Fond des cartes et modale clair */
+  --border: #e2e8f0;          /* Bordures subtiles claires */
+  --text-main: #0f172a;       /* Texte foncé */
+  --text-muted: #64748b;      /* Texte secondaire gris */
   
-  /* Couleurs d'accents */
-  --blue-bright: #38bdf8;     /* Cyan/Bleu pour le niveau Débutant / Liens */
-  --orange: #f97316;          /* Orange pour l'Intermédiaire */
-  --red-destruct: #ef4444;    /* Rouge pour le niveau Avancé et Fermeture */
-  --brand-blue: #0284c7;      /* Bleu corporate NeoLab-CI */
+  --blue-bright: #38bdf8;     
+  --orange: #f97316;          
+  --red-destruct: #ef4444;    
+  --brand-blue: #0284c7;      
 }
 
-/* Base de la page */
+/* Prise en charge du mode sombre via .dark-theme */
+body.dark-theme {
+  --bg-main: #0b0f19;
+  --bg-card: #131926;
+  --border: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--bg-main);
@@ -23,6 +30,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -31,9 +39,6 @@ body {
   padding: 20px;
 }
 
-/* ==========================================================================
-   EN-TÊTE (HEADER) & STATISTIQUES
-   ========================================================================== */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -58,6 +63,7 @@ body {
   margin: 0;
   font-size: 28px;
   font-weight: 700;
+  color: var(--text-main);
 }
 
 .subtitle {
@@ -66,7 +72,6 @@ body {
   font-size: 14px;
 }
 
-/* Carte de statistiques */
 .stats-container {
   flex-shrink: 0;
 }
@@ -91,9 +96,6 @@ body {
   margin-top: 2px;
 }
 
-/* ==========================================================================
-   BARRE DE RECHERCHE ET FILTRES
-   ========================================================================== */
 .filter-section {
   display: flex;
   gap: 16px;
@@ -135,7 +137,6 @@ body {
   cursor: pointer;
 }
 
-/* Onglets (Tabs) pour les Niveaux */
 .tabs-container {
   display: flex;
   gap: 8px;
@@ -167,9 +168,6 @@ body {
   border-color: var(--brand-blue);
 }
 
-/* ==========================================================================
-   GRILLE DES CARTES DE COURS
-   ========================================================================== */
 .grid-view {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -190,7 +188,6 @@ body {
   border-color: #334155;
 }
 
-/* Badges de couleur pour la difficulté */
 .card-badge {
   font-size: 11px;
   font-weight: bold;
@@ -199,42 +196,10 @@ body {
   text-transform: uppercase;
 }
 
-.card-badge.passif { background: rgba(34, 197, 94, 0.15); color: #22c55e; }       /* Vert - Débutant */
-.card-badge.actif { background: rgba(249, 115, 22, 0.15); color: var(--orange); }  /* Orange - Intermédiaire */
-.card-badge.capteur { background: rgba(239, 68, 68, 0.15); color: var(--red-destruct); } /* Rouge - Avancé */
+.card-badge.passif { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.card-badge.actif { background: rgba(249, 115, 22, 0.15); color: var(--orange); }
+.card-badge.capteur { background: rgba(239, 68, 68, 0.15); color: var(--red-destruct); }
 
-/* ==========================================================================
-   PAGINATION
-   ========================================================================== */
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 20px;
-}
-
-.pg-btn {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.pg-btn.active {
-  background: var(--brand-blue);
-  border-color: var(--brand-blue);
-}
-
-.pg-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* ==========================================================================
-   FENÊTRE MODALE (OPTION A)
-   ========================================================================== */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -272,17 +237,10 @@ body {
   padding: 20px 20px 0 20px;
 }
 
-.modal-category {
-  font-family: monospace;
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-
-/* NOUVEAU : Bouton Croix coloré et dynamique */
 .modal-close {
-  background: rgba(239, 68, 68, 0.1); /* Léger fond rouge transparent */
+  background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  color: var(--red-destruct);        /* Croix en rouge vif */
+  color: var(--red-destruct);
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
@@ -302,226 +260,4 @@ body {
 
 .modal-body {
   padding: 20px;
-}
-
-.modal-section-title {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  margin: 24px 0 12px 0;
-  font-weight: bold;
-}
-
-/* Éléments internes de la modale */
-.spec-card {
-  background: var(--bg-main);
-  border: 1px solid var(--border);
-  padding: 12px;
-  border-radius: 8px;
-}
-
-.spec-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.spec-value {
-  font-weight: bold;
-  margin-top: 4px;
-  font-size: 15px;
-}
-
-.pin-item {
-  display: flex;
-  align-items: center;
-  background: var(--bg-main);
-  border: 1px solid var(--border);
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-.pin-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 12px;
-}
-
-.pin-name {
-  font-weight: bold;
-  margin-right: 6px;
-}
-
-.pin-role {
-  color: var(--text-muted);
-}
-
-.code-block {
-  background: #070a12;
-  border: 1px solid var(--border);
-  padding: 14px;
-  border-radius: 8px;
-  overflow-x: auto;
-}
-
-/* ==========================================================================
-   BOUTON FLOTTANT RETOUR À L'ACCUEIL
-   ========================================================================== */
-.btn-retour-accueil {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  background-color: var(--brand-blue);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  text-decoration: none;
-  transition: all 0.2s ease;
-  z-index: 999;
-}
-
-.btn-retour-accueil:hover {
-  transform: scale(1.1);
-  background-color: #0369a1;
-}
-
-/* ==========================================================================
-   OPTIMISATION ET RÉDUCTION DE TAILLE SUR SMARTPHONE (MEDIA QUERY)
-   ========================================================================== */
-@media (max-width: 768px) {
-  .container {
-    padding: 12px; /* Réduction des marges globales de la page */
-  }
-
-  /* En-tête plus compact */
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding-bottom: 14px;
-    margin-bottom: 16px;
-  }
-  
-  .page-header h1 {
-    font-size: 20px; /* Titre principal plus petit */
-  }
-  
-  .subtitle {
-    font-size: 12px;
-  }
-
-  .stats-container {
-    width: 100%;
-  }
-
-  .stat-card {
-    text-align: center;
-    padding: 8px 16px;
-  }
-  
-  .stat-number {
-    font-size: 18px;
-  }
-
-  /* Filtres et recherche plus denses */
-  .filter-section {
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .search-box input, .sort-box select {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  .search-box input {
-    padding-left: 36px;
-  }
-
-  .tabs-container {
-    margin-bottom: 16px;
-  }
-
-  .cat-tab {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  /* Cartes de cours miniaturisées */
-  .grid-view {
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* Moins larges */
-    gap: 12px; /* Espaces réduits entre les cartes */
-  }
-
-  .card-img {
-    height: 90px !important; /* Hauteur de l'image réduite */
-    font-size: 36px !important; /* Emoji plus petit */
-  }
-
-  .card-body {
-    padding: 10px !important;
-  }
-
-  .card-title {
-    font-size: 14px !important;
-    margin-bottom: 4px !important;
-  }
-
-  .card-desc {
-    font-size: 11px !important;
-    margin-bottom: 8px !important;
-    line-height: 1.3 !important;
-  }
-
-  /* Fenêtre Modale optimisée pour l'écran mobile */
-  .modal-content {
-    max-height: 85vh;
-  }
-
-  .modal-header {
-    padding: 14px 14px 0 14px;
-  }
-
-  .modal-header h2 {
-    font-size: 16px !important;
-  }
-
-  .modal-body {
-    padding: 14px;
-  }
-
-  .modal-section-title {
-    margin: 16px 0 8px 0;
-    font-size: 11px;
-  }
-
-  .spec-value {
-    font-size: 13px;
-  }
-
-  .pin-item {
-    padding: 8px 10px;
-    font-size: 12px;
-  }
-
-  /* Bouton retour en bas à droite */
-  .btn-retour-accueil {
-    top: auto;
-    bottom: 16px;
-    right: 16px;
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
-  }
 }

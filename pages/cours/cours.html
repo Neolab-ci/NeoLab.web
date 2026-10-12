@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NeoLab-CI - Espace Cours</title>
+  <title>NeoLab-CI - Espace de Cours</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="cours.css"> 
   <link rel="stylesheet" href="../../com.css">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,7 +15,35 @@
 </head>
 <body>
 
-  <div class="container">
+    <!-- NAVBAR UNIFIÉE -->
+    <header class="navbar" style="position: sticky; top: 0; z-index: 1000; background: var(--bg-card); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);">
+        <div class="navbar-container" style="max-width: 1300px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <a href="../../index.html" class="logo" style="display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; color: var(--text-main);">
+                <div class="logo-icon" style="color: var(--brand-blue); font-size: 1.4rem;"><i class="fa-solid fa-graduation-cap"></i></div>
+                <span>NeoLab-CI</span>
+            </a>
+            
+            <nav class="nav-menu" id="navMenu" style="display: flex; gap: 32px;">
+                <a href="../../index.html" style="color: var(--text-muted); font-weight: 500;">Accueil</a>
+                <a href="cours.html" class="active" style="color: var(--text-main); font-weight: 600;">Cours</a>
+                <a href="../projet/projet.html" style="color: var(--text-muted); font-weight: 500;">Projets</a>
+                <a href="../composant/composants.html" style="color: var(--text-muted); font-weight: 500;">Composants</a>
+                <a href="../apropo/contact/contact.html" style="color: var(--text-muted); font-weight: 500;">Contact</a>
+            </nav>
+
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+                <!-- Bouton Bascule Thème Clair / Sombre -->
+                <button id="theme-toggle-btn" class="lang-selector" title="Changer le thème" style="background:none; border:none; cursor:pointer; color:var(--text-main); font-size:1.1rem;">
+                    <i class="fa-solid fa-sun" id="theme-icon"></i>
+                </button>
+                <div id="dynamic-auth-action">
+                    <a href="../../espace/eleve/eleve.html" class="btn-connect" style="border: 1px solid var(--brand-blue); padding: 8px 18px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; color: var(--brand-blue);">Mon Espace</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+  <div class="container" style="margin-top: 20px;">
     
     <header class="page-header">
       <div class="header-main">
@@ -48,7 +80,7 @@
       </div>
     </div>
 
- <div class="tabs-container" id="levelTabs" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+    <div class="tabs-container" id="levelTabs" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
       <button class="cat-tab active" onclick="filterCategory('all', this)">
         🌐 Tous (<span id="countAllCours">0</span>)
       </button>
@@ -73,29 +105,28 @@
     </div>
 
     <div class="format-filters" style="display: flex; gap: 8px; margin: -10px 0 20px 0; padding: 0 5px;">
-      <button class="fmt-btn active" onclick="filterFormat('all', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s;">
+      <button class="fmt-btn active" onclick="filterFormat('all', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500;">
         📱 Tout afficher
       </button>
-      <button class="fmt-btn" onclick="filterFormat('pdf', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s;">
+      <button class="fmt-btn" onclick="filterFormat('pdf', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500;">
         📄 Supports PDF
       </button>
-      <button class="fmt-btn" onclick="filterFormat('video', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s;">
+      <button class="fmt-btn" onclick="filterFormat('video', this)" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500;">
         🎥 Cours Vidéo
       </button>
     </div>
-    <!-- Boutons de changement de vue (Grille / Liste) -->
-<div class="view-switcher" style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; padding: 0 10px;">
-    <button id="btnViewGrid" onclick="changeViewMode('grid')" style="padding: 6px 12px; background: #334155; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;">
-        ⣿ Grille
-    </button>
-    <button id="btnViewList" onclick="changeViewMode('list')" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;">
-        ☰ Liste
-    </button>
-</div>
+
+    <div class="view-switcher" style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; padding: 0 10px;">
+        <button id="btnViewGrid" onclick="changeViewMode('grid')" style="padding: 6px 12px; background: #334155; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+            ⣿ Grille
+        </button>
+        <button id="btnViewList" onclick="changeViewMode('list')" style="padding: 6px 12px; background: #1e293b; color: #94a3b8; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+            ☰ Liste
+        </button>
+    </div>
+
     <main class="grid-view" id="coursesGridView"></main>
-
     <div class="pagination"></div>
-
 
   </div>
 
@@ -105,33 +136,5 @@
 
   <script src="cours.js"></script>
   <script src="../../com.js"></script>
-
-  <div class="floating-nav-container">
-    <button class="floating-nav-trigger" id="floating-nav-trigger" title="Navigation rapide">
-        <i data-lucide="menu"></i>
-    </button>
-    <div class="floating-nav-menu" id="floating-nav-menu">
-        <a href="../../index.html" class="floating-nav-item" title="Tableau de bord">
-            <i data-lucide="layout-dashboard"></i>ACCUEIL
-            <span>Dashboard</span>
-        </a>
-        <a href="../projet/projet.html" class="floating-nav-item" title="Mes Projets">
-            <i data-lucide="folder-kanban"></i>PROJET
-            <span>Projets</span>
-        </a>
-        <a href="../composant/composants.html" class="floating-nav-item" title="Mes Composants">
-            <i data-lucide="component"></i>COMPOSANTS
-            <span>Composants</span>
-        </a>
-         <a href="../../espace/eleve/eleve.html" class="floating-nav-item" title="Mon espace élève">
-            <i data-lucide="user"></i>ESPACE
-            <span>Mon espace</span>
-        </a>
-        <button id="floating-btn-logout" class="floating-nav-item logout" title="Déconnexion">
-            <i data-lucide="log-out"></i>SORTIE
-            <span>Quitter</span>
-        </button>
-    </div>
-  </div>
 </body>
 </html>

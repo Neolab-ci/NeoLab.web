@@ -14,26 +14,34 @@
     <!-- HEADER / NAVIGATION -->
     <header class="main-header">
         <div class="container header-container">
-            <a href="#" class="logo">
+            <a href="../../../index.html" class="logo">
                 <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
                 <span>NeoLab-CI</span>
             </a>
             
             <!-- Menu de navigation principal -->
             <nav class="main-nav" id="mainNav">
-                <a href="../../../acceuil.html">Accueil</a>
-                <a href="../../cours/cours.html">Cours </a>
-                <a href="../../projet/projet.html">Projets </a>
+                <a href="../../../index.html">Accueil</a>
+                <a href="../../cours/cours.html">Cours</a>
+                <a href="../../projet/projet.html">Projets</a>
                 <a href="../../composant/composants.html">Composants</a>
                 <a href="../../apropo/index.html">À propos de nous</a>
             </nav>
             <div class="header-actions">
+                <!-- Bouton Bascule Thème Clair / Sombre -->
+                <button id="theme-toggle-btn" class="lang-selector" title="Changer le thème" style="background:none; border:none; cursor:pointer; color:var(--text-primary); font-size:1.1rem;">
+                    <i class="fa-solid fa-sun" id="theme-icon"></i>
+                </button>
+
                 <div class="lang-selector">
                     <i class="fa-solid fa-globe"></i>
                     <span>FR</span>
-                    <i class="fa-solid fa-chevron-down"></i>
                 </div>
-                <a href="#" class="btn-connect">Se connecter</a>
+                
+                <!-- Bouton d'action dynamique (Connexion ou Espace Élève) -->
+                <div id="dynamic-auth-action">
+                    <a href="../../login/auth.html" class="btn-connect">Se connecter</a>
+                </div>
                 
                 <!-- BOUTON HAMBURGER POUR MOBILE -->
                 <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">
@@ -111,7 +119,6 @@
             <!-- FORMULAIRE -->
             <div class="contact-form-wrapper">
                 <h2>Envoyez-nous un message</h2>
-                <!-- Message de succès ou d'erreur dynamique -->
                 <div id="formFeedback" class="form-feedback hidden"></div>
                 
                 <form id="contactForm" class="contact-form">
@@ -163,8 +170,7 @@
                                 <i class="fa-solid fa-chevron-down"></i>
                             </div>
                             <div class="accordion-content">
-                                <p>Une fois votre parcours de formation validé à 100%, votre 
-                                    certificat sera téléchargeable directement depuis votre tableau de bord.</p>
+                                <p>Une fois votre parcours de formation validé à 100%, votre certificat sera téléchargeable directement depuis votre tableau de bord.</p>
                             </div>
                         </div>
                         <div class="accordion-item">
@@ -173,8 +179,7 @@
                                 <i class="fa-solid fa-chevron-down"></i>
                             </div>
                             <div class="accordion-content">
-                                <p>Nous proposons une sélection de modules gratuits d'initiation, 
-                                    ainsi que des parcours certifiants payants.</p>
+                                <p>Nous proposons une sélection de modules gratuits d'initiation, ainsi que des parcours certifiants payants.</p>
                             </div>
                         </div>
                     </div>
@@ -205,46 +210,38 @@
     <section class="request-type-section">
         <div class="container">
             <h2 class="section-title">Choisissez votre type de demande</h2>
-                        <!-- GRILLE DES TYPES DE DEMANDE -->
-            <!-- GRILLE DES TYPES DE DEMANDE -->
             <div class="request-grid">
-                <!-- Carte 1 -->
                 <div class="request-card" onclick="ouvrirModaleContact('etudiant')">
-                    <div class="choice-icon"><i class="fa-solid fa-user-graduate"></i></div>
+                    <div class="choice-icon" style="color:var(--primary-color); font-size:2rem; margin-bottom:15px;"><i class="fa-solid fa-user-graduate"></i></div>
                     <h3>Je suis un étudiant</h3>
                     <p>Questions sur les cours, certificats ou progression.</p>
                     <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
-                <!-- Carte 2 -->
                 <div class="request-card" onclick="ouvrirModaleContact('laboratoire')">
-                    <div class="choice-icon"><i class="fa-solid fa-hospital-user"></i></div>
+                    <div class="choice-icon" style="color:var(--primary-color); font-size:2rem; margin-bottom:15px;"><i class="fa-solid fa-hospital-user"></i></div>
                     <h3>Hôpital / Laboratoire</h3>
                     <p>Demandes de formation ou de partenariat.</p>
                     <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
-                <!-- Carte 3 -->
                 <div class="request-card" onclick="ouvrirModaleContact('etablissement')">
-                    <div class="choice-icon"><i class="fa-solid fa-school"></i></div>
+                    <div class="choice-icon" style="color:var(--primary-color); font-size:2rem; margin-bottom:15px;"><i class="fa-solid fa-school"></i></div>
                     <h3>Établissement de formation</h3>
                     <p>Collaboration et programmes pédagogiques.</p>
-                    <button class="request-arrow    "><i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
-                <!-- Carte 4 -->
                 <div class="request-card" onclick="ouvrirModaleContact('partenaire')">
-                    <div class="choice-icon"><i class="fa-solid fa-handshake"></i></div>
+                    <div class="choice-icon" style="color:var(--primary-color); font-size:2rem; margin-bottom:15px;"><i class="fa-solid fa-handshake"></i></div>
                     <h3>Devenir partenaire</h3>
                     <p>Partenariats, sponsoring ou collaboration.</p>
                     <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
-                <!-- Carte 5 -->
                 <div class="request-card" onclick="ouvrirModaleContact('technique')">
-                    <div class="choice-icon"><i class="fa-solid fa-bug"></i></div>
+                    <div class="choice-icon" style="color:var(--primary-color); font-size:2rem; margin-bottom:15px;"><i class="fa-solid fa-bug"></i></div>
                     <h3>Problème technique</h3>
                     <p>Difficultés de connexion, bugs ou pannes.</p>
                     <button class="request-arrow"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
-            
         </div>
     </section>
 
@@ -280,22 +277,21 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="main-footer">
+    <main-footer class="main-footer">
         <div class="container footer-grid">
             <div class="footer-info">
                 <div class="logo">
                     <i class="fa-solid fa-flask logo-icon"></i>
                     <span class="brand">NeoLab-CI</span>
                 </div>
-                <p class="footer-desc">NeoLab-CI est une plateforme moderne dédiée aux sciences, la Technologie, 
-                    l'electronique, l'informatique, l'innovation et au biomédical.</p>
+                <p class="footer-desc">NeoLab-CI est une plateforme moderne dédiée aux sciences, la Technologie, l'electronique, l'informatique, l'innovation et au biomédical.</p>
             </div>
             <div class="footer-links">
                 <h3>Liens utiles</h3>
                 <ul>
-                    <li><a href="../../../acceuil.html">Accueil</a></li>
+                    <li><a href="../../../index.html">Accueil</a></li>
                     <li><a href="#">Formations</a></li>
-                    <li><a href="#form-faq-section">Contact</a></li>
+                    <li><a href="#">Contact</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -312,55 +308,43 @@
                 </form>
             </div>
         </div>
-    </footer>
+    </main-footer>
 
-    <!-- SCRIPT APPLICATION PRINCIPAL EN TYPE MODULE (REQUIS POUR FIREBASE V10) -->
-    <!-- Script chargé en tant que module ES6 pour supporter les imports Firestore v10 -->
-    <script type="module" src="contact.js"></script>
-    <!-- FENÊTRE MODALE DYNAMIQUE DE CONTACT -->
-<div id="modalContact" class="contact-modal-overlay" style="display: none;">
-    <div class="contact-modal-box">
-        <button class="contact-modal-close" onclick="fermerModaleContact()">✕</button>
-        
-        <!-- Contenu divisé en 2 colonnes sur grand écran -->
-        <div class="contact-modal-grid">
-            
-            <!-- Colonne Gauche : Vidéo explicative & texte descriptif -->
-            <div class="modal-left">
-                <h3 id="modal-titre">Titre de la demande</h3>
-                <p id="modal-description" style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
-                    Explications personnalisées selon le profil sélectionné...
-                </p>
-                
-                <!-- Zone Vidéo Explicative -->
-                <div class="modal-video-container">
-                    <!-- Nous utiliserons un iframe pour lire une vidéo (YouTube, Vimeo, ou locale) -->
-                    <iframe id="modal-video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <!-- MODALE DE CONTACT -->
+    <div id="modalContact" class="contact-modal-overlay" style="display: none;">
+        <div class="contact-modal-box">
+            <button class="contact-modal-close" onclick="fermerModaleContact()">✕</button>
+            <div class="contact-modal-grid">
+                <div class="modal-left">
+                    <h3 id="modal-titre">Titre de la demande</h3>
+                    <p id="modal-description" style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">Explications personnalisées...</p>
+                    <div class="modal-video-container">
+                        <iframe id="modal-video-iframe" src="" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="modal-right">
+                    <h4><i class="fa-solid fa-paper-plane"></i> Envoyez-nous un message</h4>
+                    <form id="form-contact-modal">
+                        <input type="hidden" id="form-type-demande">
+                        <label for="contact-nom">Nom complet</label>
+                        <input type="text" id="contact-nom" required placeholder="Votre nom">
+                        <label for="contact-email">Email</label>
+                        <input type="email" id="contact-email" required placeholder="Votre adresse email">
+                        <label for="contact-message">Message</label>
+                        <textarea id="contact-message" required rows="4" placeholder="Détaillez votre besoin..."></textarea>
+                        <button type="submit" class="btn-send-contact">Envoyer ma demande</button>
+                    </form>
                 </div>
             </div>
-
-            <!-- Colonne Droite : Formulaire d'envoi direct -->
-            <div class="modal-right">
-                <h4><i class="fa-solid fa-paper-plane"></i> Envoyez-nous un message</h4>
-                <form id="form-contact-modal">
-                    <!-- Champ caché pour garder en mémoire le type de demande pour Firebase -->
-                    <input type="hidden" id="form-type-demande">
-
-                    <label for="contact-nom">Nom complet</label>
-                    <input type="text" id="contact-nom" required placeholder="Votre nom">
-
-                    <label for="contact-email">Email</label>
-                    <input type="email" id="contact-email" required placeholder="Votre adresse email">
-
-                    <label for="contact-message">Message</label>
-                    <textarea id="contact-message" required rows="4" placeholder="Détaillez votre besoin..."></textarea>
-
-                    <button type="submit" class="btn-send-contact">Envoyer ma demande</button>
-                </form>
-            </div>
-
         </div>
     </div>
-</div>
+
+    <!-- SDKs Firebase Compat pour la synchro de session et Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Script principal unifié -->
+    <script src="contact.js"></script>
 </body>
 </html>
