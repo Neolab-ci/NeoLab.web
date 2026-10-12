@@ -25,15 +25,17 @@ document.addEventListener("DOMContentLoaded", function() {
         lucide.createIcons();
     }
 
-    // VÉRIFICATION DE LA SESSION ÉLÈVE
+    // 1. VÉRIFICATION STRICTE DE LA SESSION DE L'ÉLÈVE
     auth.onAuthStateChanged((user) => {
         if (user) {
-            console.log("Élève connecté :", user.email);
+            console.log("Élève authentifié avec succès :", user.uid);
+            // Charger les données du profil et les cours adaptés à sa filière
             chargerDonneesProfil(user.uid);
-            chargerFiliereSelector();
-            chargerCatalogueCours();
+            remplirSelectFilieresFirestore();
+            chargerCatalogueCoursMultiFiliere();
         } else {
-            window.location.href = "../../assets/login/auth.html";
+            console.warn("Accès non autorisé : Aucun élève connecté.");
+            window.location.href = "auth.html"; // Redirection vers la page de connexion
         }
     });
 
@@ -59,11 +61,35 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // MISE À JOUR DU PROFIL ET DE LA FILIÈRE DE L'ÉLÈVE
+    document.getElementById('form-update-profile')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const nom = document.getElementById('settings-nom').value;
+        const sexe = document.getElementById('settings-sexe').value;
+        const filiereId = document.getElementById('settings-filiere').value;
+        const niveau = document.getElementById('settings-niveau').value;
+
+        db.collection('eleves').doc(user.uid).update({
+            nom: nom,
+            sexe: sexe,
+            filiere_id: filiereId,
+            niveauEtudes: niveau
+        })
+        .then(() => {
+            alert("✨ Profil et filière mis à jour avec succès !");
+            chargerDonneesProfil(user.uid);
+        })
+        .catch(err => alert("Erreur lors de la mise à jour : " + err.message));
+    });
+
     // COMMUTATION DE VUE (GRILLE / LISTE)
     document.getElementById('btn-view-grid')?.addEventListener('click', () => changeStudentView('grid'));
     document.getElementById('btn-view-list')?.addEventListener('click', () => changeStudentView('list'));
 
-    // FILTRE DE COURS PAR FILIÈRE
+    // FILTRE MANUEL DE COURS PAR FILIÈRE
     document.getElementById('select-filter-filiere')?.addEventListener('change', function() {
         filtrerEtAfficherCours(this.value);
     });
@@ -86,13 +112,13 @@ document.addEventListener("DOMContentLoaded", function() {
             envoye_le: firebase.firestore.FieldValue.serverTimestamp()
         })
         .then(() => {
-            alert("✨ Votre message a bien été transmis à l'équipe NeoLab-CI !");
+            alert("✨ Votre message a bien été transmis à l'administration !");
             document.getElementById('contactFormStudent').reset();
         })
-        .catch(err => alert("Erreur d'envoi du message : " + err.message));
+        .catch(err => alert("Erreur d'envoi : " + err.message));
     });
 
-    // GESTION DU MODE SOMBRE
+    // MODE SOMBRE
     const themeToggle = document.getElementById('theme-toggle');
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-theme');
@@ -116,7 +142,9 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// CHARGER LE PROFIL DE L'ÉLÈVE
+// ==========================================
+// CHARGEMENT DU PROFIL ET REMPLISSAGE DES FORMULAIRES
+// ==========================================
 function chargerDonneesProfil(uid) {
     db.collection('eleves').doc(uid).get().then((doc) => {
         if (doc.exists) {
@@ -129,32 +157,62 @@ function chargerDonneesProfil(uid) {
                 document.getElementById('user-display-avatar').style.display = "block";
             }
 
-            if (document.getElementById('dash-filiere')) document.getElementById('dash-filiere').innerText = globalEleveData.niveauEtudes || "Général";
+            if (document.getElementById('dash-filiere')) document.getElementById('dash-filiere').innerText = globalEleveData.filiere_id || globalEleveData.niveauEtudes || "Général";
             if (document.getElementById('profile-card-avatar')) document.getElementById('profile-card-avatar').src = avatarURL;
             if (document.getElementById('profile-card-nom')) document.getElementById('profile-card-nom').innerText = globalEleveData.nom;
             if (document.getElementById('profile-card-email')) document.getElementById('profile-card-email').innerText = globalEleveData.email;
             if (document.getElementById('profile-card-sexe')) document.getElementById('profile-card-sexe').innerText = globalEleveData.sexe || "Non renseigné";
-            if (document.getElementById('profile-card-niveau')) document.getElementById('profile-card-niveau').innerText = globalEleveData.niveauEtudes || "Non renseigné";
+            if (document.getElementById('profile-card-filiere')) document.getElementById('profile-card-filiere').innerText = globalEleveData.filiere_id || "Non définie";
+            if (document.getElementById('profile-card-niveau')) document.getElementById('profile-card-niveau').innerText = globalEleveData.niveauEtudes || "Non défini";
             if (document.getElementById('profile-card-date')) document.getElementById('profile-card-date').innerText = globalEleveData.dateInscription || "N/A";
+
+            // Pré-remplir les champs des paramètres
+            if (document.getElementById('settings-nom')) document.getElementById('settings-nom').value = globalEleveData.nom || "";
+            if (document.getElementById('settings-sexe')) document.getElementById('settings-sexe').value = globalEleveData.sexe || "Homme";
+            if (document.getElementById('settings-niveau')) document.getElementById('settings-niveau').value = globalEleveData.niveauEtudes || "";
+            if (document.getElementById('settings-filiere') && globalEleveData.filiere_id) {
+                document.getElementById('settings-filiere').value = globalEleveData.filiere_id;
+            }
+
+            // Mettre à jour l'affichage des cours en fonction de la filière de l'élève connecté
+            chargerCatalogueCoursMultiFiliere();
+        } else {
+            console.error("Profil élève introuvable.");
+            auth.signOut().then(() => { window.location.href = "auth.html"; });
+        }
+    }).catch(err => console.error("Erreur de chargement du profil :", err));
+}
+
+// REMPLIR TOUS LES MENUS DÉROULANTS DE FILIÈRES DEPUIS FIRESTORE
+function remplirSelectFilieresFirestore() {
+    db.collection('filieres').get().then((snapshot) => {
+        const selectSettings = document.getElementById('settings-filiere');
+        const selectFilter = document.getElementById('select-filter-filiere');
+
+        if (selectSettings) selectSettings.innerHTML = `<option value="">-- Sélectionnez votre filière --</option>`;
+        if (selectFilter) selectFilter.innerHTML = `<option value="toutes">Toutes les filières</option>`;
+
+        snapshot.forEach((doc) => {
+            const fil = doc.data();
+            const filId = doc.id;
+            const filNom = fil.nom || filId;
+
+            if (selectSettings) {
+                selectSettings.innerHTML += `<option value="${filId}">${filNom}</option>`;
+            }
+            if (selectFilter) {
+                selectFilter.innerHTML += `<option value="${filId}">${filNom}</option>`;
+            }
+        });
+
+        if (globalEleveData && globalEleveData.filiere_id && selectSettings) {
+            selectSettings.value = globalEleveData.filiere_id;
         }
     });
 }
 
-// CHARGER LES FILIÈRES DISPONIBLES EN BASE POUR LE FILTRE
-function chargerFiliereSelector() {
-    db.collection('filieres').get().then((snapshot) => {
-        const select = document.getElementById('select-filter-filiere');
-        if (!select) return;
-
-        snapshot.forEach((doc) => {
-            const fil = doc.data();
-            select.innerHTML += `<option value="${doc.id}">${fil.nom || doc.id}</option>`;
-        });
-    });
-}
-
-// CHARGER LES COURS FIRESTORE
-function chargerCatalogueCours() {
+// CHARGER LES COURS DEPUIS FIRESTORE
+function chargerCatalogueCoursMultiFiliere() {
     db.collection('cours').onSnapshot((snapshot) => {
         allCourses = [];
         snapshot.forEach((doc) => {
@@ -162,31 +220,52 @@ function chargerCatalogueCours() {
         });
 
         if (document.getElementById('dash-cours')) document.getElementById('dash-cours').innerText = allCourses.length;
-        filtrerEtAfficherCours('toutes');
+        
+        // Par défaut, on filtre selon la filière propre de l'élève connecté, ou 'toutes' s'il n'en a pas encore
+        const filiereEleve = (globalEleveData && globalEleveData.filiere_id) ? globalEleveData.filiere_id : 'toutes';
+        
+        // Sélectionne automatiquement la valeur dans le filtre s'il existe
+        const selectFilter = document.getElementById('select-filter-filiere');
+        if (selectFilter && globalEleveData && globalEleveData.filiere_id) {
+            selectFilter.value = globalEleveData.filiere_id;
+        }
+
+        filtrerEtAfficherCours(filiereEleve);
     });
 }
 
-// FILTRER ET AFFICHER LES COURS DANS L'ESPACE ÉLÈVE
+// LOGIQUE DE FILTRAGE MULTI-FILIÈRES (FILIÈRE UNIQUE OU TABLEAU `filieres_ids`)
 function filtrerEtAfficherCours(filiereId) {
     const container = document.getElementById('student-courses-grid');
     if (!container) return;
 
     let coursFiltres = allCourses;
     if (filiereId !== 'toutes') {
-        coursFiltres = allCourses.filter(c => (c.filiere_id === filiereId || c.category === filiereId));
+        coursFiltres = allCourses.filter(c => {
+            // Vérifie si le cours contient la filière dans un tableau `filieres_ids` OU correspond à `filiere_id` / `category`
+            if (Array.isArray(c.filieres_ids) && c.filieres_ids.includes(filiereId)) {
+                return true;
+            }
+            if (c.filiere_id === filiereId || c.category === filiereId) {
+                return true;
+            }
+            return false;
+        });
     }
 
     if (coursFiltres.length === 0) {
-        container.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted);">Aucun cours disponible pour cette filière.</p>`;
+        container.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted);">Aucun cours disponible pour cette sélection.</p>`;
         return;
     }
 
     container.innerHTML = coursFiltres.map(c => `
-        <div class="card" style="padding:15px; border-radius:10px;">
-            <span style="font-size:0.75rem; color:#3b82f6; font-weight:bold; text-transform:uppercase;">${c.filiere_id || c.category || 'Général'}</span>
-            <h3 style="font-size:1.1rem; margin:5px 0;">${c.titre || c.title}</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">${c.description || c.short || ''}</p>
-            <a href="${c.media_url || c.pdf || '#'}" target="_blank" style="display:inline-block; padding:8px 12px; background:var(--primary); color:white; border-radius:6px; font-size:0.85rem; text-decoration:none; font-weight:bold;">
+        <div class="card" style="padding:15px; border-radius:10px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+                <span style="font-size:0.75rem; color:#3b82f6; font-weight:bold; text-transform:uppercase;">${c.filiere_id || c.category || 'Commun'}</span>
+                <h3 style="font-size:1.1rem; margin:5px 0; color:var(--text-main);">${c.titre || c.title}</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">${c.description || c.short || ''}</p>
+            </div>
+            <a href="${c.media_url || c.pdf || c.videoUrl || '#'}" target="_blank" style="display:inline-block; padding:8px 12px; background:var(--primary); color:white; border-radius:6px; font-size:0.85rem; text-decoration:none; font-weight:bold; text-align:center;">
                 Consulter le cours
             </a>
         </div>

@@ -6,14 +6,14 @@
     <title>NeoLab-CI — Connexion & Inscription</title>
     <link rel="stylesheet" href="auth.css">
     <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
     <div class="auth-container">
         <div class="auth-header">
             <h2>NeoLab-CI</h2>
-            <p>Plateforme d'Électronique & Technologie</p>
+            <p>Plateforme Multi-Filières & Technologie</p>
         </div>
 
         <div class="auth-tabs">
@@ -21,6 +21,7 @@
             <button id="tab-register" class="tab-btn" onclick="switchForm('register')">Inscription</button>
         </div>
 
+        <!-- FORMULAIRE DE CONNEXION -->
         <form id="login-form" class="auth-form active">
             <div class="form-group">
                 <label for="login-role">Je suis :</label>
@@ -31,7 +32,7 @@
             </div>
             <div class="form-group">
                 <label for="login-email">Adresse Email</label>
-                <input type="email" id="login-email" placeholder=" entre votre email" required>
+                <input type="email" id="login-email" placeholder="Entrez votre email" required>
             </div>
             <div class="form-group">
                 <label for="login-password">Mot de passe</label>
@@ -40,6 +41,7 @@
             <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
         </form>
 
+        <!-- FORMULAIRE D'INSCRIPTION -->
         <form id="register-form" class="auth-form">
             <div class="form-group">
                 <label for="reg-role">Je m'inscris en tant que :</label>
@@ -68,11 +70,20 @@
                 <input type="password" id="reg-password" placeholder="Minimum 6 caractères" required>
             </div>
 
-            <div class="form-group" id="reg-group-niveau">
-                <label for="reg-niveau">Niveau d'études / Filière</label>
-                <input type="text" id="reg-niveau" placeholder="Ex: Licence 2 Électronique" required>
+            <!-- CHAMPS SPÉCIFIQUES ÉLÈVE : FILIÈRE (FIRESTORE) + NIVEAU -->
+            <div class="form-group" id="reg-group-filiere">
+                <label for="reg-filiere">Filière d'études *</label>
+                <select id="reg-filiere" required>
+                    <option value="">Chargement des filières...</option>
+                </select>
             </div>
 
+            <div class="form-group" id="reg-group-niveau">
+                <label for="reg-niveau">Niveau d'études *</label>
+                <input type="text" id="reg-niveau" placeholder="Ex: BTS 1, Licence 2..." required>
+            </div>
+
+            <!-- CHAMPS SPÉCIFIQUES PROFESSEUR -->
             <div class="form-group" id="reg-group-specialite" style="display: none;">
                 <label for="reg-specialite">Spécialité d'enseignement</label>
                 <input type="text" id="reg-specialite" placeholder="Ex: Systèmes Embarqués / Arduino">
@@ -82,11 +93,9 @@
         </form>
     </div>
 
-
-        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script> 
-        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="auth.js"></script>
 </body>
 </html>

@@ -137,3 +137,24 @@ body {
 .btn-success { background-color: var(--success-color); color: white; }
 .btn-success:hover { background-color: #2f855a; }
 
+/* Animation du conteneur façon Cahier */
+.auth-container {
+    transition: transform 0.6s ease, box-shadow 0.6s ease;
+    transform-style: preserve-3d;
+}
+
+.auth-container.opening {
+    transform: rotateY(-15deg) scale(1.02);
+    box-shadow: -15px 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.auth-container.shake {
+    animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+

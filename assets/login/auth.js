@@ -1,29 +1,6 @@
 // ==========================================
-// 1. VÉRIFICATION DE LA SESSION SUR CETTE PAGE
+// CONFIGURATION ET INITIALISATION FIREBASE
 // ==========================================
-document.addEventListener("DOMContentLoaded", function () {
-    
-    // On écoute le changement d'état de connexion de Firebase
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            // 🔓 L'ÉLÈVE EST CONNECTÉ
-            console.log("Session active pour l'élève :", user.uid);
-            
-            // --- METS ICI LES FONCTIONS À RETENIR UNIQUEMENT POUR L'ÉLÈVE ---
-            // Exemple : afficher son nom, charger ses notes, etc.
-            // initialiserEspaceEleve(user);
-
-        } else {
-            // 🔒 AUCUN ÉLÈVE CONNECTÉ
-            console.log("Aucune session trouvée.");
-            
-            // Si cette page est PRIVÉE (réservée aux élèves), on le redirige :
-            // window.location.href = "connexion.html";
-        }
-    });
-});
-
-// Configuration Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBRGYbiSp26ba_cxj7REHKkOqSylQf1DfQ",
     authDomain: "neolab-ci.firebaseapp.com",
@@ -39,7 +16,12 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// 1. Gestion du changement d'onglet (Connexion / Inscription)
+document.addEventListener("DOMContentLoaded", function () {
+    // Charger les filières dans le menu déroulant à l'ouverture de la page
+    chargerFilieresInscription();
+});
+
+// 1. Gestion des onglets (Connexion / Inscription)
 function switchForm(formType) {
     document.getElementById('tab-login').classList.remove('active');
     document.getElementById('tab-register').classList.remove('active');
@@ -55,27 +37,56 @@ function switchForm(formType) {
     }
 }
 
-// 2. Affichage dynamique des champs selon le rôle à l'inscription
+// 2. Basculement dynamique des champs selon le rôle (Élève vs Professeur)
 function toggleRegistrationFields() {
     const role = document.getElementById('reg-role').value;
+    const groupFiliere = document.getElementById('reg-group-filiere');
     const groupNiveau = document.getElementById('reg-group-niveau');
     const groupSpecialite = document.getElementById('reg-group-specialite');
     
     if (role === 'eleve') {
+        groupFiliere.style.display = 'block';
         groupNiveau.style.display = 'block';
         groupSpecialite.style.display = 'none';
+        document.getElementById('reg-filiere').required = true;
         document.getElementById('reg-niveau').required = true;
         document.getElementById('reg-specialite').required = false;
     } else {
+        groupFiliere.style.display = 'none';
         groupNiveau.style.display = 'none';
         groupSpecialite.style.display = 'block';
+        document.getElementById('reg-filiere').required = false;
         document.getElementById('reg-niveau').required = false;
         document.getElementById('reg-specialite').required = true;
     }
 }
 
+// 3. Charger les filières depuis Firestore pour alimenter le menu déroulant
+function chargerFilieresInscription() {
+    db.collection('filieres').get().then((snapshot) => {
+        const selectFiliere = document.getElementById('reg-filiere');
+        if (!selectFiliere) return;
+
+        selectFiliere.innerHTML = '<option value="">-- Sélectionnez votre filière --</option>';
+        
+        if (snapshot.empty) {
+            selectFiliere.innerHTML = '<option value="">Aucune filière disponible (Contactez l\'admin)</option>';
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const fil = doc.data();
+            const filId = doc.id;
+            const filNom = fil.nom || filId;
+            selectFiliere.innerHTML += `<option value="${filId}">${filNom}</option>`;
+        });
+    }).catch(err => {
+        console.error("Erreur de chargement des filières :", err);
+    });
+}
+
 // ==========================================
-// LOGIQUE DE CONNEXION 
+// LOGIQUE DE CONNEXION
 // ==========================================
 document.getElementById('login-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -84,21 +95,17 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
     const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
 
-    // 2. SI C'EST UN ÉLÈVE (CORRIGÉ AVEC AUTH + REDIRECTION CHEZ TOI)
     if (role === 'eleve') {
         auth.signInWithEmailAndPassword(email, password)
         .then(() => {
             alert("Connexion réussie ! Redirection vers votre Espace Élève...");
-            window.location.href = "../../acceuil.html"; 
+            window.location.href = "../../espace/eleve/eleve.html";
         })
         .catch(error => {
             alert("Erreur : Email ou mot de passe incorrect.");
             console.error(error);
         });
-    }
-
-    // 3. SI C'EST UN PROFESSEUR
-    else if (role === 'professeur') {
+    } else if (role === 'professeur') {
         db.collection('professeurs')
           .where('email', '==', email)
           .where('password_init', '==', password)
@@ -121,7 +128,7 @@ function verifierSiProfEnAttente(email, password) {
       .get()
       .then(snapshot => {
           if (!snapshot.empty) {
-              alert("⚠️ Votre compte est toujours en attente de validation par l'administration.");
+              alert("⚠️ Votre compte est en attente de validation par l'administration.");
           } else {
               alert("Email ou mot de passe incorrect.");
           }
@@ -147,26 +154,33 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
     }
 
     if (role === 'eleve') {
+        const filiereId = document.getElementById('reg-filiere').value;
         const niveau = document.getElementById('reg-niveau').value;
 
-        // 1. Création dans Firebase Auth
+        if (!filiereId) {
+            alert("Veuillez sélectionner une filière valide.");
+            return;
+        }
+
+        // 1. Création du compte dans Firebase Auth
         auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             const user = userCredential.user;
             
-            // 2. Écriture synchronisée avec l'UID de session
+            // 2. Enregistrement des données de l'élève avec sa filière liée
             return db.collection('eleves').doc(user.uid).set({
                 uid: user.uid,
                 nom: nom,
                 email: email,
                 sexe: sexe,
                 password_init: password,
+                filiere_id: filiereId,
                 niveauEtudes: niveau,
                 dateInscription: dateActuelle
             });
         })
         .then(() => {
-            alert("Compte Élève créé avec succès !");
+            alert("Compte Élève créé avec succès ! Bienvenue sur NeoLab-CI.");
             window.location.href = "../../espace/eleve/eleve.html";
         })
         .catch(error => alert("Erreur lors de l'inscription : " + error.message));
@@ -184,9 +198,36 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
             statut: 'en_attente'
         })
         .then(() => {
-            alert("✉️ Demande d'inscription envoyée à la NeoLab veille patienter !");
+            alert("✉️ Demande d'inscription envoyée à l'administration ! Veuillez patienter.");
             switchForm('login'); 
         })
         .catch(error => alert("Erreur lors du dépôt de candidature : " + error.message));
+    }
+});
+
+document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const role = document.getElementById('login-role').value;
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const container = document.querySelector('.auth-container');
+
+    if (role === 'eleve') {
+        auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+            // Effet d'ouverture du cahier en cas de succès
+            container.classList.add('opening');
+            setTimeout(() => {
+                window.location.href = "eleve_2.html"; 
+            }, 600);
+        })
+        .catch(error => {
+            // Effet de cahier fermé / refusé en cas d'erreur
+            container.classList.add('shake');
+            setTimeout(() => container.classList.remove('shake'), 400);
+            alert("Erreur : Email ou mot de passe incorrect. Le cahier reste fermé !");
+            console.error(error);
+        });
     }
 });
