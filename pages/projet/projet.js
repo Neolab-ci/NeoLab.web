@@ -1,30 +1,5 @@
 // ==========================================
-// 1. VÉRIFICATION DE LA SESSION SUR CETTE PAGE
-// ==========================================
-document.addEventListener("DOMContentLoaded", function () {
-    
-    // On écoute le changement d'état de connexion de Firebase
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            // 🔓 L'ÉLÈVE EST CONNECTÉ
-            console.log("Session active pour l'élève :", user.uid);
-            
-            // --- METS ICI LES FONCTIONS À RETENIR UNIQUEMENT POUR L'ÉLÈVE ---
-            // Exemple : afficher son nom, charger ses notes, etc.
-            // initialiserEspaceEleve(user);
-
-        } else {
-            // 🔒 AUCUN ÉLÈVE CONNECTÉ
-            console.log("Aucune session trouvée.");
-            
-            // Si cette page est PRIVÉE (réservée aux élèves), on le redirige :
-            // window.location.href = "connexion.html";
-        }
-    });
-});
-
-// ==========================================
-// 1. INITIALISATION DE FIREBASE & CONFIGURATION
+// CONFIGURATION FIREBASE & INITIALISATION
 // ==========================================
 const firebaseConfig = {
     apiKey: "AIzaSyBRGYbiSp26ba_cxj7REHKkOqSylQf1DfQ",
@@ -41,301 +16,392 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 const auth = firebase.auth(); 
 
-// Variables globales pour l'application
 let localProjectsArray = [];
 let activeCategoryFilter = "all";
 let currentSelectedProject = null;
+let currentUserUid = null;
+let currentUserName = "Étudiant NeoLab";
 
-// CORRECTION PERSISTANCE : Écouteur global de session au chargement de la page
 document.addEventListener("DOMContentLoaded", function () {
-    // Initialisation des icônes Lucide
     lucide.createIcons();
 
-    // Vérification active et en direct de la session de l'élève
+
+
+    // Gestion du Thème Clair / Sombre
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        if (themeIcon) { themeIcon.className = "fa-solid fa-moon"; }
+    }
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeIcon.className = isDark ? "fa-solid fa-moon" : "fa-solid fa-sun";
+        });
+    }
+// Récupération automatique d'un paramètre de recherche dans l'URL (ex: ?search=Arduino)
+const urlParams = new URLSearchParams(window.location.search);
+const searchQueryParam = urlParams.get('search');
+if (searchQueryParam && document.getElementById("searchInput")) {
+    document.getElementById("searchInput").value = searchQueryParam;
+}
+    // Gestion session utilisateur en temps réel
     auth.onAuthStateChanged((user) => {
         if (user) {
-            console.log("Élève connecté avec succès (Session active) :", user.uid);
+            currentUserUid = user.uid;
+            db.collection("eleves").doc(user.uid).get().then(doc => {
+                if (doc.exists && doc.data().nom) {
+                    currentUserName = doc.data().nom;
+                }
+            }).catch(() => {
+                currentUserName = user.email ? user.email.split('@')[0] : "Étudiant NeoLab";
+            });
         } else {
-            console.log("Visiteur anonyme ou déconnecté.");
+            currentUserUid = null;
         }
-        // On rafraîchit les cartes et la modal pour adapter les boutons à l'état de connexion
-        executerFiltrageGlobal();
     });
 
-    // Écoute en temps réel de la collection Firestore 'projets'
     recupererProjetsDepuisFirestore();
 
-    // Écouteur sur la barre de recherche textuelle
-    const inputSearch = document.getElementById("searchInput");
-    if (inputSearch) {
-        inputSearch.addEventListener("input", executerFiltrageGlobal);
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", executerFiltrageGlobal);
     }
 });
 
 // ==========================================
-// 2. RÉCUPÉRATION DU FLUX FIRESTORE
+// RÉCUPÉRATION DEPUIS FIRESTORE
 // ==========================================
 function recupererProjetsDepuisFirestore() {
     db.collection("projets").onSnapshot((snapshot) => {
         localProjectsArray = [];
-        
         snapshot.forEach((doc) => {
             const data = doc.data();
             localProjectsArray.push({
                 id: doc.id,
-                titre: data.titre || "Projet sans nom",
-                description: data.description || "",
-                categorie: data.categorie || "all",
-                niveau: data.niveau || "debutant",
-                duree: data.duree || "N/A",
-                composants: data.composants || "",
-                imageProjet: data.imageProjet || "",
-                imageCablage: data.imageCablage || "",
-                etape1: data.etape1 || "",
-                etape2: data.etape2 || "",
-                etape3: data.etape3 || ""
+                titre: data.titre || data.title || "Projet sans nom",
+                description: data.descriptions || data.description || data.short || "",
+                explications: data.details || data.explications || "Aucune explication détaillée fournie.",
+                categorie: (data.categorie || data.category || "arduino").toLowerCase().trim(),
+                niveau: (data.niveau || data.level || "debutant").toLowerCase().trim(),
+                filiere_id: (data.filiere_id || "informatique").toLowerCase().trim(),
+                auteurNom: data.auteur_nom || data.auteurNom || "NeoLab-CI",
+                auteurId: data.auteur_id || data.auteurId || "",
+                imageProjet: data.img || data.imageProjet || "",
+                imageCablage: data.schemat || data.schema || data.imageCablage || "",
+                pdf: data.pdf || "",
+                videoUrl: data.videoUrl || "",
+                utilisateursIds: data.utilisateurs_ids || data.utilisateursIds || []
             });
         });
-
         executerFiltrageGlobal();
     }, (error) => {
-        console.error("Erreur d'accès à la collection projets : ", error);
+        console.error("Erreur de récupération Firestore : ", error);
     });
 }
 
 // ==========================================
-// 3. AFFICHAGE, RECHERCHE ET FILTRES (PAR ID SÉCURISÉ)
+// FILTRES & AFFICHAGE DE LA GRILLE
 // ==========================================
-function toggleTechList() {
-    const container = document.getElementById("techListContainer");
-    const arrow = document.getElementById("arrowIcon");
-    if (container) {
-        container.classList.toggle("hidden");
-        arrow.classList.toggle("rotate-180");
-    }
-}
-
-function selectCategory(categoryName) {
+function selectCategory(categoryName, elem) {
     activeCategoryFilter = categoryName;
 
     document.querySelectorAll(".cat-btn").forEach((btn) => {
         btn.classList.remove("bg-blue-600/20", "border-blue-500/30", "text-blue-400");
-        btn.classList.add("text-gray-400", "hover:bg-[#131b2e]");
+        btn.classList.add("bg-[#0B1120]", "text-gray-400");
     });
 
-    const eventTarget = event.currentTarget;
-    eventTarget.classList.remove("text-gray-400", "hover:bg-[#131b2e]");
-    eventTarget.classList.add("bg-blue-600/20", "border-blue-500/30", "text-blue-400");
-
-    toggleTechList();
-    document.getElementById("mainTechBtnText").innerText = eventTarget.innerText;
+    if (elem) {
+        elem.classList.remove("bg-[#0B1120]", "text-gray-400");
+        elem.classList.add("bg-blue-600/20", "border-blue-500/30", "text-blue-400");
+    }
 
     executerFiltrageGlobal();
 }
 
 function executerFiltrageGlobal() {
-    const searchString = document.getElementById("searchInput").value.toLowerCase().trim();
-    
-    const gridDeb = document.getElementById("grid-debutant");
-    const gridInt = document.getElementById("grid-intermediaire");
-    const gridAva = document.getElementById("grid-avance");
-    
-    if(!gridDeb || !gridInt || !gridAva) return;
+    const searchString = document.getElementById("searchInput") ? document.getElementById("searchInput").value.toLowerCase().trim() : "";
+    const grid = document.getElementById("projectsGrid");
+    if (!grid) return;
 
-    gridDeb.innerHTML = "";
-    gridInt.innerHTML = "";
-    gridAva.innerHTML = "";
-
-    let totalProjetsVisibles = 0;
+    grid.innerHTML = "";
+    let visibleCount = 0;
 
     localProjectsArray.forEach((proj) => {
-        const validationCategorie = (activeCategoryFilter === "all" || proj.categorie === activeCategoryFilter);
-        const validationTexte = proj.titre.toLowerCase().includes(searchString) || 
-                               proj.composants.toLowerCase().includes(searchString) ||
-                               proj.description.toLowerCase().includes(searchString);
+        const matchCat = (activeCategoryFilter === "all" || proj.categorie === activeCategoryFilter);
+        const matchSearch = proj.titre.toLowerCase().includes(searchString) || 
+                            proj.description.toLowerCase().includes(searchString) ||
+                            proj.auteurNom.toLowerCase().includes(searchString);
 
-        if (validationCategorie && validationTexte) {
-            totalProjetsVisibles++;
-            
-            const carteHTML = `
-                <div class="project-card p-6 rounded-2xl cursor-pointer smooth-transition flex flex-col justify-between" onclick="ouvrirProjetParId('${proj.id}')">
+        if (matchCat && matchSearch) {
+            visibleCount++;
+            const nbUtilisateurs = proj.utilisateursIds.length;
+            const isUtilise = currentUserUid && proj.utilisateursIds.includes(currentUserUid);
+
+            grid.innerHTML += `
+                <div class="project-card bg-[#0B1120] border border-blue-500/15 p-5 rounded-2xl cursor-pointer transition-all hover:-translate-y-1 hover:border-blue-500/40 flex flex-col justify-between" onclick="ouvrirProjet('${proj.id}')">
                     <div>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-blue-500/10 text-blue-400 rounded-md uppercase tracking-wider">${proj.categorie}</span>
-                        <h3 class="text-xl font-bold mt-3 text-white tracking-tight">${proj.titre}</h3>
-                        <p class="text-gray-400 text-sm mt-2 line-clamp-3">${proj.description}</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded">${proj.categorie}</span>
+                            <span class="text-[10px] text-gray-400 italic">Par ${proj.auteurNom}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">${proj.titre}</h3>
+                        <p class="text-gray-400 text-xs line-clamp-2">${proj.description}</p>
                     </div>
-                    <div class="mt-6 pt-4 border-t border-blue-500/5 flex items-center justify-between text-xs text-gray-500">
-                        <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-400"></i> ${proj.duree}</span>
-                        <span class="truncate max-w-[150px]"><i data-lucide="cpu" class="w-3.5 h-3.5 inline text-blue-400"></i> ${proj.composants}</span>
+                    <div class="mt-5 pt-3 border-t border-blue-500/5 flex items-center justify-between text-xs text-gray-400">
+                        <span>👥 ${nbUtilisateurs} réalisation${nbUtilisateurs > 1 ? 's' : ''}</span>
+                        ${isUtilise ? '<span class="text-emerald-400 font-bold text-[10px]">✅ Réalisé</span>' : ''}
                     </div>
                 </div>
             `;
-
-            if (proj.niveau === "debutant") gridDeb.innerHTML += carteHTML;
-            else if (proj.niveau === "intermediaire") gridInt.innerHTML += carteHTML;
-            else if (proj.niveau === "avance") gridAva.innerHTML += carteHTML;
         }
     });
 
-    toggleSectionVisibility("section-debutant", gridDeb.innerHTML !== "");
-    toggleSectionVisibility("section-intermediaire", gridInt.innerHTML !== "");
-    toggleSectionVisibility("section-avance", gridAva.innerHTML !== "");
-
     const alertNoResult = document.getElementById("noResult");
     if (alertNoResult) {
-        if (totalProjetsVisibles === 0) alertNoResult.classList.remove("hidden");
+        if (visibleCount === 0) alertNoResult.classList.remove("hidden");
         else alertNoResult.classList.add("hidden");
     }
 
     lucide.createIcons();
 }
 
-function toggleSectionVisibility(sectionId, conditionVisible) {
-    const element = document.getElementById(sectionId);
-    if (!element) return;
-    if (conditionVisible) element.classList.remove("hidden");
-    else element.classList.add("hidden");
-}
-
 // ==========================================
-// 4. INTERCEPTION DU CLIC ET AFFICHAGE MODAL
+// OUVERTURE DE LA MODALE & GESTION DES MÉDIAS
 // ==========================================
-function ouvrirProjetParId(projectId) {
-    const projetTrouve = localProjectsArray.find(p => p.id === projectId);
-    if (projetTrouve) {
-        openModal(projetTrouve);
-    } else {
-        console.error("Projet introuvable pour l'ID :", projectId);
-    }
-}
+function ouvrirProjet(projectId) {
+    const proj = localProjectsArray.find(p => p.id === projectId);
+    if (!proj) return;
+    currentSelectedProject = proj;
 
-function openModal(projectObj) {
-    currentSelectedProject = projectObj;
-
-    document.getElementById("modalCategory").innerText = projectObj.categorie;
-    document.getElementById("title").innerText = projectObj.titre;
-    document.getElementById("desc").innerText = projectObj.description;
-    document.getElementById("duration").innerText = projectObj.duree;
-    document.getElementById("components").innerText = projectObj.composants || "Aucun matériel requis";
+    document.getElementById("modalCategory").innerText = proj.categorie;
+    document.getElementById("modalAuthor").innerText = `Proposé par ${proj.auteurNom}`;
+    document.getElementById("title").innerText = proj.titre;
+    document.getElementById("desc").innerText = proj.description;
+    document.getElementById("modalExplications").innerText = proj.explications;
+    document.getElementById("usageCount").innerText = proj.utilisateursIds.length;
 
     const defaultImg = "https://images.unsplash.com/photo-1608564697171-2f6118823993?q=80&w=500&auto=format&fit=crop";
-    document.getElementById("img-projet-fini").src = projectObj.imageProjet || defaultImg;
-    document.getElementById("img-cablage").src = projectObj.imageCablage || defaultImg;
+    document.getElementById("img-projet-fini").src = proj.imageProjet || defaultImg;
+    document.getElementById("img-cablage").src = proj.imageCablage || defaultImg;
 
-    const stepsList = document.getElementById("steps-list");
-    stepsList.innerHTML = `
-        <li class="flex gap-2"><b class="text-amber-400">1. Câblage :</b> ${projectObj.etape1 || "Installer et connecter les composants selon le schéma."}</li>
-        <li class="flex gap-2"><b class="text-amber-400">2. Code :</b> ${projectObj.etape2 || "Développer le script requis et configurer l'environnement."}</li>
-        <li class="flex gap-2"><b class="text-amber-400">3. Test :</b> ${projectObj.etape3 || "Téléverser le programme et valider le comportement attendu."}</li>
-    `;
+    // Gestion dynamique des liens additionnels (PDF / Vidéo) + Bouton Télécharger la fiche
+    let mediaExtraContainer = document.getElementById("modalExtraMedia");
+    if (!mediaExtraContainer) {
+        const explicationsBlock = document.getElementById("modalExplications").closest('.bg-\\[\\#050816\\]');
+        if (explicationsBlock) {
+            mediaExtraContainer = document.createElement("div");
+            mediaExtraContainer.id = "modalExtraMedia";
+            mediaExtraContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-3 mb-6";
+            explicationsBlock.after(mediaExtraContainer);
+        }
+    }
 
-    gererZoneActionProjet(projectObj.id);
+    if (mediaExtraContainer) {
+        let extraHTML = "";
+        if (proj.pdf && proj.pdf.trim() !== "") {
+            extraHTML += `<a href="${proj.pdf}" target="_blank" class="bg-[#050816] hover:bg-blue-950/40 border border-blue-500/20 p-3 rounded-xl flex items-center gap-3 transition-all text-blue-400 text-xs font-semibold"><i data-lucide="file-text" class="w-5 h-5 text-red-400"></i><span>Télécharger le PDF</span></a>`;
+        }
+        if (proj.videoUrl && proj.videoUrl.trim() !== "") {
+            extraHTML += `<a href="${proj.videoUrl}" target="_blank" class="bg-[#050816] hover:bg-blue-950/40 border border-blue-500/20 p-3 rounded-xl flex items-center gap-3 transition-all text-blue-400 text-xs font-semibold"><i data-lucide="video" class="w-5 h-5 text-emerald-400"></i><span>Voir la vidéo</span></a>`;
+        }
+        
+        // Bouton pour télécharger la fiche technique
+        extraHTML += `
+            <button onclick="telechargerFicheProjet()" class="col-span-full bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 p-3 rounded-xl flex items-center justify-center gap-2 transition-all text-blue-300 text-xs font-bold cursor-pointer">
+                <i data-lucide="download" class="w-4 h-4"></i> Télécharger la fiche technique (.txt)
+            </button>
+        `;
 
+        mediaExtraContainer.innerHTML = extraHTML;
+    }
+
+    gererBoutonUtilisation(proj);
+    
+    // Affichage de la modale
     document.getElementById("modal").classList.remove("hidden");
     lucide.createIcons();
 }
 
-// ==========================================
-// 5. INTERACTIVITÉ & FORMULAIRE DE RENDU
-// ==========================================
-function gererZoneActionProjet(projectId) {
-    const actionZone = document.getElementById("project-action-zone");
-    const user = auth.currentUser;
-
-    if (!user) {
-        actionZone.innerHTML = `
-            <p class="text-center text-xs text-gray-500">Connectez-vous avec votre compte élève NeoLab-CI pour enregistrer votre progression sur ce projet.</p>
-        `;
-        return;
+// Fermeture de la modale en cliquant en dehors de la boîte
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target === modal) {
+        closeModal();
     }
-
-    db.collection("projets_eleves")
-      .where("studentUid", "==", user.uid)
-      .where("projectId", "==", projectId)
-      .get()
-      .then((snapshot) => {
-          if (snapshot.empty) {
-              actionZone.innerHTML = `
-                  <button onclick="demarrerProjet('${projectId}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
-                      <i data-lucide="play" class="w-4 h-4"></i> Commencer la réalisation de ce projet
-                  </button>
-              `;
-          } else {
-              const suiviData = snapshot.docs[0].data();
-              const suiviId = snapshot.docs[0].id;
-
-              if (suiviData.statut === "en_cours") {
-                  actionZone.innerHTML = `
-                      <form onsubmit="soumettreRenduProjet(event, '${suiviId}')" class="bg-[#050816] p-4 rounded-xl border border-blue-500/10 space-y-3">
-                          <h4 class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2"><i data-lucide="send"></i> Formulaire de Rendu Technique</h4>
-                          <div>
-                              <label class="block text-[11px] text-gray-500 uppercase font-bold mb-1">Lien du Code (Simulation Wokwi, Tinkercad ou GitHub)</label>
-                              <input type="url" id="rendu-code" required placeholder="https://wokwi.com/projects/..." class="w-full bg-[#0B1120] border border-blue-500/20 rounded-lg p-2 text-xs outline-none focus:border-blue-500 text-white">
-                          </div>
-                          <div>
-                              <label class="block text-[11px] text-gray-500 uppercase font-bold mb-1">Lien vidéo de démonstration (Drive, YouTube... Optionnel)</label>
-                              <input type="url" id="rendu-video" placeholder="https://drive.google.com/..." class="w-full bg-[#0B1120] border border-blue-500/20 rounded-lg p-2 text-xs outline-none focus:border-blue-500 text-white">
-                          </div>
-                          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs transition-all">
-                              Soumettre mon travail pour correction
-                          </button>
-                      </form>
-                  `;
-              } else if (suiviData.statut === "rendu") {
-                  actionZone.innerHTML = `
-                      <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 p-4 rounded-xl text-center text-xs font-semibold flex items-center justify-center gap-2">
-                          <i data-lucide="clock" class="w-4 h-4"></i> Code soumis ! En attente de validation par votre enseignant.
-                      </div>
-                  `;
-              } else if (suiviData.statut === "valide") {
-                  actionZone.innerHTML = `
-                      <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-center text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10">
-                          <i data-lucide="check-circle" class="w-5 h-5"></i> Projet validé ! Les points ont été attribués à votre profil. 🏆
-                      </div>
-                  `;
-              }
-          }
-          lucide.createIcons();
-      }).catch(err => console.error("Erreur d'analyse de progression :", err));
-}
-
-function demarrerProjet(projectId) {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    db.collection("projets_eleves").add({
-        studentUid: user.uid,
-        projectId: projectId,
-        titreProjet: currentSelectedProject.titre,
-        statut: "en_cours",
-        dateDemarrage: new Date().toLocaleDateString('fr-FR'),
-        lienCode: "",
-        lienVideo: ""
-    })
-    .then(() => {
-        alert("🚀 Projet activé ! Suivez pas à pas le guide de TP pour réaliser le montage.");
-        gererZoneActionProjet(projectId);
-    }).catch(err => alert("Erreur d'initialisation : " + err.message));
-}
-
-function soumettreRenduProjet(e, suiviId) {
-    e.preventDefault();
-
-    const urlCode = document.getElementById("rendu-code").value;
-    const urlVideo = document.getElementById("rendu-video").value;
-
-    db.collection("projets_eleves").doc(suiviId).update({
-        statut: "rendu",
-        lienCode: urlCode,
-        lienVideo: urlVideo,
-        dateRendu: new Date().toLocaleDateString('fr-FR')
-    })
-    .then(() => {
-        alert("✉️ Travail envoyé avec succès ! Votre enseignant va l'examiner.");
-        if (currentSelectedProject) gererZoneActionProjet(currentSelectedProject.id);
-    }).catch(err => alert("Erreur d'envoi : " + err.message));
-}
+});
 
 function closeModal() {
     document.getElementById("modal").classList.add("hidden");
+}
+
+// ==========================================
+// TÉLÉCHARGEMENT DE LA FICHE PROJET (.TXT)
+// ==========================================
+function telechargerFicheProjet() {
+    if (!currentSelectedProject) return;
+    const p = currentSelectedProject;
+
+    const contenuFiche = `
+==================================================
+NEOLAB-CI - FICHE TECHNIQUE DE PROJET
+==================================================
+Titre : ${p.titre}
+Catégorie : ${p.categorie.toUpperCase()}
+Niveau : ${p.niveau.toUpperCase()}
+Auteur : ${p.auteurNom}
+
+--------------------------------------------------
+1. DESCRIPTION COURTE
+--------------------------------------------------
+${p.description}
+
+--------------------------------------------------
+2. EXPLICATIONS ET DÉTAILS DE RÉALISATION
+--------------------------------------------------
+${p.explications}
+
+--------------------------------------------------
+3. LIENS DES MÉDIAS & SCHÉMAS
+--------------------------------------------------
+- Image du projet fini : ${p.imageProjet || 'Non renseigné'}
+- Schéma de câblage : ${p.imageCablage || 'Non renseigné'}
+- Fichier PDF : ${p.pdf || 'Aucun'}
+- Vidéo de démonstration : ${p.videoUrl || 'Aucune'}
+
+==================================================
+Généré par la plateforme NeoLab-CI (2026)
+==================================================
+    `.trim();
+
+    const blob = new Blob([contenuFiche], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${p.titre.toLowerCase().replace(/[^a-z0-9]/g, '_')}_neolab.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// ==========================================
+// GESTION DU BOUTON DE RÉALISATION DU PROJET
+// ==========================================
+function gererBoutonUtilisation(proj) {
+    const actionZone = document.getElementById("project-action-zone");
+    if (!currentUserUid) {
+        actionZone.innerHTML = `<p class="text-center text-xs text-gray-500 mt-4">Connectez-vous pour marquer ce projet comme réalisé.</p>`;
+        return;
+    }
+
+    const dejaUtilise = proj.utilisateursIds.includes(currentUserUid);
+
+    if (!dejaUtilise) {
+        actionZone.innerHTML = `
+            <button onclick="marquerProjetUtilise('${proj.id}', true)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer mt-4">
+                <i data-lucide="check" class="w-4 h-4"></i> J'ai utilisé / réalisé ce projet
+            </button>
+        `;
+    } else {
+        actionZone.innerHTML = `
+            <button onclick="marquerProjetUtilise('${proj.id}', false)" class="w-full bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer mt-4">
+                <i data-lucide="check-circle" class="w-4 h-4"></i> Projet validé par vous (Annuler ?)
+            </button>
+        `;
+    }
+}
+
+function marquerProjetUtilise(projectId, ajouter) {
+    if (!currentUserUid) return;
+    const projRef = db.collection("projets").doc(projectId);
+
+    db.runTransaction((transaction) => {
+        return transaction.get(projRef).then((doc) => {
+            if (!doc.exists) throw "Projet introuvable !";
+            let ids = doc.data().utilisateurs_ids || doc.data().utilisateursIds || [];
+
+            if (ajouter && !ids.includes(currentUserUid)) {
+                ids.push(currentUserUid);
+            } else if (!ajouter) {
+                ids = ids.filter(id => id !== currentUserUid);
+            }
+
+            transaction.update(projRef, { utilisateurs_ids: ids });
+        });
+    }).then(() => {
+        const p = localProjectsArray.find(item => item.id === projectId);
+        if (p) {
+            if (ajouter && !p.utilisateursIds.includes(currentUserUid)) p.utilisateursIds.push(currentUserUid);
+            else if (!ajouter) p.utilisateursIds = p.utilisateursIds.filter(id => id !== currentUserUid);
+            ouvrirProjet(projectId);
+        }
+        executerFiltrageGlobal();
+    }).catch(err => alert("Erreur de mise à jour : " + err));
+}
+
+// ==========================================
+// PUBLICATION DE PROJET
+// ==========================================
+function openAddProjectModal() {
+    if (!currentUserUid) {
+        alert("Veuillez vous connecter pour partager un projet.");
+        window.location.href = "../../assets/login/auth.html";
+        return;
+    }
+    document.getElementById("addProjectModal").classList.remove("hidden");
+}
+
+function closeAddProjectModal() {
+    document.getElementById("addProjectModal").classList.add("hidden");
+}
+
+function publierNouveauProjet(e) {
+    e.preventDefault();
+    if (!currentUserUid) {
+        alert("Session expirée, veuillez vous reconnecter.");
+        return;
+    }
+
+    const titre = document.getElementById("newTitle").value.trim();
+    const categorie = document.getElementById("newCategory").value;
+    const niveau = document.getElementById("newLevel").value;
+    const descriptions = document.getElementById("newDesc").value.trim();
+    const details = document.getElementById("newExpl").value.trim();
+    const img = document.getElementById("newImg").value.trim();
+    const schemat = document.getElementById("newSchema").value.trim();
+    const pdf = document.getElementById("newPdf") ? document.getElementById("newPdf").value.trim() : "";
+    const videoUrl = document.getElementById("newVideo") ? document.getElementById("newVideo").value.trim() : "";
+
+    const nouveauProjetData = {
+        titre: titre,
+        descriptions: descriptions,
+        details: details,
+        categorie: categorie,
+        niveau: niveau,
+        filiere_id: "informatique",
+        auteur_id: currentUserUid,
+        auteur_nom: currentUserName,
+        img: img || "https://images.unsplash.com/photo-1608564697171-2f6118823993?q=80&w=500&auto=format&fit=crop",
+        schemat: schemat || "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=500&auto=format&fit=crop",
+        pdf: pdf,
+        videoUrl: videoUrl,
+        utilisateurs_ids: [currentUserUid]
+    };
+
+    db.collection("projets").add(nouveauProjetData)
+    .then(() => {
+        alert("🎉 Votre projet a été partagé avec succès !");
+        document.getElementById("addProjectForm").reset();
+        closeAddProjectModal();
+    })
+    .catch((err) => {
+        console.error("Erreur d'écriture Firestore :", err);
+        alert("Erreur lors de la publication : " + err.message);
+    });
 }

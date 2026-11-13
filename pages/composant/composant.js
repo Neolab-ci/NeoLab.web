@@ -1,13 +1,12 @@
 // ==========================================
-// 1. VÉRIFICATION DE LA SESSION ET FIRESTORE
+// 1. INITIALISATION & FIRESTORE
 // ==========================================
 let db;
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Initialisation de Firestore si Firebase est prêt
     if (typeof firebase !== 'undefined' && firebase.firestore) {
         db = firebase.firestore();
-        ecouterComposantsFirestore(); // Écoute temps réel des composants
+        ecouterComposantsFirestore();
     } else {
         console.error("Firebase Firestore n'est pas disponible.");
     }
@@ -15,8 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             console.log("Session active pour l'utilisateur :", user.uid);
-        } else {
-            console.log("Aucune session trouvée.");
         }
     });
 });
@@ -25,17 +22,14 @@ let components = [];
 let filteredComponents = [];
 let currentView = 'grid';
 let currentCategory = 'all';
-
-// Variables de pagination
 let currentPage = 1;
 const itemsPerPage = 10;
 
 // ==========================================
-// 2. RÉCUPÉRATION DYNAMIQUE (FIRESTORE)
+// 2. RÉCUPÉRATION DES COMPOSANTS
 // ==========================================
 function ecouterComposantsFirestore() {
-    // On écoute la collection "boutique_produits" ou "composants"
-    db.collection("boutique_produits").onSnapshot((snapshot) => {
+    db.collection("composants").onSnapshot((snapshot) => {
         components = [];
         snapshot.forEach((doc) => {
             const data = doc.data();
@@ -43,6 +37,7 @@ function ecouterComposantsFirestore() {
                 id: doc.id,
                 name: data.nom || data.name || "Composant sans nom",
                 category: data.categorie || data.category || "Autre",
+                filiere: (data.filiere_id || data.filiere || "informatique").toLowerCase().trim(),
                 badge: data.badge || getBadgeClass(data.categorie || data.category),
                 emoji: data.emoji || "🔌",
                 img: data.image || data.img || "",
@@ -56,15 +51,14 @@ function ecouterComposantsFirestore() {
             });
         });
 
-        // Si la base de données Firestore est vide, fallback sur le <template> local HTML
         if (components.length === 0) {
             loadComponentsFromHTML();
         } else {
             updateUI();
         }
     }, (error) => {
-        console.error("Erreur lors de la récupération Firestore :", error);
-        loadComponentsFromHTML(); // En cas d'erreur réseau, fallback local
+        console.error("Erreur Firestore composants :", error);
+        loadComponentsFromHTML();
     });
 }
 
@@ -82,7 +76,13 @@ function loadComponentsFromHTML() {
     const template = document.getElementById('component-data');
     if (!template) return;
     const divs = template.content.querySelectorAll('.json-comp');
-    components = Array.from(divs).map(div => JSON.parse(div.textContent.trim()));
+    components = Array.from(divs).map(div => {
+        const obj = JSON.parse(div.textContent.trim());
+        return {
+            ...obj,
+            filiere: obj.filiere || "informatique"
+        };
+    });
     updateUI();
 }
 
@@ -97,6 +97,9 @@ function updateUI() {
     filterComponents();
 }
 
+// ==========================================
+// 3. FILTRES (RECHERCHE, CATÉGORIE, FILIÈRE) & TRI
+// ==========================================
 function setView(view) {
     currentView = view;
     document.getElementById('gridBtn').classList.toggle('active', view === 'grid');
@@ -114,13 +117,15 @@ function filterCat(cat, elem) {
 }
 
 function filterComponents() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
+    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+    const filiereFilter = document.getElementById('filiereSelect').value;
     const sort = document.getElementById('sortSelect').value;
 
     filteredComponents = components.filter(c => {
         const matchesSearch = c.name.toLowerCase().includes(search) || c.short.toLowerCase().includes(search);
-        const matchesCat = currentCategory === 'all' || c.category === currentCategory;
-        return matchesSearch && matchesCat;
+        const matchesCat = (currentCategory === 'all' || c.category === currentCategory);
+        const matchesFiliere = (filiereFilter === 'all' || c.filiere === filiereFilter);
+        return matchesSearch && matchesCat && matchesFiliere;
     });
 
     if (sort === 'az') filteredComponents.sort((a, b) => a.name.localeCompare(b.name));
@@ -174,7 +179,7 @@ function changePage(page) {
 }
 
 // ==========================================
-// 3. RENDU DYNAMIQUE DES LISTES ET MODALE
+// 4. AFFICHAGE DES CARTES & MODALE + BOUTON PROJET
 // ==========================================
 function renderGrid(data) {
     const container = document.getElementById('gridView');
@@ -232,7 +237,7 @@ function openModal(id) {
     document.getElementById('modalContent').innerHTML = `
         <div class="modal-header">
             <div class="modal-info">
-                <div class="modal-category">// ${c.category}</div>
+                <div class="modal-category">// ${c.category} • Filière : ${c.filiere}</div>
                 <h2>${c.name}</h2>
             </div>
             <button class="modal-close" onclick="closeModal()">✕</button>
@@ -272,6 +277,13 @@ function openModal(id) {
             <div class="modal-section-title">Exemple de code Arduino</div>
             <pre class="code-block"><code>${c.code}</code></pre>
             
+            <!-- BOUTON MAGIQUE : VOIR LES PROJETS ASSOCIÉS À CE COMPOSANT -->
+            <div style="margin-bottom: 16px;">
+                <a href="../projet/projet.html?search=${encodeURIComponent(c.name)}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 text-xs uppercase tracking-wider" style="text-decoration:none;">
+                    <i data-lucide="folder-git-2" class="w-4 h-4"></i> Voir les projets réalisés avec ce composant
+                </a>
+            </div>
+
             <div class="modal-actions">
                 <button id="btn-telecharger-texte" class="btn-action-primary">
                     📥 Télécharger la fiche (.txt)
@@ -284,6 +296,7 @@ function openModal(id) {
     `;
     document.getElementById('modalOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
+    lucide.createIcons();
 
     document.getElementById('btn-telecharger-texte').onclick = function() {
         executerTelechargementTexte(c);
@@ -300,12 +313,16 @@ function closeModal(e) {
     document.body.style.overflow = '';
 }
 
+// ==========================================
+// TÉLÉCHARGEMENT & PARTAGE
+// ==========================================
 function executerTelechargementTexte(composantData) {
     let contenuFiche = `==================================================\n`;
     contenuFiche += `       NEOLAB-CI : FICHE TECHNIQUE COMPOSANT      \n`;
     contenuFiche += `==================================================\n\n`;
     contenuFiche += `Nom : ${composantData.name}\n`;
     contenuFiche += `Catégorie : ${composantData.category}\n`;
+    contenuFiche += `Filière : ${composantData.filiere}\n`;
     contenuFiche += `Description : ${composantData.desc || 'N/A'}\n\n`;
 
     contenuFiche += `--------------------------------------------------\n`;
@@ -317,26 +334,6 @@ function executerTelechargementTexte(composantData) {
         contenuFiche += `Aucune spécification renseignée.\n`;
     }
 
-    contenuFiche += `\n--------------------------------------------------\n`;
-    contenuFiche += `BROCHAGE (PINOUT) :\n`;
-    contenuFiche += `--------------------------------------------------\n`;
-    if (composantData.pins && composantData.pins.length > 0) {
-        composantData.pins.forEach(pin => { contenuFiche += `- ${pin.name} : ${pin.role}\n`; });
-    } else {
-        contenuFiche += `Pas de brochage spécifique.\n`;
-    }
-
-    contenuFiche += `\n--------------------------------------------------\n`;
-    contenuFiche += `EXEMPLE DE CODE ARDUINO :\n`;
-    contenuFiche += `--------------------------------------------------\n`;
-    if (composantData.code) {
-        let codePropre = composantData.code.replace(/<\/?[^>]+(>|$)/g, "");
-        codePropre = codePropre.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
-        contenuFiche += codePropre + `\n`;
-    } else {
-        contenuFiche += `Aucun code requis pour ce matériel.\n`;
-    }
-    
     contenuFiche += `\n==================================================\n`;
     contenuFiche += `Généré par NeoLab-CI - Éducation et Technologie\n`;
 
@@ -350,7 +347,7 @@ function executerTelechargementTexte(composantData) {
 }
 
 function executerPartageLien(composantData) {
-    const textePartage = `*NeoLab-CI : Fiche pratique*\n\n*${composantData.name}* (${composantData.category})\n_${composantData.short}_\n\nRetrouve les caractéristiques et les codes d'exemple ici !`;
+    const textePartage = `*NeoLab-CI : Fiche pratique*\n\n*${composantData.name}* (${composantData.category})\n_${composantData.short}_`;
     if (navigator.share) {
         navigator.share({
             title: `NeoLab-CI - ${composantData.name}`,
